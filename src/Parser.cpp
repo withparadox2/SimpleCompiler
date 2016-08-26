@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include "Parser.h"
+#include "Node.h"
 
 using namespace std;
 
@@ -10,13 +11,7 @@ Parser::Parser(Lexer &lexer) : lexer(lexer), tokenIndex(0) {
 }
 
 void Parser::parse() {
-    while (true) {
-        Token &token = takeToken();
-        if (token.id == Token::T_END) {
-            break;
-        }
-        cout << token.lexeme << endl;
-    }
+    Node* node = buildClassNode();
 }
 
 Token &Parser::takeToken() {
@@ -40,3 +35,33 @@ void Parser::unTakeToken() {
     }
 }
 
+bool Parser::match(std::string lexeme) {
+    Token token = takeToken();
+    if(token.lexeme == lexeme) {
+        return true;
+    }
+    cerr << "expected " << lexeme;
+    exit(-1);
+}
+
+void Parser::error(std::string desc) {
+    cerr << desc;
+    exit(-1);
+}
+
+Node* Parser::buildClassNode() {
+    match("class");
+    Token &nameToken = takeToken();
+    if (nameToken.id != Token::T_ID) {
+        error("expected class name");
+    }
+    match("{");
+    Node* funcNode = buildFuncNode();
+    match("}");
+    ClassNode *node = new ClassNode(funcNode, nameToken.lexeme);
+    return node;
+}
+
+Node* Parser::buildFuncNode() {
+
+}

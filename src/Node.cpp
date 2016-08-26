@@ -3,3 +3,5 @@
 //
 
 #include "Node.h"
+
+ClassNode::ClassNode(Node *funcNode, std::string &name) : funcNode(funcNode), name(name) {}
