@@ -4,8 +4,14 @@
 #include <iostream>
 #include "Token.h"
 
-Token::Token(int id) : id(id) {}
+using namespace std;
+
+Token::Token(int id, string &text) : id(id), lexeme(text) {
+}
+
+Token::Token(const Token &token) : id(token.id), lexeme(token.lexeme) {
+}
 
 void Token::toString() {
-    std::cout << "id = " << id << std::endl;
+    cout << lexeme << endl;
 }
