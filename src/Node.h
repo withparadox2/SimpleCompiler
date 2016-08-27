@@ -9,6 +9,7 @@
 #include <vector>
 
 using std::vector;
+
 class Node {
 };
 
@@ -21,7 +22,7 @@ public:
 };
 
 class FuncNode : public Node {
-private:
+public:
     std::string name;
     vector<Node *> modifierNodes;
     Node *returnTypeNode;
@@ -44,12 +45,25 @@ private:
     int type;
     std::string &name;
 public:
+    bool isArray;
+
     const static int TYPE_OBJECT = 1;
-    const static int TYPE_PRIMITIVE =2;
+    const static int TYPE_PRIMITIVE = 2;
 
     TypeNode(int type, std::string &name);
 };
 
+class ParaNode : public Node {
+private:
+    Node* typeNode;
+    std::string &name;
+public:
+    ParaNode(Node *typeNode, std::string &name);
+};
+
+class StatementNode : public Node {
+
+};
 
 
 #endif //SIMPLECOMPILER_NODE_H
