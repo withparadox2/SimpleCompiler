@@ -11,3 +11,7 @@ ModifierNode::ModifierNode(int modifier) : modifier(modifier) {}
 TypeNode::TypeNode(int type, std::string &name) : type(type), name(name) {}
 
 ParaNode::ParaNode(Node *typeNode, std::string &name) : typeNode(typeNode), name(name) {}
+
+SelectNode::SelectNode(std::string &name) : name(name) {}
+
+StrNode::StrNode(std::string &val) : value(val) {}

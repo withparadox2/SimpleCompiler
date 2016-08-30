@@ -62,7 +62,22 @@ public:
 };
 
 class StatementNode : public Node {
+public:
+    Node* selectNode;
+    Node* paraNode;
+};
 
+class SelectNode : public Node {
+public:
+    SelectNode* next;
+    std::string &name;
+    SelectNode(std::string &name);
+};
+
+class StrNode : public Node {
+public:
+    std::string value;
+    StrNode(std::string &val);
 };
 
 

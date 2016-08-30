@@ -148,12 +148,49 @@ Node *Parser::buildParaNode() {
     return new ParaNode(node, token.lexeme);
 }
 
+//invoke
 Node *Parser::buildStatementNode() {
-    while (true) {
-        Token &token = takeToken();
-        if (token.id == Token::T_END || token.lexeme == ";") {
-            break;
+    Node *node = buildSelectNode();
+    if (node == nullptr) {
+        return nullptr;
+    }
+    match("(");
+    Node *argument = buildStrNode();
+    match(")");
+    match(";");
+    StatementNode *sNode = new StatementNode();
+    sNode->selectNode = node;
+    sNode->paraNode = argument;
+    return sNode;
+}
+
+Node *Parser::buildSelectNode() {
+    Token *token = &takeToken();
+    SelectNode *node = nullptr;
+    SelectNode *n = nullptr;
+    while (token->id == Token::T_ID) {
+        if (node == nullptr) {
+            n = new SelectNode(token->lexeme);
+            node = n;
+        } else {
+            n->next = new SelectNode(token->lexeme);
+            n = n->next;
         }
+        token = &takeToken();
+        if (token->lexeme != ".") {
+            break;
+        } else {
+            token = &takeToken();
+        }
+    }
+    unTakeToken();
+    return node;
+}
+
+Node *Parser::buildStrNode() {
+    Token &token = takeToken();
+    if (token.id == Token::T_STR) {
+        return new StrNode(token.lexeme);
     }
     return nullptr;
 }

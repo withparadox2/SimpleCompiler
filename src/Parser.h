@@ -31,6 +31,8 @@ private:
     Node* buildParaNode();
     Node* buildExpressionNode();
     Node* buildStatementNode();
+    Node* buildSelectNode();
+    Node* buildStrNode();
     bool matchLight(int id, std::string lexeme);
 public:
     const static int MAX_DEQUE_SIZE = 10;
