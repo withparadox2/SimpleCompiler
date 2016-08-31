@@ -10,8 +10,8 @@ using namespace std;
 Parser::Parser(Lexer &lexer) : lexer(lexer), tokenIndex(0) {
 }
 
-void Parser::parse() {
-    Node *node = buildClassNode();
+ClassNode* Parser::parse() {
+    return buildClassNode();
 }
 
 void Parser::printTokens() {
@@ -55,7 +55,7 @@ bool Parser::match(std::string lexeme) {
 }
 
 
-Node *Parser::buildClassNode() {
+ClassNode *Parser::buildClassNode() {
     match("class");
     Token &nameToken = takeToken();
     if (nameToken.id != Token::T_ID) {

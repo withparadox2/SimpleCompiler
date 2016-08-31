@@ -24,7 +24,7 @@ private:
     Token &takeToken();
     void unTakeToken();
     bool match(std::string lexeme);
-    Node* buildClassNode();
+    ClassNode * buildClassNode();
     FuncNode * buildFuncNode();
     ModifierNode * buildModifierNode();
     TypeNode * buildTypeNode();
@@ -37,7 +37,7 @@ public:
     const static int MAX_DEQUE_SIZE = 10;
     Parser(Lexer &lexer);
     void printTokens();
-    void parse();
+    ClassNode * parse();
 
 
 };
