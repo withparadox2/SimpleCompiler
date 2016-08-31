@@ -25,18 +25,18 @@ private:
     void unTakeToken();
     bool match(std::string lexeme);
     Node* buildClassNode();
-    Node* buildFuncNode();
-    Node* buildModifierNode();
-    Node* buildTypeNode();
-    Node* buildParaNode();
-    Node* buildExpressionNode();
-    Node* buildStatementNode();
-    Node* buildSelectNode();
-    Node* buildStrNode();
+    FuncNode * buildFuncNode();
+    ModifierNode * buildModifierNode();
+    TypeNode * buildTypeNode();
+    ParaNode * buildParaNode();
+    StatementNode * buildStatementNode();
+    SelectNode * buildSelectNode();
+    ExpressionNode * buildExpressionNode();
     bool matchLight(int id, std::string lexeme);
 public:
     const static int MAX_DEQUE_SIZE = 10;
     Parser(Lexer &lexer);
+    void printTokens();
     void parse();
 
 

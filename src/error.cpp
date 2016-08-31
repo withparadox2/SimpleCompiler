@@ -3,8 +3,7 @@
 //
 
 #include "error.h"
-#include <string>
-#include <iostream>
+
 void error(std::string desc) {
     std::cerr << desc;
     exit(-1);

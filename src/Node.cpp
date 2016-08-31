@@ -4,14 +4,14 @@
 
 #include "Node.h"
 
-ClassNode::ClassNode(Node *funcNode, std::string &name) : funcNode(funcNode), name(name) {}
+ClassNode::ClassNode(FuncNode *funcNode, std::string &name) : funcNode(funcNode), name(name) {}
 
 ModifierNode::ModifierNode(int modifier) : modifier(modifier) {}
 
 TypeNode::TypeNode(int type, std::string &name) : type(type), name(name) {}
 
-ParaNode::ParaNode(Node *typeNode, std::string &name) : typeNode(typeNode), name(name) {}
+ParaNode::ParaNode(TypeNode *typeNode, std::string &name) : typeNode(typeNode), name(name) {}
 
 SelectNode::SelectNode(std::string &name) : name(name) {}
 
-StrNode::StrNode(std::string &val) : value(val) {}
+ExpressionNode::ExpressionNode(std::string &val) : value(val) {}

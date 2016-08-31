@@ -3,7 +3,6 @@
 //
 #include <iostream>
 #include "Parser.h"
-#include "Node.h"
 #include "error.h"
 
 using namespace std;
@@ -12,7 +11,10 @@ Parser::Parser(Lexer &lexer) : lexer(lexer), tokenIndex(0) {
 }
 
 void Parser::parse() {
-//    Node *node = buildClassNode();
+    Node *node = buildClassNode();
+}
+
+void Parser::printTokens() {
     while (true) {
         Token &token = takeToken();
         if (token.id == Token::T_END) {
@@ -53,7 +55,6 @@ bool Parser::match(std::string lexeme) {
 }
 
 
-
 Node *Parser::buildClassNode() {
     match("class");
     Token &nameToken = takeToken();
@@ -61,23 +62,27 @@ Node *Parser::buildClassNode() {
         error("expected class name");
     }
     match("{");
-    Node *funcNode = buildFuncNode();
+    FuncNode *funcNode = buildFuncNode();
     match("}");
     ClassNode *node = new ClassNode(funcNode, nameToken.lexeme);
+    cout << "parse success" << endl;
     return node;
 }
 
-Node *Parser::buildFuncNode() {
-    Node *node;
+FuncNode *Parser::buildFuncNode() {
     FuncNode *funcNode = new FuncNode;
-    while ((node = buildModifierNode()) != nullptr) {
-        funcNode->modifierNodes.push_back(node);
+
+    ModifierNode *modifierNode;
+    while ((modifierNode = buildModifierNode()) != nullptr) {
+        funcNode->modifierNodes.push_back(modifierNode);
     }
 
-    node = buildTypeNode();
-    if (node == nullptr) {
+    TypeNode *typeNode = buildTypeNode();
+    if (typeNode == nullptr) {
         error("return type can not be null");
     }
+
+    funcNode->returnTypeNode = typeNode;
 
     Token &token = takeToken();
     if (token.id == Token::T_ID) {
@@ -88,22 +93,25 @@ Node *Parser::buildFuncNode() {
 
     match("(");
 
-    while ((node = buildParaNode()) != nullptr) {
-        funcNode->parameterNodes.push_back(node);
+    ParaNode *paraNode;
+    while ((paraNode = buildParaNode()) != nullptr) {
+        funcNode->parameterNodes.push_back(paraNode);
     }
 
     match(")");
     match("{");
 
-    while ((node = buildStatementNode()) != nullptr) {
-        funcNode->statementNodes.push_back(node);
+    StatementNode *statementNode;
+    while ((statementNode = buildStatementNode()) != nullptr) {
+        funcNode->statementNodes.push_back(statementNode);
     }
 
     match("}");
-    cout << "parse success" << endl;
+
+    return funcNode;
 }
 
-Node *Parser::buildModifierNode() {
+ModifierNode *Parser::buildModifierNode() {
     Token &token = takeToken();
     if (token.id == Token::T_ID) {
         if (token.lexeme == "public") {
@@ -116,7 +124,7 @@ Node *Parser::buildModifierNode() {
     return nullptr;
 }
 
-Node *Parser::buildTypeNode() {
+TypeNode *Parser::buildTypeNode() {
     Token &token = takeToken();
     if (token.id == Token::T_ID) {
         if (token.lexeme == "void") {
@@ -139,8 +147,8 @@ Node *Parser::buildTypeNode() {
     return nullptr;
 }
 
-Node *Parser::buildParaNode() {
-    Node *node = buildTypeNode();
+ParaNode *Parser::buildParaNode() {
+    TypeNode *node = buildTypeNode();
     if (node == nullptr) {
         return nullptr;
     }
@@ -154,22 +162,22 @@ Node *Parser::buildParaNode() {
 }
 
 //invoke
-Node *Parser::buildStatementNode() {
-    Node *node = buildSelectNode();
-    if (node == nullptr) {
+StatementNode *Parser::buildStatementNode() {
+    SelectNode *objNode = buildSelectNode();
+    if (objNode == nullptr) {
         return nullptr;
     }
     match("(");
-    Node *argument = buildStrNode();
+    ExpressionNode *expNode = buildExpressionNode();
     match(")");
     match(";");
     StatementNode *sNode = new StatementNode();
-    sNode->selectNode = node;
-    sNode->paraNode = argument;
+    sNode->selectNode = objNode;
+    sNode->paraNode = expNode;
     return sNode;
 }
 
-Node *Parser::buildSelectNode() {
+SelectNode *Parser::buildSelectNode() {
     Token *token = &takeToken();
     SelectNode *node = nullptr;
     SelectNode *n = nullptr;
@@ -192,10 +200,10 @@ Node *Parser::buildSelectNode() {
     return node;
 }
 
-Node *Parser::buildStrNode() {
+ExpressionNode *Parser::buildExpressionNode() {
     Token &token = takeToken();
     if (token.id == Token::T_STR) {
-        return new StrNode(token.lexeme);
+        return new ExpressionNode(token.lexeme);
     }
     return nullptr;
 }

@@ -10,24 +10,33 @@
 
 using std::vector;
 
+class ClassNode;
+class FuncNode;
+class ModifierNode;
+class TypeNode;
+class ParaNode;
+class StatementNode;
+class SelectNode;
+class ExpressionNode;
+
 class Node {
 };
 
 class ClassNode : public Node {
 private:
-    Node *funcNode;
+    FuncNode *funcNode;
     std::string &name;
 public:
-    ClassNode(Node *funcNode, std::string &name);
+    ClassNode(FuncNode *funcNode, std::string &name);
 };
 
 class FuncNode : public Node {
 public:
     std::string name;
-    vector<Node *> modifierNodes;
-    Node *returnTypeNode;
-    vector<Node *> parameterNodes;
-    vector<Node *> statementNodes;
+    vector<ModifierNode *> modifierNodes;
+    TypeNode *returnTypeNode;
+    vector<ParaNode *> parameterNodes;
+    vector<StatementNode *> statementNodes;
 };
 
 class ModifierNode : public Node {
@@ -55,16 +64,16 @@ public:
 
 class ParaNode : public Node {
 private:
-    Node* typeNode;
+    TypeNode* typeNode;
     std::string &name;
 public:
-    ParaNode(Node *typeNode, std::string &name);
+    ParaNode(TypeNode *typeNode, std::string &name);
 };
 
 class StatementNode : public Node {
 public:
-    Node* selectNode;
-    Node* paraNode;
+    SelectNode* selectNode;
+    ExpressionNode* paraNode;
 };
 
 class SelectNode : public Node {
@@ -74,10 +83,10 @@ public:
     SelectNode(std::string &name);
 };
 
-class StrNode : public Node {
+class ExpressionNode : public Node {
 public:
     std::string value;
-    StrNode(std::string &val);
+    ExpressionNode(std::string &val);
 };
 
 
