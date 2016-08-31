@@ -2,11 +2,12 @@
 #include <fstream>
 #include "Lexer.h"
 #include "Parser.h"
+#include "Common.h"
 
 using namespace std;
 
 int main() {
-    string filePath("E:/programming/compiler/SimpleCompiler/TestHelloWorld/HelloWorld.java");
+    string filePath(FILE_PATH);
     std::ifstream is(filePath.c_str());
 
     if (is.is_open()) {
