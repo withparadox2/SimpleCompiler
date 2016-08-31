@@ -4,6 +4,7 @@
 
 #include "Lexer.h"
 #include <iostream>
+#include "error.h"
 
 using namespace std;
 
@@ -30,17 +31,6 @@ Token Lexer::nextToken() {
     int state = STATE_START;
     string text = "";
     while (char c = nextChar()) {
-        if (state == STATE_COMMENT) {
-            if (c != '\n') {
-                continue;
-            }
-        }
-        if (state == STATE_STR) {
-            if (c != '"') {
-                text += c;
-                continue;
-            }
-        }
         switch (c) {
             case ' ':
                 if (state != STATE_START) {
@@ -48,20 +38,16 @@ Token Lexer::nextToken() {
                 }
                 break;
             case '/':
-                if (state != STATE_START && state != STATE_STR) {
+                if (state != STATE_START) {
                     return buildToken(text, state);
                 }
-                if (state != STATE_STR) {
-                    if (nextChar() != '/') {
-                        cout << "wrong comment" << endl;
-                        exit(-1);
-                    } else {
-                        state = STATE_COMMENT;
-                    }
+                if (nextChar() != '/') {
+                    error("wrong comment");
                 }
+                while (nextChar() != '\n') {}
                 break;
             case '\n':
-                if (state != STATE_COMMENT && state != STATE_START) {
+                if (state != STATE_START) {
                     return buildToken(text, state);
                 }
                 state = STATE_START;
@@ -83,12 +69,14 @@ Token Lexer::nextToken() {
                 if (state != STATE_START) {
                     return buildToken(text, state);
                 }
-                if (state != STATE_STR) {
-                    state = STATE_STR;
-                } else {
-                    return buildToken(text, state);
+
+                while ((c = nextChar()) != '"') {
+                    if (c == '\n') {
+                        error("string can only appear in single line");
+                    }
+                    text += c;
                 }
-                break;
+                return buildToken(text, STATE_STR);
             default:
                 state = STATE_ID;
                 text += c;
@@ -96,7 +84,7 @@ Token Lexer::nextToken() {
         }
     }
     string empty = "";
-    return Token(-1, empty);
+    return Token(Token::T_END, empty);
 }
 
 void Lexer::rollBack() {
@@ -111,10 +99,8 @@ char Lexer::nextChar() {
             sourceCode += '\n';
         }
     }
-    int size = sourceCode.size();
-    if (head >= size) {
+    if (head >= sourceCode.size()) {
         return 0;
     }
-
     return sourceCode[head++];
 }

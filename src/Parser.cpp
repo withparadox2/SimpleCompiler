@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Parser.h"
 #include "Node.h"
+#include "error.h"
 
 using namespace std;
 
@@ -11,7 +12,14 @@ Parser::Parser(Lexer &lexer) : lexer(lexer), tokenIndex(0) {
 }
 
 void Parser::parse() {
-    Node *node = buildClassNode();
+//    Node *node = buildClassNode();
+    while (true) {
+        Token &token = takeToken();
+        if (token.id == Token::T_END) {
+            break;
+        }
+        cout << token.lexeme << endl;
+    }
 }
 
 Token &Parser::takeToken() {
@@ -44,10 +52,7 @@ bool Parser::match(std::string lexeme) {
     exit(-1);
 }
 
-void Parser::error(std::string desc) {
-    cerr << desc;
-    exit(-1);
-}
+
 
 Node *Parser::buildClassNode() {
     match("class");

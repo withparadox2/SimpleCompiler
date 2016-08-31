@@ -38,7 +38,7 @@ public:
     const static int MAX_DEQUE_SIZE = 10;
     Parser(Lexer &lexer);
     void parse();
-    void error(std::string desc);
+
 
 };
 
