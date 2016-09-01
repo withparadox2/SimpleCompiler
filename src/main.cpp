@@ -2,7 +2,7 @@
 #include <fstream>
 #include "Lexer.h"
 #include "Parser.h"
-#include "Common.h"
+#include "common.h"
 #include "Code.h"
 
 using namespace std;

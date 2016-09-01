@@ -8,8 +8,8 @@
 #include <functional>
 #include <vector>
 #include <map>
+#include <fstream>
 
-class Pool;
 
 const int CONSTANT_Class = 7;
 const int CONSTANT_Fieldref = 9;
@@ -26,14 +26,25 @@ const int CONSTANT_MethodHandle = 15;
 const int CONSTANT_MethodType = 16;
 const int CONSTANT_InvokeDynamic = 18;
 
+
+class Pool;
+
+class ConstantBase;
+
+class ConstantPolymer;
+
 using namespace std;
 
 class ConstantPolymer {
-    map<string, vector<ConstantBase *>> map;
+    map<string, vector<ConstantBase *> > ctMap;
 public:
     ConstantBase *isExist(string val, int tag);
 
     void put(string val, ConstantBase *item);
+
+    void buildList(vector<ConstantBase *> &vec);
+
+    ~ConstantPolymer();
 };
 
 class ConstantBase {
@@ -54,6 +65,8 @@ public:
 
     ConstantBase(int tag, ConstantBase *ref1, ConstantBase *ref2);
 
+    void init();
+
     void setIndex(int index);
 
     void ref(function<void(int)> ref);
@@ -68,8 +81,15 @@ public:
 };
 
 class Pool {
+    vector<ConstantBase *> ctVec;
 public:
+    Pool();
+
     ConstantPolymer polymer;
+
+    void buildConstantList();
+
+    void writeStream(ofstream *stream);
 
     ConstantBase *genUtf8(string val);
 
@@ -77,13 +97,11 @@ public:
 
     ConstantBase *genString(string val);
 
-
     ConstantBase *genNameAndType(string ref1, string ref2);
 
     ConstantBase *genMethodref(string ref1, string ref2, string ref3);
 
     ConstantBase *genFieldref(string ref1, string ref2, string ref3);
-
 };
 
 
