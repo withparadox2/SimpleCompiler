@@ -11,6 +11,7 @@ class Code {
 private:
     ClassNode* rootNode;
     std::string classPath;
+
 public:
     Code(ClassNode* classNode, std::string path);
     void start();
