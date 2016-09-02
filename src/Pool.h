@@ -36,8 +36,7 @@ class ConstantPolymer;
 using namespace std;
 
 class ConstantPolymer {
-    //TODO 使用val+tag作为map的key值，避免中间生成vector
-    map<string, vector<ConstantBase *> > ctMap;
+    map<string, ConstantBase *> ctMap;
 public:
     ConstantBase *isExist(string val, int tag);
 

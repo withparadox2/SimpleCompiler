@@ -9,41 +9,35 @@ using namespace std;
 
 
 ConstantBase *ConstantPolymer::isExist(string val, int tag) {
-    if (ctMap.find(val) == ctMap.end()) {
+    string key = val + to_string(tag);
+    if (ctMap.find(key) == ctMap.end()) {
         return nullptr;
     }
-    auto &vec = ctMap[val];
-    for (auto iter = vec.begin(); iter != vec.end(); iter++) {
-        ConstantBase *p = *iter;
-        if (p->tag == tag) {
-            return p;
-        }
+    auto p = ctMap[key];
+    if (p->tag == tag) {
+        return p;
     }
     return nullptr;
 }
 
 void ConstantPolymer::put(string val, ConstantBase *item) {
-    auto &vec = ctMap[val];
-    vec.push_back(item);
+    string key = val + to_string(item->tag);
+    if (ctMap.find(key) == ctMap.end()) {
+        ctMap.insert(make_pair(key, item));
+    }
 }
 
 ConstantPolymer::~ConstantPolymer() {
     for (auto it = ctMap.begin(); it != ctMap.end(); ++it) {
-        auto vec = it->second;
-        for (auto itVec = vec.begin(); itVec != vec.end(); ++itVec) {
-            delete *itVec;
-        }
+        delete it->second;
     }
 }
 
 void ConstantPolymer::buildList(vector<ConstantBase *> &ctVec) {
     for (auto it = ctMap.begin(); it != ctMap.end(); ++it) {
-        auto vec = it->second;
-        for (int i = 0; i < vec.size(); i++) {
-            ConstantBase *item = vec[i];
-            item->setIndex(ctVec.size());
-            ctVec.push_back(item);
-        }
+        ConstantBase *item = it->second;
+        item->setIndex(ctVec.size());
+        ctVec.push_back(item);
     }
 }
 
