@@ -64,7 +64,8 @@ ClassNode *Parser::buildClassNode() {
     match("{");
     FuncNode *funcNode = buildFuncNode();
     match("}");
-    ClassNode *node = new ClassNode(funcNode, nameToken.lexeme);
+    ClassNode *node = new ClassNode(nameToken.lexeme);
+    node->funcNodes.push_back(funcNode);
     cout << "parse success" << endl;
     return node;
 }

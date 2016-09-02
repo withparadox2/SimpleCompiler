@@ -6,12 +6,13 @@
 #define SIMPLECOMPILER_CODE_H
 
 #include "Node.h"
+#include "Pool.h"
 
 class Code {
 private:
     ClassNode* rootNode;
     std::string classPath;
-
+    void prepare(Pool &pool);
 public:
     Code(ClassNode* classNode, std::string path);
     void start();
@@ -21,6 +22,7 @@ public:
     void writeMethods();
     void writeFields();
     void writeAttribute();
+
 };
 
 

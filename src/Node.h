@@ -23,20 +23,22 @@ class Node {
 };
 
 class ClassNode : public Node {
-private:
-    FuncNode *funcNode;
-    std::string &name;
 public:
-    ClassNode(FuncNode *funcNode, std::string &name);
+    vector<FuncNode *> funcNodes;
+    std::string name;
+    SelectNode *superClass;
+    ClassNode(std::string &name);
 };
 
 class FuncNode : public Node {
 public:
+    FuncNode();
     std::string name;
     vector<ModifierNode *> modifierNodes;
     TypeNode *returnTypeNode;
     vector<ParaNode *> parameterNodes;
     vector<StatementNode *> statementNodes;
+    std::string buildDescriptor();
 };
 
 class ModifierNode : public Node {
@@ -51,27 +53,28 @@ public:
 
 class TypeNode : public Node {
 private:
-    int type;
-    std::string &name;
 public:
     bool isArray;
+    std::string name;
+    int type;
 
     const static int TYPE_OBJECT = 1;
     const static int TYPE_PRIMITIVE = 2;
 
     TypeNode(int type, std::string &name);
+    std::string buildPath(std::string separator);
 };
 
 class ParaNode : public Node {
-private:
-    TypeNode* typeNode;
-    std::string &name;
 public:
+    TypeNode* typeNode;
+    std::string name;
     ParaNode(TypeNode *typeNode, std::string &name);
 };
 
 class StatementNode : public Node {
 public:
+    StatementNode();
     SelectNode* selectNode;
     ExpressionNode* paraNode;
 };
@@ -79,8 +82,9 @@ public:
 class SelectNode : public Node {
 public:
     SelectNode* next;
-    std::string &name;
-    SelectNode(std::string &name);
+    std::string name;
+    SelectNode(std::string name);
+    std::string buildPath(std::string separator);
 };
 
 class ExpressionNode : public Node {

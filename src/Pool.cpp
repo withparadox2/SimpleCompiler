@@ -166,11 +166,11 @@ ConstantBase *Pool::genFieldref(string ref1, string ref2, string ref3) {
 }
 
 Pool::Pool() {
-    genClass("HelloWorld");
-    genNameAndType("<init>", "()V");
-    genMethodref("java/lang/Object", "<init>", "()V");
-    buildConstantList();
-    writeStream(nullptr);
+//    genClass("HelloWorld");
+//    genNameAndType("<init>", "()V");
+//    genMethodref("java/lang/Object", "<init>", "()V");
+//    buildConstantList();
+//    writeStream(nullptr);
 }
 
 void Pool::buildConstantList() {
