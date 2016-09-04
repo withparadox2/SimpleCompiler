@@ -44,10 +44,11 @@ public:
 
 class ModifierNode : public Node {
 private:
-    int modifier;
 public:
-    const static int STATIC = 1;
-    const static int PUBLIC = 2;
+    int modifier;
+
+    const static int STATIC = 0x0008;
+    const static int PUBLIC = 0x0001;
 
     ModifierNode(int modifier);
 };
@@ -88,6 +89,8 @@ public:
     std::string name;
     SelectNode(std::string name);
     std::string buildPath(std::string separator);
+
+    ConstantBase *genConstantRef(Pool &pool, ClassNode *rootNode);
 };
 
 class StringLiteralNode : public Node {

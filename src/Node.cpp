@@ -36,6 +36,20 @@ std::string SelectNode::buildPath(std::string separator) {
     return result;
 }
 
+ConstantBase *SelectNode::genConstantRef(Pool &pool, ClassNode *rootNode) {
+    if (name == "super") {
+        string &superClass = rootNode->superClass->name;
+        string funcName = "<init>";
+        string funcType = "()V";
+        return pool.genMethodref(superClass, funcName, funcType);
+    } else if (name == "println") {
+        return pool.genMethodref("java/io/PrintStream", name, "(Ljava/lang/String;)V");
+    } else if (name == "out") {
+        return pool.genFieldref("java/lang/System", "out", "Ljava/io/PrintStream;");
+    }
+    return nullptr;
+}
+
 StringLiteralNode::StringLiteralNode(std::string &val) : value(val) {}
 
 InvokeNode::InvokeNode() : selectNode(nullptr), argNode(nullptr) {}
@@ -44,18 +58,7 @@ void InvokeNode::genConstant(Pool &pool, ClassNode *rootNode) {
     auto tempNode = selectNode;
     while (tempNode != nullptr) {
         string &name = tempNode->name;
-        if (tempNode->next == nullptr) {
-            if (name == "super") {
-                string &superClass = rootNode->superClass->name;
-                string funcName = "<init>";
-                string funcType = "()V";
-                pool.genMethodref(superClass, funcName, funcType);
-            } else if (name == "println") {
-                pool.genMethodref("java/io/PrintStream", name, "(Ljava/lang/String;)V");
-            }
-        } else if (name == "out") {
-            pool.genFieldref("java/lang/System", "out", "Ljava/io/PrintStream;");
-        }
+        tempNode->genConstantRef(pool, rootNode);
         tempNode = tempNode->next;
     }
 

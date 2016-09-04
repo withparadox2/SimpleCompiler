@@ -81,9 +81,10 @@ public:
 };
 
 class Pool {
-    vector<ConstantBase *> ctVec;
 public:
     Pool();
+
+    vector<ConstantBase *> ctVec;
 
     ConstantPolymer polymer;
 

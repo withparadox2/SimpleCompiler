@@ -15,7 +15,7 @@ int main() {
         Parser parser(lexer);
         ClassNode* node = parser.parse();
         is.close();
-        Code code(node, FILE_PATH_ROOT "hello.class");
+        Code code(node, FILE_PATH_ROOT "HelloWorld.class");
         code.start();
     }
     return 0;
