@@ -57,7 +57,8 @@ bool Parser::match(std::string lexeme) {
 
 ClassNode *Parser::buildClassNode() {
     match("class");
-    Token &nameToken = takeToken();
+    //do not use &nameToken, may be pop out
+    Token nameToken = takeToken();
     if (nameToken.id != Token::T_ID) {
         error("expected class name");
     }
@@ -102,7 +103,7 @@ FuncNode *Parser::buildFuncNode() {
     match(")");
     match("{");
 
-    StatementNode *statementNode;
+    InvokeNode *statementNode;
     while ((statementNode = buildStatementNode()) != nullptr) {
         funcNode->statementNodes.push_back(statementNode);
     }
@@ -163,18 +164,18 @@ ParaNode *Parser::buildParaNode() {
 }
 
 //invoke
-StatementNode *Parser::buildStatementNode() {
+InvokeNode *Parser::buildStatementNode() {
     SelectNode *objNode = buildSelectNode();
     if (objNode == nullptr) {
         return nullptr;
     }
     match("(");
-    ExpressionNode *expNode = buildExpressionNode();
+    StringLiteralNode *expNode = buildExpressionNode();
     match(")");
     match(";");
-    StatementNode *sNode = new StatementNode();
+    InvokeNode *sNode = new InvokeNode();
     sNode->selectNode = objNode;
-    sNode->paraNode = expNode;
+    sNode->argNode = expNode;
     return sNode;
 }
 
@@ -201,10 +202,10 @@ SelectNode *Parser::buildSelectNode() {
     return node;
 }
 
-ExpressionNode *Parser::buildExpressionNode() {
+StringLiteralNode *Parser::buildExpressionNode() {
     Token &token = takeToken();
     if (token.id == Token::T_STR) {
-        return new ExpressionNode(token.lexeme);
+        return new StringLiteralNode(token.lexeme);
     }
     return nullptr;
 }

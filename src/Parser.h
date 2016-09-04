@@ -29,9 +29,9 @@ private:
     ModifierNode * buildModifierNode();
     TypeNode * buildTypeNode();
     ParaNode * buildParaNode();
-    StatementNode * buildStatementNode();
+    InvokeNode * buildStatementNode();
     SelectNode * buildSelectNode();
-    ExpressionNode * buildExpressionNode();
+    StringLiteralNode * buildExpressionNode();
     bool matchLight(int id, std::string lexeme);
 public:
     const static int MAX_DEQUE_SIZE = 10;

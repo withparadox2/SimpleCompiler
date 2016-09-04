@@ -39,10 +39,7 @@ void Code::writeAttribute() {
 
 void Code::prepare(Pool &pool) {
     if (rootNode->superClass == nullptr) {
-        SelectNode *sNode = new SelectNode("java");
-        rootNode->superClass = sNode;
-        sNode->next = new SelectNode("lang");
-        sNode->next->next = new SelectNode("Object");
+        rootNode->superClass = new ClassNode("java/lang/Object");
     }
 
     auto &funcNodes = rootNode->funcNodes;
@@ -56,19 +53,27 @@ void Code::prepare(Pool &pool) {
         FuncNode *funcNode = new FuncNode;
         funcNode->name = "<init>";
 
-        StatementNode *statementNode = new StatementNode;
+        InvokeNode *statementNode = new InvokeNode;
         SelectNode *objNode = new SelectNode("super");
         statementNode->selectNode = objNode;
         funcNode->statementNodes.push_back(statementNode);
         funcNodes.push_back(funcNode);
     }
 
+    pool.genUtf8("Code");
+    pool.genUtf8("LineNumberTable");
+    pool.genUtf8("SourceFile");
+    pool.genUtf8("HelloWorld.java");
     pool.genClass(rootNode->name);
-    pool.genClass(rootNode->superClass->buildPath("/"));
+    pool.genClass(rootNode->superClass->name);
 
     for (auto iter = funcNodes.begin(); iter != funcNodes.end(); iter++) {
-        pool.genUtf8((*iter)->name);
-        pool.genUtf8((*iter)->buildDescriptor());
+        FuncNode *funcNode = *iter;
+        pool.genUtf8(funcNode->name);
+        pool.genUtf8(funcNode->buildDescriptor());
+
+        InvokeNode *invokeNode = funcNode->statementNodes[0];
+        invokeNode->genConstant(pool, rootNode);
     }
 
     pool.buildConstantList();

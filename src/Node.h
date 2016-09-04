@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "Pool.h"
 
 using std::vector;
 
@@ -15,9 +16,9 @@ class FuncNode;
 class ModifierNode;
 class TypeNode;
 class ParaNode;
-class StatementNode;
+class InvokeNode;
 class SelectNode;
-class ExpressionNode;
+class StringLiteralNode;
 
 class Node {
 };
@@ -26,8 +27,8 @@ class ClassNode : public Node {
 public:
     vector<FuncNode *> funcNodes;
     std::string name;
-    SelectNode *superClass;
-    ClassNode(std::string &name);
+    ClassNode *superClass;
+    ClassNode(std::string name);
 };
 
 class FuncNode : public Node {
@@ -37,7 +38,7 @@ public:
     vector<ModifierNode *> modifierNodes;
     TypeNode *returnTypeNode;
     vector<ParaNode *> parameterNodes;
-    vector<StatementNode *> statementNodes;
+    vector<InvokeNode *> statementNodes;
     std::string buildDescriptor();
 };
 
@@ -72,11 +73,13 @@ public:
     ParaNode(TypeNode *typeNode, std::string &name);
 };
 
-class StatementNode : public Node {
+class InvokeNode : public Node {
 public:
-    StatementNode();
+    InvokeNode();
     SelectNode* selectNode;
-    ExpressionNode* paraNode;
+    StringLiteralNode* argNode;
+    void genConstant(Pool &pool, ClassNode *rootNode);
+    std::string funcType();
 };
 
 class SelectNode : public Node {
@@ -87,10 +90,10 @@ public:
     std::string buildPath(std::string separator);
 };
 
-class ExpressionNode : public Node {
+class StringLiteralNode : public Node {
 public:
     std::string value;
-    ExpressionNode(std::string &val);
+    StringLiteralNode(std::string &val);
 };
 
 

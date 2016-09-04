@@ -178,8 +178,11 @@ void Pool::buildConstantList() {
 }
 
 void Pool::writeStream(ofstream *stream) {
+    int i = 0;
     for (auto iter = ctVec.begin(); iter != ctVec.end(); ++iter) {
         auto item = *iter;
+        cout << "i = " << i << endl;
+        i++;
         cout << "tag = " << item->tag << "  value = " << item->value << endl;
         if (item->refFirstPos >= 0) {
             cout << "refFirstPos = " << item->refFirstPos << endl;

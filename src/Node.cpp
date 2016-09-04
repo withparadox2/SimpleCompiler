@@ -2,9 +2,12 @@
 // Created by withparadox2 on 2016/8/25.
 //
 
+#include <iostream>
 #include "Node.h"
 
-ClassNode::ClassNode(std::string &name) : name(name), superClass(nullptr) {}
+using namespace std;
+
+ClassNode::ClassNode(std::string name) : name(name), superClass(nullptr) {}
 
 ModifierNode::ModifierNode(int modifier) : modifier(modifier) {}
 
@@ -12,7 +15,7 @@ TypeNode::TypeNode(int type, std::string &name) : type(type), name(name) {}
 
 std::string TypeNode::buildPath(std::string separator) {
     if (name == "String") {
-        return "java" + separator + "lang" + separator + name;
+        return "java/lang/String";
     } else if (name == "int") {
         return "I";
     }
@@ -33,9 +36,37 @@ std::string SelectNode::buildPath(std::string separator) {
     return result;
 }
 
-ExpressionNode::ExpressionNode(std::string &val) : value(val) {}
+StringLiteralNode::StringLiteralNode(std::string &val) : value(val) {}
 
-StatementNode::StatementNode() : selectNode(nullptr), paraNode(nullptr) {}
+InvokeNode::InvokeNode() : selectNode(nullptr), argNode(nullptr) {}
+
+void InvokeNode::genConstant(Pool &pool, ClassNode *rootNode) {
+    auto tempNode = selectNode;
+    while (tempNode != nullptr) {
+        string &name = tempNode->name;
+        if (tempNode->next == nullptr) {
+            if (name == "super") {
+                string &superClass = rootNode->superClass->name;
+                string funcName = "<init>";
+                string funcType = "()V";
+                pool.genMethodref(superClass, funcName, funcType);
+            } else if (name == "println") {
+                pool.genMethodref("java/io/PrintStream", name, "(Ljava/lang/String;)V");
+            }
+        } else if (name == "out") {
+            pool.genFieldref("java/lang/System", "out", "Ljava/io/PrintStream;");
+        }
+        tempNode = tempNode->next;
+    }
+
+    if (argNode != nullptr) {
+        pool.genString(argNode->value);
+    }
+}
+
+std::string InvokeNode::funcType() {
+    return std::string();
+}
 
 FuncNode::FuncNode() : returnTypeNode(nullptr) {}
 
