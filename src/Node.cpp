@@ -4,10 +4,19 @@
 
 #include <iostream>
 #include "Node.h"
+#include "Utils.h"
 
 using namespace std;
 
+
 ClassNode::ClassNode(std::string name) : name(name), superClass(nullptr) {}
+
+ClassNode::~ClassNode() {
+    if (superClass != nullptr) {
+        delete superClass;
+    }
+    releaseVec(funcNodes);
+}
 
 ModifierNode::ModifierNode(int modifier) : modifier(modifier) {}
 
@@ -24,17 +33,13 @@ std::string TypeNode::buildPath(std::string separator) {
 
 ParaNode::ParaNode(TypeNode *typeNode, std::string &name) : typeNode(typeNode), name(name) {}
 
-SelectNode::SelectNode(std::string name) : name(name), next(nullptr) {}
-
-std::string SelectNode::buildPath(std::string separator) {
-    std::string result = name;
-    SelectNode *p = next;
-    while (p != nullptr) {
-        result += separator + p->name;
-        p = p->next;
+ParaNode::~ParaNode() {
+    if (typeNode != nullptr) {
+        delete typeNode;
     }
-    return result;
 }
+
+SelectNode::SelectNode(std::string name) : name(name), next(nullptr) {}
 
 ConstantBase *SelectNode::genConstantRef(Pool &pool, ClassNode *rootNode) {
     if (name == "super") {
@@ -48,6 +53,12 @@ ConstantBase *SelectNode::genConstantRef(Pool &pool, ClassNode *rootNode) {
         return pool.genFieldref("java/lang/System", "out", "Ljava/io/PrintStream;");
     }
     return nullptr;
+}
+
+SelectNode::~SelectNode() {
+    if (next != nullptr) {
+        delete next;
+    }
 }
 
 StringLiteralNode::StringLiteralNode(std::string &val) : value(val) {}
@@ -67,8 +78,13 @@ void InvokeNode::genConstant(Pool &pool, ClassNode *rootNode) {
     }
 }
 
-std::string InvokeNode::funcType() {
-    return std::string();
+InvokeNode::~InvokeNode() {
+    if (selectNode != nullptr) {
+        delete selectNode;
+    }
+    if (argNode != nullptr) {
+        delete argNode;
+    }
 }
 
 FuncNode::FuncNode() : returnTypeNode(nullptr) {}
@@ -94,4 +110,13 @@ std::string FuncNode::buildDescriptor() {
         }
     }
     return "(" + pType + ")" + rType;
+}
+
+FuncNode::~FuncNode() {
+    if (returnTypeNode != nullptr) {
+        delete returnTypeNode;
+    }
+    releaseVec(modifierNodes);
+    releaseVec(parameterNodes);
+    releaseVec(statementNodes);
 }

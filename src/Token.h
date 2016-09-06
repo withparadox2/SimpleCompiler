@@ -12,7 +12,7 @@ private:
 
 public:
     int id;
-    std::string lexeme;
+    std::string lexeme;//must not be a reference
     Token(int id, std::string & text);
     Token(const Token &token);
     virtual void toString();

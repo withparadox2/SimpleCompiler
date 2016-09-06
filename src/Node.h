@@ -29,6 +29,7 @@ public:
     std::string name;
     ClassNode *superClass;
     ClassNode(std::string name);
+    ~ClassNode();
 };
 
 class FuncNode : public Node {
@@ -40,6 +41,7 @@ public:
     vector<ParaNode *> parameterNodes;
     vector<InvokeNode *> statementNodes;
     std::string buildDescriptor();
+    ~FuncNode();
 };
 
 class ModifierNode : public Node {
@@ -72,6 +74,7 @@ public:
     TypeNode* typeNode;
     std::string name;
     ParaNode(TypeNode *typeNode, std::string &name);
+    ~ParaNode();
 };
 
 class InvokeNode : public Node {
@@ -80,7 +83,7 @@ public:
     SelectNode* selectNode;
     StringLiteralNode* argNode;
     void genConstant(Pool &pool, ClassNode *rootNode);
-    std::string funcType();
+    ~InvokeNode();
 };
 
 class SelectNode : public Node {
@@ -88,9 +91,8 @@ public:
     SelectNode* next;
     std::string name;
     SelectNode(std::string name);
-    std::string buildPath(std::string separator);
-
     ConstantBase *genConstantRef(Pool &pool, ClassNode *rootNode);
+    ~SelectNode();
 };
 
 class StringLiteralNode : public Node {
@@ -98,6 +100,8 @@ public:
     std::string value;
     StringLiteralNode(std::string &val);
 };
+
+
 
 
 #endif //SIMPLECOMPILER_NODE_H

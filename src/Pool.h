@@ -103,6 +103,8 @@ public:
     ConstantBase *genMethodref(string ref1, string ref2, string ref3);
 
     ConstantBase *genFieldref(string ref1, string ref2, string ref3);
+
+    ~Pool();
 };
 
 

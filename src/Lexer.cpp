@@ -3,15 +3,14 @@
 //
 
 #include "Lexer.h"
-#include <iostream>
 #include "error.h"
 
 using namespace std;
 
-Lexer::Lexer(ifstream &stream) : stream(stream), head(0), sourceCode("") {}
+Lexer::Lexer(ifstream &stream) : stream(stream), head(0) {}
 
 Token Lexer::buildToken(string &text, int state) {
-    int id = Token::T_END;
+    int id;
     switch (state) {
         case STATE_CHAR:
             id = Token::T_CHAR;
@@ -22,6 +21,8 @@ Token Lexer::buildToken(string &text, int state) {
         case STATE_ID:
             id = Token::T_ID;
             break;
+        default:
+            id = Token::T_END;
     }
     return Token(id, text);
 }
@@ -50,7 +51,6 @@ Token Lexer::nextToken() {
                 if (state != STATE_START) {
                     return buildToken(text, state);
                 }
-                state = STATE_START;
                 break;
             case '(':
             case ')':
@@ -104,3 +104,4 @@ char Lexer::nextChar() {
     }
     return sourceCode[head++];
 }
+
