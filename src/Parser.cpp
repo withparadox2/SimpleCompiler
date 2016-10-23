@@ -10,7 +10,7 @@ using namespace std;
 Parser::Parser(Lexer &lexer) : lexer(lexer), tokenIndex(0) {
 }
 
-ClassNode* Parser::parse() {
+ClassNode *Parser::parse() {
     return buildClassNode();
 }
 
@@ -41,7 +41,7 @@ Token &Parser::takeToken() {
 void Parser::unTakeToken() {
     tokenIndex++;
     if (tokenIndex > MAX_DEQUE_SIZE) {
-        //error
+        error("the max size of queue of token needs to be expanded.");
     }
 }
 
@@ -50,8 +50,7 @@ bool Parser::match(std::string lexeme) {
     if (token.lexeme == lexeme) {
         return true;
     }
-    cerr << "expected " << lexeme;
-    exit(-1);
+    error("expected " + lexeme);
 }
 
 

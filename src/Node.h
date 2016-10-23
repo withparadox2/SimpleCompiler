@@ -60,8 +60,8 @@ public:
     ClassNode *superClass;
 
     ClassNode(std::string name);
-
     void accept(Visitor &visitor) override;
+    ~ClassNode();
 };
 
 class FuncNode : public Node {
@@ -75,8 +75,8 @@ public:
     vector<InvokeNode *> statementNodes;
 
     std::string buildDescriptor();
-
     void accept(Visitor &visitor) override;
+    ~FuncNode();
 };
 
 class ModifierNode : public Node {
@@ -116,9 +116,8 @@ public:
     std::string name;
 
     ParaNode(TypeNode *typeNode, std::string &name);
-
     void accept(Visitor &visitor) override;
-
+    ~ParaNode();
 };
 
 class InvokeNode : public Node {
@@ -129,11 +128,11 @@ public:
     StringLiteralNode *argNode;
 
     void genConstant(Pool &pool, ClassNode *rootNode);
-
     std::string funcType();
 
     void accept(Visitor &visitor) override;
 
+    ~InvokeNode();
 };
 
 class SelectNode : public Node {
@@ -149,6 +148,7 @@ public:
 
     void accept(Visitor &visitor) override;
 
+    ~SelectNode();
 };
 
 class StringLiteralNode : public Node {
@@ -159,6 +159,8 @@ public:
 
     void accept(Visitor &visitor) override;
 };
+
+
 
 
 #endif //SIMPLECOMPILER_NODE_H

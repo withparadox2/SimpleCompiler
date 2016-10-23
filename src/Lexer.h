@@ -27,7 +27,6 @@ public:
     Token nextToken();
 
     static const int STATE_START = 1;
-    static const int STATE_COMMENT = 2;
     static const int STATE_STR = 3;
     static const int STATE_ID = 4;
     static const int STATE_CHAR = 6;

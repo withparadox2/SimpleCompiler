@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "Pool.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -166,11 +167,6 @@ ConstantBase *Pool::genFieldref(string ref1, string ref2, string ref3) {
 }
 
 Pool::Pool() {
-//    genClass("HelloWorld");
-//    genNameAndType("<init>", "()V");
-//    genMethodref("java/lang/Object", "<init>", "()V");
-//    buildConstantList();
-//    writeStream(nullptr);
 }
 
 void Pool::buildConstantList() {
@@ -192,4 +188,8 @@ void Pool::writeStream(ofstream *stream) {
         }
         cout << "============================" << endl;
     }
+}
+
+Pool::~Pool() {
+    //ConstantBase* ctVec has been handled by ConstantPolymer
 }
