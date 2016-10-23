@@ -25,6 +25,8 @@ private:
     void prepare(Pool &pool);
 
     ofstream ofs;
+
+    u1 arrBuffer[4];
 public:
     Code(ClassNode *classNode, std::string path);
 
@@ -52,6 +54,8 @@ public:
     void w4B(u4 bytes);
 
     u2 buildModifierFlag(vector<ModifierNode *> &nodes);
+
+    ClassNode *getRootNode();
 };
 
 

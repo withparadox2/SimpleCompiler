@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Code.h"
 #include "Pool.h"
+#include "Gen.h"
 
 Code::Code(ClassNode *classNode, std::string path) : rootNode(classNode) {
     ofs.open(path, std::ofstream::binary | std::ofstream::trunc);
@@ -58,42 +59,11 @@ void Code::writeClassInfo() {
 }
 
 void Code::writeMethods() {
+    Gen gen(*this, pool);
     auto &funcNodes = rootNode->funcNodes;
     for (auto iter = funcNodes.rbegin(); iter != funcNodes.rend(); iter++) {
         FuncNode *node = *iter;
-        w2B(buildModifierFlag(node->modifierNodes));
-        w2B(pool.genUtf8(node->name)->index + 1);//name_index
-        w2B(pool.genUtf8(node->buildDescriptor())->index + 1);//descriptor
-        w2B(1);//attribute count
-        w2B(pool.genUtf8("Code")->index + 1);
-
-        if (node->name == "<init>") {
-            w4B(17);
-            w2B(1);
-            w2B(1);
-            w4B(5);//code length
-            w1B(0x2a);//aload this
-            w1B(0xb7);//invoke special
-
-            int superFuncIndex = node->statementNodes[0]->selectNode->genConstantRef(pool, rootNode)->index + 1;
-            w2B(superFuncIndex);
-            w1B(0xb1);//return
-        } else {
-            SelectNode *selectNode = node->statementNodes[0]->selectNode;
-            w4B(21);
-            w2B(2);
-            w2B(1);
-            w4B(9);
-            w1B(0xb2);
-            w2B(selectNode->next->genConstantRef(pool, rootNode)->index + 1);
-            w1B(0x12);
-            w1B(pool.genString(node->statementNodes[0]->argNode->value)->index + 1);
-            w1B(0xb6);
-            w2B(selectNode->next->next->genConstantRef(pool, rootNode)->index + 1);
-            w1B(0xb1);
-        }
-        w2B(0);//exception table length
-        w2B(0);//attribute count
+        gen.visit(node);
     }
 }
 
@@ -150,12 +120,10 @@ void Code::prepare(Pool &pool) {
 
 template<class T>
 void Code::wBytes(T integer, int length) {
-    u1 *array = new u1[length];
     for (int i = 0; i < length; ++i) {
-        array[length - 1 - i] = integer >> (8 * i);
+        arrBuffer[length - 1 - i] = integer >> (8 * i);
     }
-    ofs.write((const char *) array, length);
-    delete[]array;
+    ofs.write((const char *) arrBuffer, length);
 }
 
 void Code::w1B(u1 bytes) {
@@ -176,5 +144,9 @@ u2 Code::buildModifierFlag(vector<ModifierNode *> &nodes) {
         flag |= (*iter)->modifier;
     }
     return flag;
+}
+
+ClassNode *Code::getRootNode() {
+    return rootNode;
 }
 

@@ -9,7 +9,15 @@ using namespace std;
 
 ClassNode::ClassNode(std::string name) : name(name), superClass(nullptr) {}
 
+void ClassNode::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+
 ModifierNode::ModifierNode(int modifier) : modifier(modifier) {}
+
+void ModifierNode::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
 
 TypeNode::TypeNode(int type, std::string &name) : type(type), name(name) {}
 
@@ -22,7 +30,15 @@ std::string TypeNode::buildPath(std::string separator) {
     return "";
 }
 
+void TypeNode::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+
 ParaNode::ParaNode(TypeNode *typeNode, std::string &name) : typeNode(typeNode), name(name) {}
+
+void ParaNode::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
 
 SelectNode::SelectNode(std::string name) : name(name), next(nullptr) {}
 
@@ -50,7 +66,15 @@ ConstantBase *SelectNode::genConstantRef(Pool &pool, ClassNode *rootNode) {
     return nullptr;
 }
 
+void SelectNode::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+
 StringLiteralNode::StringLiteralNode(std::string &val) : value(val) {}
+
+void StringLiteralNode::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
 
 InvokeNode::InvokeNode() : selectNode(nullptr), argNode(nullptr) {}
 
@@ -69,6 +93,10 @@ void InvokeNode::genConstant(Pool &pool, ClassNode *rootNode) {
 
 std::string InvokeNode::funcType() {
     return std::string();
+}
+
+void InvokeNode::accept(Visitor &visitor) {
+    visitor.visit(this);
 }
 
 FuncNode::FuncNode() : returnTypeNode(nullptr) {}
@@ -94,4 +122,8 @@ std::string FuncNode::buildDescriptor() {
         }
     }
     return "(" + pType + ")" + rType;
+}
+
+void FuncNode::accept(Visitor &visitor) {
+    visitor.visit(this);
 }
