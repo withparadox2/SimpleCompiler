@@ -8,7 +8,6 @@
 
 using namespace std;
 
-
 ClassNode::ClassNode(std::string name) : name(name), superClass(nullptr) {}
 
 ClassNode::~ClassNode() {

@@ -8,7 +8,7 @@
 #include "Lexer.h"
 #include "Token.h"
 #include <deque>
-#include "Node.h"
+#include "../Node.h"
 
 enum KIND {
     CLASS,

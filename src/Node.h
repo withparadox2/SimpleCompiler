@@ -46,7 +46,9 @@ public:
     virtual void visit(SelectNode *node) = 0;
 
     virtual void visit(StringLiteralNode *node) = 0;
+
 };
+
 
 class Node {
 public:

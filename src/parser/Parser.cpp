@@ -3,7 +3,7 @@
 //
 #include <iostream>
 #include "Parser.h"
-#include "error.h"
+#include "../util/error.h"
 
 using namespace std;
 
@@ -17,10 +17,10 @@ ClassNode *Parser::parse() {
 void Parser::printTokens() {
     while (true) {
         Token &token = takeToken();
-        if (token.id == Token::T_END) {
+        if (token.id == Token::END) {
             break;
         }
-        cout << token.lexeme << endl;
+        cout << token.name << endl;
     }
 }
 
@@ -47,7 +47,7 @@ void Parser::unTakeToken() {
 
 bool Parser::match(std::string lexeme) {
     Token &token = takeToken();
-    if (token.lexeme == lexeme) {
+    if (token.name == lexeme) {
         return true;
     }
     error("expected " + lexeme);
@@ -58,13 +58,13 @@ ClassNode *Parser::buildClassNode() {
     match("class");
     //do not use &nameToken, may be pop out
     Token nameToken = takeToken();
-    if (nameToken.id != Token::T_ID) {
+    if (nameToken.id != Token::IDENTIFIER) {
         error("expected class name");
     }
     match("{");
     FuncNode *funcNode = buildFuncNode();
     match("}");
-    ClassNode *node = new ClassNode(nameToken.lexeme);
+    ClassNode *node = new ClassNode(nameToken.name);
     node->funcNodes.push_back(funcNode);
     cout << "parse success" << endl;
     return node;
@@ -86,8 +86,8 @@ FuncNode *Parser::buildFuncNode() {
     funcNode->returnTypeNode = typeNode;
 
     Token &token = takeToken();
-    if (token.id == Token::T_ID) {
-        funcNode->name = token.lexeme;
+    if (token.id == Token::IDENTIFIER) {
+        funcNode->name = token.name;
     } else {
         error("func name can not be null");
     }
@@ -114,10 +114,10 @@ FuncNode *Parser::buildFuncNode() {
 
 ModifierNode *Parser::buildModifierNode() {
     Token &token = takeToken();
-    if (token.id == Token::T_ID) {
-        if (token.lexeme == "public") {
+    if (token.id == Token::IDENTIFIER) {
+        if (token.name == "public") {
             return new ModifierNode(ModifierNode::PUBLIC);
-        } else if (token.lexeme == "static") {
+        } else if (token.name == "static") {
             return new ModifierNode(ModifierNode::STATIC);
         }
     }
@@ -127,13 +127,13 @@ ModifierNode *Parser::buildModifierNode() {
 
 TypeNode *Parser::buildTypeNode() {
     Token &token = takeToken();
-    if (token.id == Token::T_ID) {
-        if (token.lexeme == "void") {
-            return new TypeNode(TypeNode::TYPE_PRIMITIVE, token.lexeme);
+    if (token.id == Token::IDENTIFIER) {
+        if (token.name == "void") {
+            return new TypeNode(TypeNode::TYPE_PRIMITIVE, token.name);
         }
-        TypeNode *node = new TypeNode(TypeNode::TYPE_OBJECT, token.lexeme);
-        if (matchLight(Token::T_CHAR, "[")) {
-            if (matchLight(Token::T_CHAR, "]")) {
+        TypeNode *node = new TypeNode(TypeNode::TYPE_OBJECT, token.name);
+        if (matchLight(Token::CHARLITERAL, "[")) {
+            if (matchLight(Token::CHARLITERAL, "]")) {
                 node->isArray = true;
             } else {
                 error("array declaration need both [ and ]");
@@ -155,11 +155,11 @@ ParaNode *Parser::buildParaNode() {
     }
 
     Token &token = takeToken();
-    if (token.id != Token::T_ID) {
+    if (token.id != Token::IDENTIFIER) {
         error("parameter need a name");
     }
 
-    return new ParaNode(node, token.lexeme);
+    return new ParaNode(node, token.name);
 }
 
 //invoke
@@ -182,16 +182,16 @@ SelectNode *Parser::buildSelectNode() {
     Token *token = &takeToken();
     SelectNode *node = nullptr;
     SelectNode *n = nullptr;
-    while (token->id == Token::T_ID) {
+    while (token->id == Token::IDENTIFIER) {
         if (node == nullptr) {
-            n = new SelectNode(token->lexeme);
+            n = new SelectNode(token->name);
             node = n;
         } else {
-            n->next = new SelectNode(token->lexeme);
+            n->next = new SelectNode(token->name);
             n = n->next;
         }
         token = &takeToken();
-        if (token->lexeme != ".") {
+        if (token->name != ".") {
             break;
         } else {
             token = &takeToken();
@@ -203,13 +203,13 @@ SelectNode *Parser::buildSelectNode() {
 
 StringLiteralNode *Parser::buildExpressionNode() {
     Token &token = takeToken();
-    if (token.id == Token::T_STR) {
-        return new StringLiteralNode(token.lexeme);
+    if (token.id == Token::STRINGLITERAL) {
+        return new StringLiteralNode(token.name);
     }
     return nullptr;
 }
 
 bool Parser::matchLight(int id, std::string lexeme) {
     Token &token = takeToken();
-    return token.id == id && token.lexeme == lexeme;
+    return token.id == id && token.name == lexeme;
 }

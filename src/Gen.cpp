@@ -55,4 +55,3 @@ void Gen::visit(InvokeNode *node) {};
 
 void Gen::visit(SelectNode *node) {};
 
-void Gen::visit(StringLiteralNode *node) {};
