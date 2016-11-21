@@ -25,7 +25,7 @@ void testLexer(Lexer &lexer) {
     while (lexer.token() != Token::_EOF) {
         Token &t = lexer.token();
         if (t.desc().length() == 0) {
-            cout << lexer.bufStr;
+            cout << lexer.bufStr << endl;
         } else {
             cout << t.desc() << endl;
         }

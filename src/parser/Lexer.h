@@ -18,8 +18,10 @@ private:
     bool isSpecial(char c);
 
     bool isIdent(char c, bool isHead);
+    bool isDigit(char c);
     void scanIdent();
     void scanOperator();
+    void scanNumber();
 
     void nextChar();
 

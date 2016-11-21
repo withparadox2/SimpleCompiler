@@ -21,10 +21,6 @@ Name* Names::fromString(const string &str) {
     return table[str];
 }
 
-Name* Names::fromChars(char *cs, int start, int end) {
-    return nullptr;
-}
-
 Names& Names::instance() {
     return inst;
 }

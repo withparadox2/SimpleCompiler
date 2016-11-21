@@ -93,6 +93,8 @@ void Lexer::nextToken() {
             default:
                 if (isIdent(ch, true)) {
                     scanIdent();
+                } else if (isDigit(ch)) {
+                    scanNumber();
                 } else if (isSpecial(ch)) {
                     scanOperator();
                 } else if (ch == 0) {
@@ -188,22 +190,13 @@ bool Lexer::isIdent(char c, bool isHead) {
             return true;
     }
     if (!isHead) {
-        switch (c) {
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return true;
+        if (isDigit(c)) {
+            return true;
         }
     }
     return false;
 }
+
 
 void Lexer::scanIdent() {
     do {
@@ -234,7 +227,35 @@ void Lexer::scanOperator() {
     }
 }
 
+void Lexer::scanNumber() {
+    do {
+        bufStr += ch;
+        nextChar();
+    } while (isDigit(ch));
+
+    cToken = &Token::INTLITERAL;
+}
+
 Name &Lexer::name() {
     return *cName;
 }
+
+bool Lexer::isDigit(char c) {
+    switch (c) {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return true;
+    }
+    return false;
+}
+
+
 

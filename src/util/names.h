@@ -38,8 +38,6 @@ public:
     static Names &instance();
 
     Name *fromString(const string &str);
-
-    Name *fromChars(char cs[], int start, int end);
 };
 
 #endif //SIMPLECOMPILER_NAMES_H

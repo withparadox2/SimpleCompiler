@@ -87,7 +87,7 @@ Token Token::LBRACKET("[");
 Token Token::RBRACKET("]");
 
 Token Token::SEMI(";");
-Token Token::COMMA(";");
+Token Token::COMMA(",");
 Token Token::DOT(".");
 Token Token::ELLIPSIS("...");
 Token Token::EQ("=");
