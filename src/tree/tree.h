@@ -5,6 +5,10 @@
 #ifndef SIMPLECOMPILER_TREE_H
 #define SIMPLECOMPILER_TREE_H
 
+#include <vector>
+#include "treevisitor.h"
+
+using std::vector;
 
 class Tree {
 public:
@@ -12,13 +16,14 @@ public:
 
     //Type* type;
     virtual void accept(Visitor &v) = 0;
-// abstract <R,D> R accept(TreeVisitor<R,D> v, D d);
+    template <typename R, typename D>
+    R accept(TreeVisitor<R, D> v, D& d);
 };
 
 class JCClassDecl : public Tree {
 public:
     Name &name;
-    <JCTree> defs;
+    vector<JCTree*> defs;
 //    ClassSymbol sym;
 };
 
