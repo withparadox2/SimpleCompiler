@@ -12,8 +12,6 @@ public:
 
     //Type* type;
     virtual void accept(Visitor &v) = 0;
-
-
 // abstract <R,D> R accept(TreeVisitor<R,D> v, D d);
 };
 
