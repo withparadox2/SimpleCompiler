@@ -8,11 +8,10 @@
 #include "Lexer.h"
 #include "Token.h"
 #include <deque>
-#include "../Node.h"
+#include "../tree/tree.h"
 
 enum KIND {
     CLASS,
-
 };
 
 class Parser {
@@ -38,8 +37,6 @@ public:
     Parser(Lexer &lexer);
     void printTokens();
     ClassNode * parse();
-
-
 };
 
 

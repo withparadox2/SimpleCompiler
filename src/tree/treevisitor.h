@@ -4,8 +4,54 @@
 
 #ifndef SIMPLECOMPILER_TREEVISITOR_H
 #define SIMPLECOMPILER_TREEVISITOR_H
-template <typename R,typename P>
+
+class JCClassDecl;
+
+class JCMethodDecl;
+
+class JCVariableDecl;
+
+class JCBlock;
+
+class JCForLoop;
+
+class JCIf;
+
+class JCExpressionStatement;
+
+class JCBreak;
+
+class JCContinue;
+
+class JCReturn;
+
+class JCMethodInvocation;
+
+class JCNewClass;
+
+class JCParens;
+
+class JCAssign;
+
+class JCBinary;
+
+class JCArrayAccess;
+
+class JCFieldAccess;
+
+class JCIdent;
+
+class JCLiteral;
+
+class JCPrimitiveTypeTree;
+
+class JCArrayTypeTree;
+
+class JCModifiers;
+
+template<typename R, typename P>
 class TreeVisitor {
+public:
     R visitClassDef(JCClassDecl &that, P &p);
 
     R visitMethodDef(JCMethodDecl &that, P &p);

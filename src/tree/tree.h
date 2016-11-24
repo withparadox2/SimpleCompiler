@@ -7,8 +7,11 @@
 
 #include <vector>
 #include "treevisitor.h"
+#include "../util/names.h"
 
 using std::vector;
+
+class Visitor;
 
 class Tree {
 public:
@@ -64,7 +67,7 @@ public:
 
     /** Method invocation expressions, of type Apply.
      */
-    static const int APPLY = ASSERT + 1;
+    static const int APPLY = RETURN + 1;
 
     /** Class instance creation expressions, of type NewClass.
      */
@@ -84,7 +87,7 @@ public:
 
     /** Indexed array expressions, of type Indexed.
      */
-    static const int INDEXED = TYPETEST + 1;
+    static const int INDEXED = ASSIGN + 1;
 
     /** Selections, of type Select.
      */
@@ -119,7 +122,7 @@ public:
 
     /** unary operator for null reference checks, only used internally.
      */
-    static const int NULLCHK = POSTDEC + 1;
+    static const int NULLCHK = COMPL + 1;
 
     /** Binary operators, of type Binary.
      */
@@ -139,7 +142,7 @@ public:
 class JCClassDecl : public Tree {
 public:
     Name &name;
-    vector<JCTree *> defs;
+    vector<Tree*> defs;
 //    ClassSymbol sym;
 };
 
@@ -281,7 +284,7 @@ public:
 
     void visitModifiers(JCModifiers &that) { visitTree(that); }
 
-    void visitTree(JCTree &that) {
+    void visitTree(Tree &that) {
         //TODO error
     }
 };

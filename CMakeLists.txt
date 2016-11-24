@@ -3,5 +3,5 @@ project(SimpleCompiler)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-set(SOURCE_FILES src/main.cpp src/parser/Token.cpp src/parser/Lexer.cpp src/util/names.cpp)
+set(SOURCE_FILES src/main.cpp src/parser/Token.cpp src/parser/Lexer.cpp src/util/names.cpp src/tree/tree.cpp)
 add_executable(SimpleCompiler ${SOURCE_FILES})
