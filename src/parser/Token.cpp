@@ -44,7 +44,7 @@ std::string Token::fullDesc() {
         case ID_IDENTIFIER:
             return "identifier";
     }
-    return std::string();
+    return "need implementation for this token!";
 }
 
 

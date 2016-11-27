@@ -22,6 +22,8 @@ public:
     Parser(Lexer &lexer);
     Tree* parse();
     JCClassDecl* buildClass();
+    Tree* classBodyDecl();
+    JCModifiers* modifiersOpt();
     Name& indent();
 };
 
