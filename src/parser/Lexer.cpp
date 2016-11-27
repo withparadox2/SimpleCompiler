@@ -257,5 +257,17 @@ bool Lexer::isDigit(char c) {
     return false;
 }
 
+void Lexer::printTokens() {
+    nextToken();
+    while (*cToken != Token::_EOF) {
+        if (cToken->desc().length() == 0) {
+            cout << bufStr << endl;
+        } else {
+            cout << cToken->desc() << endl;
+        }
+        nextToken();
+    }
+}
+
 
 

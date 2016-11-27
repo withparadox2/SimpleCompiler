@@ -41,6 +41,7 @@ public:
 
     Token& token();
     Name& name();
+    void printTokens();
 };
 
 

@@ -16,27 +16,13 @@ enum KIND {
 
 class Parser {
 private:
-    Lexer &lexer;
-    size_t tokenIndex;
-    std::deque<Token> tokenQue;
-
-    Token &takeToken();
-    void unTakeToken();
-    bool match(std::string lexeme);
-    ClassNode * buildClassNode();
-    FuncNode * buildFuncNode();
-    ModifierNode * buildModifierNode();
-    TypeNode * buildTypeNode();
-    ParaNode * buildParaNode();
-    InvokeNode * buildStatementNode();
-    SelectNode * buildSelectNode();
-    StringLiteralNode * buildExpressionNode();
-    bool matchLight(int id, std::string lexeme);
+    Lexer &L;
+    bool match(Token &token);
 public:
-    const static int MAX_DEQUE_SIZE = 10;
     Parser(Lexer &lexer);
-    void printTokens();
-    ClassNode * parse();
+    Tree* parse();
+    JCClassDecl* buildClass();
+    Name& indent();
 };
 
 

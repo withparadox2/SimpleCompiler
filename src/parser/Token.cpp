@@ -7,19 +7,19 @@
 using namespace std;
 
 
-Token::Token(string name) : name(name) {
+Token::Token(const int id, string name) : id(id), tokenDesc(name) {
     initToken();
 }
 
-Token::Token() {
+
+Token::Token(const int id) : id(id){
     initToken();
 }
 
 
 void Token::initToken() {
-    id = tokenCount++;
-    if (name.length() > 0) {
-        Name *nameObj = Names::instance().fromString(name);
+    if (tokenDesc.length() > 0) {
+        Name *nameObj = Names::instance().fromString(tokenDesc);
         nameToToken.insert(make_pair(nameObj, this));
     }
 }
@@ -34,99 +34,109 @@ Token &Token::fromName(Name &name) {
 
 
 std::string &Token::desc() {
-    return name;
+    return tokenDesc;
 }
 
 
+std::string Token::fullDesc() {
+    if (tokenDesc.length() > 0) return tokenDesc;
+    switch (id) {
+        case ID_IDENTIFIER:
+            return "identifier";
+    }
+    return std::string();
+}
+
 
 bool Token::operator==(Token &t) {
-    return t.id == this->id;
+    return &t != nullptr && t.id == this->id;
 }
 
 
 bool Token::operator!=(Token &t) {
-    return t.id != this->id;
+    return &t == nullptr || t.id != this->id;
 }
 
-int Token::tokenCount = 0;
 std::map<Name *, Token *> Token::nameToToken;
 
 
-Token Token::_EOF;
-Token Token::ERROR;
-Token Token::IDENTIFIER;
-Token Token::BOOLEAN("boolean");
-Token Token::CLASS("class");
-Token Token::ELSE("else");
-Token Token::FOR("for");
-Token Token::IF("if");
-Token Token::INT("int");
-Token Token::NEW("new");
-Token Token::PRIVATE("private");
-Token Token::PUBLIC("public");
-Token Token::RETURN("return");
-Token Token::STATIC("static");
-Token Token::THIS("this");
-Token Token::VOID("void");
+Token Token::_EOF(ID_EOF);
+Token Token::ERROR(ID_ERROR);
+Token Token::IDENTIFIER(ID_IDENTIFIER);
+Token Token::BOOLEAN(ID_BOOLEAN, "boolean");
+Token Token::CLASS(ID_CLASS, "class");
+Token Token::ELSE(ID_ELSE, "else");
+Token Token::FOR(ID_FOR, "for");
+Token Token::IF(ID_IF, "if");
+Token Token::INT(ID_INT, "int");
+Token Token::NEW(ID_NEW, "new");
+Token Token::PRIVATE(ID_PRIVATE, "private");
+Token Token::PUBLIC(ID_PUBLIC, "public");
+Token Token::RETURN(ID_RETURN, "return");
+Token Token::STATIC(ID_STATIC, "static");
+Token Token::THIS(ID_THIS, "this");
+Token Token::VOID(ID_VOID, "void");
 
-Token Token::STRINGLITERAL;
+Token Token::STRINGLITERAL(ID_STRINGLITERAL);
 
-Token Token::INTLITERAL;
+Token Token::INTLITERAL(ID_INTLITERAL);
 
-Token Token::CHARLITERAL;
+Token Token::CHARLITERAL(ID_CHARLITERAL);
 
-Token Token::TRUE("true");
-Token Token::FALSE("false");
+Token Token::TRUE(ID_TRUE, "true");
+Token Token::FALSE(ID_FALSE, "false");
 
-Token Token::NULL_("null");
-Token Token::LPAREN("(");
-Token Token::RPAREN(")");
-Token Token::LBRACE("{");
-Token Token::RBRACE("}");
-Token Token::LBRACKET("[");
-Token Token::RBRACKET("]");
+Token Token::NULL_(ID_NULL_, "null");
+Token Token::LPAREN(ID_LPAREN, "(");
+Token Token::RPAREN(ID_RPAREN, ")");
+Token Token::LBRACE(ID_LBRACE, "{");
+Token Token::RBRACE(ID_RBRACE, "}");
+Token Token::LBRACKET(ID_LBRACKET, "[");
+Token Token::RBRACKET(ID_RBRACKET, "]");
 
-Token Token::SEMI(";");
-Token Token::COMMA(",");
-Token Token::DOT(".");
-Token Token::ELLIPSIS("...");
-Token Token::EQ("=");
-Token Token::GT(">");
-Token Token::LT("<");
-Token Token::BANG("!");
-Token Token::TILDE("~");
-Token Token::QUES("?");
-Token Token::COLON(":");
-Token Token::EQEQ("==");
-Token Token::LTEQ("<=");
-Token Token::GTEQ(">=");
-Token Token::BANGEQ("!=");
-Token Token::AMPAMP("&&");
-Token Token::BARBAR("||");
-Token Token::PLUSPLUS("++");
-Token Token::SUBSUB("--");
-Token Token::PLUS("+");
-Token Token::SUB("-");
-Token Token::STAR("*");
-Token Token::SLASH("/");
-Token Token::AMP("&");
-Token Token::BAR("|");
-Token Token::CARET("^");
-Token Token::PERCENT("%");
-Token Token::LTLT("<<");
-Token Token::GTGT(">>");
-Token Token::GTGTGT(">>>");
-Token Token::PLUSEQ("+=");
-Token Token::SUBEQ("-=");
-Token Token::STAREQ("*=");
-Token Token::SLASHEQ("/=");
-Token Token::AMPEQ("&=");
-Token Token::BAREQ("|=");
-Token Token::CARETEQ("^=");
-Token Token::PERCENTEQ("%=");
-Token Token::LTLTEQ("<<=");
-Token Token::GTGTEQ(">>=");
-Token Token::GTGTGTEQ(">>>=");
-Token Token::MONKEYS_AT("@");
+Token Token::SEMI(ID_SEMI, ";");
+Token Token::COMMA(ID_COMMA, ",");
+Token Token::DOT(ID_DOT, ".");
+Token Token::ELLIPSIS(ID_ELLIPSIS, "...");
+Token Token::EQ(ID_EQ, "=");
+Token Token::GT(ID_GT, ">");
+Token Token::LT(ID_LT, "<");
+Token Token::BANG(ID_BANG, "!");
+Token Token::TILDE(ID_TILDE, "~");
+Token Token::QUES(ID_QUES, "?");
+Token Token::COLON(ID_COLON, ":");
+Token Token::EQEQ(ID_EQEQ, "==");
+Token Token::LTEQ(ID_LTEQ, "<=");
+Token Token::GTEQ(ID_GTEQ, ">=");
+Token Token::BANGEQ(ID_BANGEQ, "!=");
+Token Token::AMPAMP(ID_AMPAMP, "&&");
+Token Token::BARBAR(ID_BARBAR, "||");
+Token Token::PLUSPLUS(ID_PLUSPLUS, "++");
+Token Token::SUBSUB(ID_SUBSUB, "--");
+Token Token::PLUS(ID_PLUS, "+");
+Token Token::SUB(ID_SUB, "-");
+Token Token::STAR(ID_STAR, "*");
+Token Token::SLASH(ID_SLASH, "/");
+Token Token::AMP(ID_AMP, "&");
+Token Token::BAR(ID_BAR, "|");
+Token Token::CARET(ID_CARET, "^");
+Token Token::PERCENT(ID_PERCENT, "%");
+Token Token::LTLT(ID_LTLT, "<<");
+Token Token::GTGT(ID_GTGT, ">>");
+Token Token::GTGTGT(ID_GTGTGT, ">>>");
+Token Token::PLUSEQ(ID_PLUSEQ, "+=");
+Token Token::SUBEQ(ID_SUBEQ, "-=");
+Token Token::STAREQ(ID_STAREQ, "*=");
+Token Token::SLASHEQ(ID_SLASHEQ, "/=");
+Token Token::AMPEQ(ID_AMPEQ, "&=");
+Token Token::BAREQ(ID_BAREQ, "|=");
+Token Token::CARETEQ(ID_CARETEQ, "^=");
+Token Token::PERCENTEQ(ID_PERCENTEQ, "%=");
+Token Token::LTLTEQ(ID_LTLTEQ, "<<=");
+Token Token::GTGTEQ(ID_GTGTEQ, ">>=");
+Token Token::GTGTGTEQ(ID_GTGTGTEQ, ">>>=");
+Token Token::MONKEYS_AT(ID_MONKEYS_AT, "@");
+
+
 
 
