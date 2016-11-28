@@ -18,12 +18,22 @@ class Parser {
 private:
     Lexer &L;
     bool match(Token &token);
+
+    static const int EXPR = 0x1;
+    static const int TYPE = 0x2;
+    int mode;
+    int lastMode;
+    static int typeTag(Token &token);
 public:
     Parser(Lexer &lexer);
     Tree* parse();
     JCClassDecl* buildClass();
     Tree* classBodyDecl();
     JCModifiers* modifiersOpt();
+    JCExpression* parseType();
+    JCExpression* term();
+    JCExpression* term(int mode);
+    JCExpression* basicType();
     Name& indent();
 };
 

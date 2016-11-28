@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Parser::Parser(Lexer &lexer) : L(lexer) {}
+Parser::Parser(Lexer &lexer) : L(lexer), mode(0), lastMode(0) {}
 
 Tree *Parser::parse() {
     return buildClass();
@@ -36,9 +36,8 @@ Tree* Parser::classBodyDecl() {
         type = new JCPrimitiveTypeTree(TypeTags::VOID);
         L.nextToken();
     } else {
-
+        type = parseType();
     }
-
 }
 
 JCModifiers* Parser::modifiersOpt() {
@@ -88,4 +87,43 @@ Name& Parser::indent() {
     } else {
         match(Token::IDENTIFIER);
     }
+}
+
+JCExpression* Parser::parseType() {
+    return term(TYPE);
+}
+
+JCExpression* Parser::term(int newMode) {
+    int prevmode = mode;
+    mode = newMode;
+    JCExpression* t = term();
+    lastmode = mode;
+    mode = prevmode;
+    return t;
+}
+
+JCExpression* Parser::term() {
+    switch (L.token()) {
+        case Token::INT:
+        case Token::BOOLEAN:
+            return basicType();
+    }
+}
+
+JCExpression* Parser::basicType() {
+    JCPrimitiveTypeTree* t = new JCPrimitiveTypeTree(typeTag(L.token()));
+    L.nextToken();
+    return t;
+}
+
+int Parser::typeTag(Token &token) {
+    switch (token.id) {
+        case Token::INT:
+            return TypeTags::INT;
+        case Token::BOOLEAN:
+            return TypeTags::BOOLEAN;
+        default:
+            return -1;
+    }
+
 }
