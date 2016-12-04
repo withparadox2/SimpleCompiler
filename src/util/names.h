@@ -21,6 +21,10 @@ public:
     string desc;
 
     Name(Names &names, const string &desc);
+
+    bool operator==(Name &name);
+
+    bool operator!=(Name &name);
 };
 
 class Names {

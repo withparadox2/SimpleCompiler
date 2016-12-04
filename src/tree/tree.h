@@ -161,10 +161,15 @@ class JCMethodDecl : public Tree {
 };
 
 class JCVariableDecl : public Tree {
+public:
+    JCExpression *type;
+    Name& name;
+    JCVariableDecl(JCExpression *type, Name& name);
 
 };
 
 class JCBlock : public JCStatement {
+
 
 };
 

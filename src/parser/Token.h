@@ -22,8 +22,6 @@ public:
     Token(const int id, std::string name);
     Token(const int id);
 
-    Token();
-
     std::string &desc();//plain text describing current token
     std::string fullDesc();
     bool operator==(Token &a);

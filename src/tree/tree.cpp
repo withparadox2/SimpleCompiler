@@ -19,11 +19,15 @@ JCArrayTypeTree::JCArrayTypeTree(JCExpression *elementType) : Tree(TYPEARRAY), e
 Tree::Tree(int tag) : treeTag(tag) {
 }
 
-JCIdent::JCIdent(Name &name) : treeTag(TYPEIDENT), name(name) {
+JCIdent::JCIdent(Name &name) : Tree(TYPEIDENT), name(name) {
 
 }
 
 JCFieldAccess::JCFieldAccess(JCExpression *selected, Name &selector) : Tree(SELECT), selected(selected),
                                                                        selector(selector) {
+
+}
+
+JCVariableDecl::JCVariableDecl(JCExpression *type, Name &name) : Tree(VARDEF), type(type), name(name) {
 
 }
