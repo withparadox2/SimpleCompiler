@@ -38,6 +38,8 @@ Tree* Parser::classBodyDecl() {
     } else {
         type = parseType();
     }
+
+
 }
 
 JCModifiers* Parser::modifiersOpt() {
@@ -87,8 +89,6 @@ Name& Parser::indent() {
     } else {
         match(Token::IDENTIFIER);
     }
-
-    
 }
 
 JCExpression* Parser::parseType() {
@@ -105,11 +105,38 @@ JCExpression* Parser::term(int newMode) {
 }
 
 JCExpression* Parser::term() {
-    switch (L.token()) {
-        case Token::INT:
-        case Token::BOOLEAN:
+    switch (L.token().id) {
+        case Token::ID_INT:
+        case Token::ID_BOOLEAN:
             return bracketOpt(basicType());
+        case Token::ID_IDENTIFIER:
+            JCExpression* t = new JCIdent(indent());
+            while (true) {
+                bool fail = false;
+                switch (L.token().id) {
+                    case Token::LBRACKET: {
+                        L.nextToken();
+                        if (L.token().id == Token::ID_RBRACKET) {
+                            t = bracketOpt(t);
+                        } else {
+                            //TODO handle array access expression
+                        }
+                        fail = true;
+                        break;
+                    }
+                    case Token::ID_DOT: {
+                        t = new JCFieldAccess(t, ident());
+                        break;
+                    }
+                    default:
+                        fail = true;
+                        break;
+                }
+                if (fail) break;
+            }
+            return t;
     }
+    //TODO handle this
 }
 
 JCExpression* Parser::basicType() {

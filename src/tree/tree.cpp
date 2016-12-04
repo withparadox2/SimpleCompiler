@@ -18,3 +18,12 @@ JCArrayTypeTree::JCArrayTypeTree(JCExpression *elementType) : Tree(TYPEARRAY), e
 
 Tree::Tree(int tag) : treeTag(tag) {
 }
+
+JCIdent::JCIdent(Name &name) : treeTag(TYPEIDENT), name(name) {
+
+}
+
+JCFieldAccess::JCFieldAccess(JCExpression *selected, Name &selector) : Tree(SELECT), selected(selected),
+                                                                       selector(selector) {
+
+}

@@ -217,11 +217,16 @@ class JCArrayAccess : public JCExpression {
 };
 
 class JCFieldAccess : public JCExpression {
-
+public:
+    Name& selector;
+    JCExpression *selected;
+    JCFieldAccess(JCExpression *selected, Name& selector);
 };
 
 class JCIdent : public JCExpression {
-
+public:
+    Name& name;
+    JCIdent(Name& name);
 };
 
 class JCLiteral : public JCExpression {
