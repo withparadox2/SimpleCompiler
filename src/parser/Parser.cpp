@@ -87,6 +87,8 @@ Name& Parser::indent() {
     } else {
         match(Token::IDENTIFIER);
     }
+
+    
 }
 
 JCExpression* Parser::parseType() {
@@ -106,7 +108,7 @@ JCExpression* Parser::term() {
     switch (L.token()) {
         case Token::INT:
         case Token::BOOLEAN:
-            return basicType();
+            return bracketOpt(basicType());
     }
 }
 
@@ -126,4 +128,18 @@ int Parser::typeTag(Token &token) {
             return -1;
     }
 
+}
+
+JCExpression* Parser::bracketOpt(JCExpression* e) {
+    if (L.token() == Token::LBRACKET) {
+        L.nextToken();
+        e = bracketsOptCont(e);
+    }
+    return e;
+}
+
+JCExpression* Parser::bracketsOptCont(JCExpression* e) {
+    match(Token::RBRACKET);
+    e = bracketOpt(e);
+    return new JCArrayTypeTree(e);
 }

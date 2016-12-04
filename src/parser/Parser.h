@@ -34,6 +34,8 @@ public:
     JCExpression* term();
     JCExpression* term(int mode);
     JCExpression* basicType();
+    JCExpression* bracketOpt(JCExpression* e);
+    JCExpression* bracketsOptCont(JCExpression* e);
     Name& indent();
 };
 

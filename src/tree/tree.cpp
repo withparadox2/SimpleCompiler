@@ -5,17 +5,16 @@
 #include "tree.h"
 
 
-JCModifiers::JCModifiers(int flags) : flags(flags) {
-}
-
-int JCModifiers::getTag() {
-    return MODIFIERS;
+JCModifiers::JCModifiers(int flags) : Tree(MODIFIERS), flags(flags) {
 }
 
 
-JCPrimitiveTypeTree::JCPrimitiveTypeTree(int tag) : typetag(tag) {
+JCPrimitiveTypeTree::JCPrimitiveTypeTree(int tag) : Tree(TYPEIDENT), typetag(tag) {
+}
+
+JCArrayTypeTree::JCArrayTypeTree(JCExpression *elementType) : Tree(TYPEARRAY), elementType(elementType) {
 
 }
-int JCPrimitiveTypeTree::getTag() {
-    return TYPEIDENT;
+
+Tree::Tree(int tag) : treeTag(tag) {
 }

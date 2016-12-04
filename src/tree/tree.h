@@ -16,8 +16,9 @@ class Visitor;
 class Tree {
 public:
     //Type* type;
+    int treeTag;
     virtual void accept(Visitor &v) = 0;
-    virtual int getTag() = 0;
+    Tree(int tag);
 
     template<typename R, typename D>
     R accept(TreeVisitor<R, D> v, D &d);
@@ -231,18 +232,18 @@ class JCPrimitiveTypeTree : public JCExpression {
 public:
     int typetag;
     JCPrimitiveTypeTree(int tag);
-    int getTag();
 };
 
 class JCArrayTypeTree : public JCExpression {
-
+public:
+    JCExpression* elementType;
+    JCArrayTypeTree(JCExpression *elementType);
 };
 
 class JCModifiers : public Tree {
 public:
     int flags;
     JCModifiers(int flags);
-    int getTag();
 };
 
 class Visitor {
