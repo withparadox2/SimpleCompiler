@@ -21,12 +21,13 @@ JCClassDecl *Parser::buildClass() {
     Name &name = ident();
     match(Token::LBRACE);
 
-    vector<Tree *> defs;
+    vector<Tree *> *defs = new vector<Tree *>();
     while (L.token() != Token::RBRACE && L.token() != Token::_EOF) {
-        defs.push_back(classBodyDecl(Name & className));
+        defs->push_back(classBodyDecl(Name & className));
     }
 
     match(Token::RBRACE);
+    return new JCClassDecl(nullptr, name, defs);
 }
 
 Tree *Parser::classBodyDecl(Name &className) {
@@ -133,6 +134,102 @@ JCExpression *Parser::term(int newMode) {
 }
 
 JCExpression *Parser::term() {
+    JCExpression *t = term1();
+    //only support =, not -=, +=, ^=...
+    if ((mode & EXPR) != 0 && L.token() == Token::EQ) {
+        return termRest(t);
+    } else {
+        return t;
+    }
+}
+
+JCExpression *Parser::termRest(JCExpression *t) {
+    match(Token::EQ);
+    mode = EXPR;//can not be type, since it's an assignment
+
+    //use term() to support syntax like: "int a = b = 2";
+    JCExpression t1 = term();
+    return JCAssign(t, t1);
+}
+
+JCExpression *Parser::term1() {
+    JCExpression *t = term2();
+
+    if ((mode & EXPR) != 0 && L.token() == Token::QUES) {
+        mode = EXPR;
+        return term1Rest(t);
+    } else {
+        return t;
+    }
+}
+
+JCExpression *Parser::term1Rest(JCExpression *t) {
+    if (L.token() == Token::QUES) {
+        L.nextToken();
+        //TODO why does t1 use term(), while t2 use term1()
+        JCExpression *t1 = term();
+        match(Token::COLON);
+        JCExpression *t2 = term1();
+        return new JCConditional(t, t1, t2);
+    } else {
+        return t;
+    }
+}
+
+JCExpression *Parser::term2() {
+    JCExpression *t = term3();
+    if ((mode & EXPR) != 0 && prec(L.token()) >= treeinfo::orPrec) {
+        mode == EXPR;
+        return term2Rest(t, treeinfo::orPrec);
+    } else {
+        return t;
+    }
+}
+
+int Parser::prec(Token &token) {
+    int oc = treeinfo::opTag(token);
+    return (oc >= 0) ? treeinfo::opPrec(oc) : -1;
+}
+
+//TODO using array for efficiency
+JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
+    vector<Token *> opStack;
+    vector<JCExpression *> odStack;
+    odStack.push_back(t);
+
+    Token *topOp = &Token::ERROR;
+    while (prec(L.token()) >= minprec) {
+        opStack.push_back(topOp);
+
+        topOp = &L.token();
+        L.nextToken();
+
+        odStack.push_back(term2());
+        // 1 * 2 + 3 => prec(*) > prec(+) =>
+        // JCBinary(+, 3, JCBinary(*, 2, 1))
+        // remember lhs is the last one being pushed back to stack
+        while (opStack.size() > 0 && prec(*topOp) >= prec(L.token())) {
+            Token *lhs = odStack.back();//at top
+            odStack.pop_back();
+            Token *rhs = odStack.back();//at top-1
+            odStack.pop_back();
+
+            int opcode = treeinfo::opTag(*topOp);
+            odStack.push_back(new JCBinary(opcode, lhs, rhs));//at top-1
+
+            topOp = opStack.back();
+            opStack.pop_back();
+        }
+    }
+
+    if (opStack.size() > 0) {
+        error("opstack still has unused opcode.");
+    }
+
+    return odStack.at(0);
+}
+
+JCExpression *Parser::term3() {
     switch (L.token().id) {
         case Token::ID_INT:
         case Token::ID_BOOLEAN:
@@ -142,12 +239,16 @@ JCExpression *Parser::term() {
             while (true) {
                 bool fail = false;
                 switch (L.token().id) {
-                    case Token::LBRACKET: {
+                    case Token::ID_LBRACKET: {
                         L.nextToken();
-                        if (L.token().id == Token::ID_RBRACKET) {
+                        if (L.token() == Token::RBRACKET) {
                             t = bracketOpt(t);
                         } else {
-                            //TODO handle array access expression
+                            if ((mode & EXPR) != 0) {
+                                JCExpression *t1 = term();
+                                t = new JCArrayAccess(t, t1);
+                            }
+                            match(Token::RBRACKET);
                         }
                         fail = true;
                         break;
@@ -281,7 +382,28 @@ JCStatement *Parser::parseStatement() {
 
             return JCForLoop(inits, cond, steps, body);
         }
+        case Token::ID_BREAK: {
+            L.nextToken();
+            match(Token::SEMI);
+            return new JCBreak;
+        }
+        case Token::ID_CONTINUE: {
+            L.nextToken();
+            match(Token::SEMI);
+            return new JCContinue;
+        }
+
+        case Token::ID_RETURN: {
+            L.nextToken();
+            JCExpression *e = term(EXPR);
+            match(Token::SEMI);
+            return new JCReturn(e);
+        }
+
+        default:
+            errno("not support " + L.token().fullDesc() + " in statement");
     }
+    return nullptr;
 }
 
 JCExpression *Parser::parExpression() {
@@ -303,7 +425,6 @@ vector<JCStatement *> *Parser::forInit() {
     stats->push_back(t);
     return stats;
 }
-
 
 
 vector<JCExpressionStatement *> *Parser::forUpdate() {

@@ -8,6 +8,7 @@
 #include <vector>
 #include "treevisitor.h"
 #include "../util/names.h"
+#include "../parser/Token.h"
 
 using std::vector;
 
@@ -47,9 +48,12 @@ public:
      */
     static const int FORLOOP = SKIP + 1;
 
+    /** Conditional expressions, of type Conditional.*/
+    static const int CONDEXPR = FORLOOP + 1;
+
     /** Conditional statements, of type If.
      */
-    static const int IF = FORLOOP + 1;
+    static const int IF = CONDEXPR + 1;
 
     /** Expression statements, of type Exec.
      */
@@ -134,7 +138,9 @@ public:
     static const int NE = EQ + 1;                     // !=
     static const int LT = NE + 1;                     // <
     static const int GT = LT + 1;                     // >
-    static const int PLUS = GT + 1;                  // +
+    static const int LE = GT + 1;                     // <=
+    static const int GE = LE + 1;                     // >=
+    static const int PLUS = GE + 1;                  // +
     static const int MINUS = PLUS + 1;                // -
     static const int MUL = MINUS + 1;                 // *
     static const int DIV = MUL + 1;                   // /
@@ -143,19 +149,21 @@ public:
 
 class JCClassDecl : public Tree {
 public:
+    JCModifiers *mods;
     Name &name;
+    vector<Tree *> *defs;
 
-    //for now, only methods is allowed
-    vector<Tree *> defs;
-//    ClassSymbol sym;
+    JCClassDecl(JCModifiers *mods, Name &name, vector<Tree *> *defs);
 };
 
 class JCExpression : public Tree {
-
+public:
+    JCExpression(int tag);
 };
 
 class JCStatement : public Tree {
-
+public:
+    JCStatement(int tag);
 };
 
 class JCMethodDecl : public Tree {
@@ -225,15 +233,20 @@ public:
 };
 
 class JCBreak : public JCStatement {
-
+public:
+    JCBreak();
 };
 
 class JCContinue : public JCStatement {
-
+public:
+    JCContinue();
 };
 
 class JCReturn : public JCStatement {
+public:
+    JCExpression *expr;
 
+    JCReturn(JCExpression *expr);
 };
 
 class JCMethodInvocation : public JCExpression {
@@ -249,15 +262,37 @@ class JCParens : public JCExpression {
 };
 
 class JCAssign : public JCExpression {
+public:
+    JCExpression *lhs;
+    JCExpression *rhs;
 
+    JCAssign(JCExpression *lhs, JCExpression *rhs);
 };
 
-class JCBinary : public JCExpression {
+class JCConditional : public JCExpression {
+public :
+    JCExpression *cond;
+    JCExpression *truepart;
+    JCExpression *falsepart;
 
+    JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart);
+}
+
+class JCBinary : public JCExpression {
+public:
+    int opcode;
+    JCExpression *lhs;
+    JCExpression *rhs;
+
+    JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs);
 };
 
 class JCArrayAccess : public JCExpression {
+public:
+    JCExpression *indexed;
+    JCExpression *index;
 
+    JCArrayAccess(JCExpression *indexed, JCExpression *index);
 };
 
 class JCFieldAccess : public JCExpression {
@@ -330,6 +365,8 @@ public:
 
     void visitAssign(JCAssign &that) { visitTree(that); }
 
+    void visitConditional(JCConditional &that) { visitTree(that); }
+
     void visitBinary(JCBinary &that) { visitTree(that); }
 
     void visitIndexed(JCArrayAccess &that) { visitTree(that); }
@@ -350,5 +387,32 @@ public:
         //TODO error
     }
 };
+
+
+namespace treeinfo {
+    const int notExpression = -1;   // not an expression
+    const int noPrec = 0;           // no enclosing expression
+    const int assignPrec = 1;
+    const int assignopPrec = 2;
+    const int condPrec = 3;
+    const int orPrec = 4;
+    const int andPrec = 5;
+    const int bitorPrec = 6;
+    const int bitxorPrec = 7;
+    const int bitandPrec = 8;
+    const int eqPrec = 9;
+    const int ordPrec = 10;
+    const int shiftPrec = 11;
+    const int addPrec = 12;
+    const int mulPrec = 13;
+    const int prefixPrec = 14;
+    const int postfixPrec = 15;
+    const int precCount = 16;
+
+    int opTag(Token &token);
+
+    int opPrec(int ot);
+
+}
 
 #endif //SIMPLECOMPILER_TREE_H

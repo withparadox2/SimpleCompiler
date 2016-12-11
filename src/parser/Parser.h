@@ -43,9 +43,18 @@ public:
 
     JCExpression *parseType();
 
-    JCExpression *term();
-
     JCExpression *term(int mode);
+
+    JCExpression *term();
+    JCExpression *termRest(JCExpression *t);
+
+    JCExpression *term1();
+    JCExpression *term1Rest(JCExpression *t);
+
+    JCExpression *term2();
+    JCExpression *term2Rest(JCExpression *t, int prec);
+
+    JCExpression *term3();
 
     JCExpression *basicType();
 
@@ -72,6 +81,8 @@ public:
     vector<JCStatement*> * forInit();
     vector<JCExpressionStatement*> * forUpdate();
     vector<JCVariableDecl*> * variableDeclarators();//TODO implementation
+
+    int prec(Token &token);
 
 };
 

@@ -35,7 +35,9 @@ public:
 
     static Token IDENTIFIER;
     static Token BOOLEAN;
+    static Token BREAK;
     static Token CLASS;
+    static Token CONTINUE;
     static Token ELSE;
     static Token FOR;
     static Token IF;
@@ -112,8 +114,10 @@ public:
 
     const static int ID_IDENTIFIER = ID_EOF + 1;
     const static int ID_BOOLEAN = ID_IDENTIFIER + 1;
-    const static int ID_CLASS = ID_BOOLEAN + 1;
-    const static int ID_ELSE = ID_CLASS + 1;
+    const static int ID_BREAK = ID_BOOLEAN + 1;
+    const static int ID_CLASS = ID_BREAK + 1;
+    const static int ID_CONTINUE = ID_CLASS + 1;
+    const static int ID_ELSE = ID_CONTINUE + 1;
     const static int ID_FOR = ID_ELSE + 1;
     const static int ID_IF = ID_FOR + 1;
     const static int ID_INT = ID_IF + 1;

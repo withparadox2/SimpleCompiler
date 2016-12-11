@@ -35,6 +35,8 @@ class JCAssign;
 
 class JCBinary;
 
+class JCConditional;
+
 class JCArrayAccess;
 
 class JCFieldAccess;
@@ -81,6 +83,8 @@ public:
     R visitAssign(JCAssign &that, P &p);
 
     R visitBinary(JCBinary &that, P &p);
+
+    R visitConditional(JCConditional &that, P &p);
 
     R visitIndexed(JCArrayAccess &that, P &p);
 
