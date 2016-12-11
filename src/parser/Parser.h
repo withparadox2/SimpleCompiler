@@ -64,6 +64,11 @@ public:
     JCBlock* block();
 
     Name &ident();
+
+    vector<JCStatement*> *blockStatements();
+
+    JCExpression* parExpression();
+    JCStatement* parseStatement();
 };
 
 

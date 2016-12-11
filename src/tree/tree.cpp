@@ -31,3 +31,11 @@ JCFieldAccess::JCFieldAccess(JCExpression *selected, Name &selector) : Tree(SELE
 JCVariableDecl::JCVariableDecl(JCExpression *type, Name &name) : Tree(VARDEF), type(type), name(name) {
 
 }
+
+JCBlock::JCBlock(vector<JCStatement *> *stats) : Tree(BLOCK), stats(stats) {
+
+}
+
+JCIf::JCIf(JCExpression *cond, JCStatement *thenpart, JCStatement *elsepart): Tree(IF), cond(cond), thenPart(thenpart), elsePart(elsepart) {
+
+}

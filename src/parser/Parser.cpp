@@ -62,7 +62,9 @@ Tree *Parser::methodDeclaratorRest(
         Name &name,
         boolean isVoid) {
     vector<JCExpression*> *params = formalParameters();
-    match(Token::LBRACE);
+    if (L.token() != Token::LBRACE) {
+        error("need { for method block");
+    }
     JCBlock *block = block();
 }
 
@@ -215,6 +217,59 @@ JCVariableDecl *Parser::formalParameter() {
     return new JCVariableDecl(type, ident());
 }
 
-JCBlock* block() {
+JCBlock* Parser::block() {
+    match(Token::LBRACE);
+    vector<JCStatement*> *vec = blockStatements();
+    match(Token::RBRACE);
+    return new JCBlock(vec);
+}
 
+/**
+ * LocalVariableDeclarationStatement
+ * Statement
+ */
+vector<JCStatement*> * Parser::blockStatements() {
+    vector<JCStatement*> *stats = new vector<JCStatement*>();
+    while (true) {
+        switch (L.token().id) {
+            case Token::ID_RBRACE:
+            case Token::ID_EOF:
+                return stats;
+            case Token::ID_IF:
+            case Token::ID_FOR:
+            case Token::ID_RETURN:
+                stats->push_back(parseStatement());
+                break;
+            default:
+                break;
+
+        }
+    }
+    return stats;
+}
+
+
+JCStatement* Parser::parseStatement() {
+    switch (L.token().id) {
+        case Token::ID_LBRACE:
+            return block();
+        case Token::ID_IF: {
+            L.nextToken();
+            JCExpression *cond = parExpression();
+            JCStatement *thenpart = parseStatement();
+            JCStatement *elsepart = nullptr;
+            if (L.token() == Token::ELSE) {
+                L.nextToken();
+                elsepart = parseStatement();
+            }
+            return new JCIf(cond, thenpart, elsepart);
+        }
+    }
+}
+
+JCExpression* Parser::parExpression() {
+    match(Token::LPAREN);
+    JCExpression *t = term(EXPR);
+    match(Token::RPAREN);
+    return t;
 }

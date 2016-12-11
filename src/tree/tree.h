@@ -17,7 +17,9 @@ class Tree {
 public:
     //Type* type;
     int treeTag;
+
     virtual void accept(Visitor &v) = 0;
+
     Tree(int tag);
 
     template<typename R, typename D>
@@ -144,7 +146,7 @@ public:
     Name &name;
 
     //for now, only methods is allowed
-    vector<Tree*> defs;
+    vector<Tree *> defs;
 //    ClassSymbol sym;
 };
 
@@ -163,13 +165,17 @@ class JCMethodDecl : public Tree {
 class JCVariableDecl : public Tree {
 public:
     JCExpression *type;
-    Name& name;
-    JCVariableDecl(JCExpression *type, Name& name);
+    Name &name;
+
+    JCVariableDecl(JCExpression *type, Name &name);
 
 };
 
 class JCBlock : public JCStatement {
+public:
+    vector<JCStatement *> *stats;
 
+    JCBlock(vector<JCStatement *> *stats);
 
 };
 
@@ -178,6 +184,14 @@ class JCForLoop : public JCStatement {
 };
 
 class JCIf : public JCStatement {
+public:
+    JCExpression *cond;
+    JCStatement *thenPart;
+    JCStatement *elsePart;
+
+    JCIf(JCExpression *cond,
+         JCStatement *thenpart,
+         JCStatement *elsepart);
 
 };
 
@@ -223,15 +237,17 @@ class JCArrayAccess : public JCExpression {
 
 class JCFieldAccess : public JCExpression {
 public:
-    Name& selector;
+    Name &selector;
     JCExpression *selected;
-    JCFieldAccess(JCExpression *selected, Name& selector);
+
+    JCFieldAccess(JCExpression *selected, Name &selector);
 };
 
 class JCIdent : public JCExpression {
 public:
-    Name& name;
-    JCIdent(Name& name);
+    Name &name;
+
+    JCIdent(Name &name);
 };
 
 class JCLiteral : public JCExpression {
@@ -241,18 +257,21 @@ class JCLiteral : public JCExpression {
 class JCPrimitiveTypeTree : public JCExpression {
 public:
     int typetag;
+
     JCPrimitiveTypeTree(int tag);
 };
 
 class JCArrayTypeTree : public JCExpression {
 public:
-    JCExpression* elementType;
+    JCExpression *elementType;
+
     JCArrayTypeTree(JCExpression *elementType);
 };
 
 class JCModifiers : public Tree {
 public:
     int flags;
+
     JCModifiers(int flags);
 };
 
