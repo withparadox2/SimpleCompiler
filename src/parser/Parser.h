@@ -84,6 +84,8 @@ public:
 
     int prec(Token &token);
 
+    JCExpression *literal();
+
 };
 
 

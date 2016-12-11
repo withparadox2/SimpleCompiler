@@ -276,7 +276,7 @@ public :
     JCExpression *falsepart;
 
     JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart);
-}
+};
 
 class JCBinary : public JCExpression {
 public:
@@ -310,9 +310,17 @@ public:
     JCIdent(Name &name);
 };
 
+template <typename R>
 class JCLiteral : public JCExpression {
-
+public:
+    R value;
+    int typetag;
+    JCLiteral(int typetag, R value);
 };
+
+template <typename R>
+JCLiteral::JCLiteral<R>(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(value) {
+}
 
 class JCPrimitiveTypeTree : public JCExpression {
 public:

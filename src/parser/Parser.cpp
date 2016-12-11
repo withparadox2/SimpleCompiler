@@ -204,7 +204,7 @@ JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
         topOp = &L.token();
         L.nextToken();
 
-        odStack.push_back(term2());
+        odStack.push_back(term3());
         // 1 * 2 + 3 => prec(*) > prec(+) =>
         // JCBinary(+, 3, JCBinary(*, 2, 1))
         // remember lhs is the last one being pushed back to stack
@@ -265,8 +265,46 @@ JCExpression *Parser::term3() {
                 if (fail) break;
             }
             return t;
+        case Token::ID_INTLITERAL:
+        case Token::ID_TRUE:
+        case Token::ID_FALSE:
+        case Token::ID_NULL_:
+        case Token::ID_STRINGLITERAL:
+            if ((mode & EXPR) != 0) {
+                mode = EXPR;
+                t = literal();
+            } else {
+                error("literal must be an expression");
+            }
+            break;
+
     }
     //TODO handle this
+}
+
+JCExpression *Parser::literal() {
+    JCExpression *t = nullptr;
+    switch (L.token().id) {
+        case Token::ID_INTLITERAL:
+            //TODO check exception?
+            int value = atoi(L.bufStr.c_str());
+            t = new JCLiteral<int>(TypeTags::INT, value);
+            break;
+        case Token::ID_STRINGLITERAL:
+            t = new JCLiteral<string>(TypeTags::CLASS, L.bufStr);
+            break;
+        case Token::ID_NULL_:
+            t = new JCLiteral<int>(TypeTags::BOT, 0);
+            break;
+        case Token::ID_TRUE:
+        case Token::ID_FALSE:
+            t = new JCLiteral<int>(TypeTags::BOOLEAN,
+                                   L.token() == Token::TRUE ? 1 : 0);
+        default:
+            error("wrong literal " + L.token().fullDesc());
+    }
+    L.nextToken();
+    return t;
 }
 
 JCExpression *Parser::basicType() {
@@ -284,7 +322,6 @@ int Parser::typeTag(Token &token) {
         default:
             return -1;
     }
-
 }
 
 JCExpression *Parser::bracketOpt(JCExpression *e) {
