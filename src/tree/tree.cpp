@@ -49,3 +49,8 @@ JCForLoop::JCForLoop(vector<JCStatement *> *init, JCExpression *cond, vector<JCE
                      JCStatement *body) : Tree(FORLOOP), init(init), cond(cond), step(step), body(body) {
 
 }
+
+JCMethodDecl::JCMethodDecl(JCModifiers *mods, JCExpression *type, Name *name, vector<JCExpression *> *params,
+                           JCBlock *body) : Tree(METHODDEF), mods(mods), type(type), name(name), params(params), body(body){
+
+}

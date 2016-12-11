@@ -159,6 +159,18 @@ class JCStatement : public Tree {
 };
 
 class JCMethodDecl : public Tree {
+public:
+    JCModifiers *mods;
+    JCExpression *type;
+    Name *name;
+    vector<JCExpression *> *params;
+    JCBlock *body;
+
+    JCMethodDecl(JCModifiers *mods,
+                 JCExpression *type,
+                 Name *name,
+                 vector<JCExpression *> *params,
+                 JCBlock *body);
 
 };
 

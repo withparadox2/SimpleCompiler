@@ -66,6 +66,8 @@ Tree *Parser::methodDeclaratorRest(
         error("need { for method block");
     }
     JCBlock *block = block();
+
+    return new JCMethodDecl(mods, type, &name, params, block);
 }
 
 JCModifiers *Parser::modifiersOpt() {
