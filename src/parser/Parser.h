@@ -69,6 +69,10 @@ public:
 
     JCExpression* parExpression();
     JCStatement* parseStatement();
+    vector<JCStatement*> * forInit();
+    vector<JCExpressionStatement*> * forUpdate();
+    vector<JCVariableDecl*> * variableDeclarators();//TODO implementation
+
 };
 
 

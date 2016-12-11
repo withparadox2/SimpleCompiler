@@ -180,7 +180,16 @@ public:
 };
 
 class JCForLoop : public JCStatement {
+public:
+    vector<JCStatement *> *init;
+    JCExpression *cond;
+    vector<JCExpressionStatement *> *step;
+    JCStatement *body;
 
+    JCForLoop(vector<JCStatement *> *init,
+              JCExpression *cond,
+              vector<JCExpressionStatement *> *step,
+              JCStatement *body);
 };
 
 class JCIf : public JCStatement {
@@ -196,6 +205,10 @@ public:
 };
 
 class JCExpressionStatement : public JCStatement {
+public:
+    JCExpression *exp;
+
+    JCExpressionStatement(JCExpression *exp);
 
 };
 

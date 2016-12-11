@@ -36,6 +36,16 @@ JCBlock::JCBlock(vector<JCStatement *> *stats) : Tree(BLOCK), stats(stats) {
 
 }
 
-JCIf::JCIf(JCExpression *cond, JCStatement *thenpart, JCStatement *elsepart): Tree(IF), cond(cond), thenPart(thenpart), elsePart(elsepart) {
+JCIf::JCIf(JCExpression *cond, JCStatement *thenpart, JCStatement *elsepart) : Tree(IF), cond(cond), thenPart(thenpart),
+                                                                               elsePart(elsepart) {
+
+}
+
+JCExpressionStatement::JCExpressionStatement(JCExpression *exp) : Tree(EXEC), exp(exp) {
+
+}
+
+JCForLoop::JCForLoop(vector<JCStatement *> *init, JCExpression *cond, vector<JCExpressionStatement *> *step,
+                     JCStatement *body) : Tree(FORLOOP), init(init), cond(cond), step(step), body(body) {
 
 }
