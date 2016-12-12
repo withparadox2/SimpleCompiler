@@ -164,3 +164,6 @@ JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs) : JCExpress
 JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart) : JCExpression(CONTINUE) {
 
 }
+
+JCParens::JCParens(JCExpression *expr) : JCExpression(PARENS), expr(expr) {
+}

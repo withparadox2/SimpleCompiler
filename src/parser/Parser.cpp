@@ -2,7 +2,10 @@
 // Created by withparadox2 on 2016/8/23.
 //
 #include <iostream>
-#include "Parser.h"
+#include <string>
+#include <exception>
+
+#include "./Parser.h"
 #include "../util/error.h"
 #include "../code/Flags.h"
 #include "../code/TypeTags.h"
@@ -274,7 +277,28 @@ JCExpression *Parser::term3() {
                 mode = EXPR;
                 t = literal();
             } else {
-                error("literal must be an expression");
+                error("literal must be an expression, @ " + L.bufStr);
+            }
+            break;
+        case Token::ID_LPAREN: {
+            if ((mode & EXPR) != 0) {
+                L.nextToken();
+                //TODO why don't just use term() for simplicity?
+                t = termRest(term1Rest(term2Rest(term3(), treeinfo::opPrec())));
+                match(Token::RPAREN);
+                t = new JCParens(t);
+            } else {
+                error("( must be an expression");
+            }
+            break;
+        }
+        case Token::ID_NEW:
+            if ((mode & EXPR) != 0) {
+                mode = EXPR;
+                L.nextToken();
+                t = creator();
+            } else {
+                error("new Object must be an expression");
             }
             break;
 
@@ -282,14 +306,38 @@ JCExpression *Parser::term3() {
     //TODO handle this
 }
 
+JCExpression *Parser::creator() {
+    switch (L.token().id) {
+        case Token::ID_INT:
+        case Token::ID_BOOLEAN:
+            arrayCreatorRest(basicType());
+            break;
+    }
+}
+
+/** ArrayCreatorRest = "[" ( "]" BracketsOpt ArrayInitializer
+ *                         | Expression "]" {"[" Expression "]"} BracketsOpt )
+ */
+JCExpression *Parser::arrayCreatorRest(JCExpression *elemtype) {
+    match(Token::LBRACKET);
+    if (L.token() == Token::RBRACKET) {
+
+    } else {
+
+    }
+}
+
+
 JCExpression *Parser::literal() {
     JCExpression *t = nullptr;
     switch (L.token().id) {
         case Token::ID_INTLITERAL:
-            //TODO check exception?
-            //TODO include header for atoi
-            int value = atoi(L.bufStr.c_str());
-            t = new JCLiteral<int>(TypeTags::INT, value);
+            try {
+                int value = std::stoi(L.bufStr);
+                t = new JCLiteral<int>(TypeTags::INT, value);
+            } catch (std::excetion &e) {
+                error(L.bufStr + " can not be converted to int.");
+            }
             break;
         case Token::ID_STRINGLITERAL:
             t = new JCLiteral<string>(TypeTags::CLASS, L.bufStr);

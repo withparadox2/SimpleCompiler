@@ -258,7 +258,9 @@ class JCNewClass : public JCExpression {
 };
 
 class JCParens : public JCExpression {
-
+public:
+    JCExpression *expr;
+    JCParens(JCExpression *expr);
 };
 
 class JCAssign : public JCExpression {
