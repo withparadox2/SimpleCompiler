@@ -167,3 +167,6 @@ JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpre
 
 JCParens::JCParens(JCExpression *expr) : JCExpression(PARENS), expr(expr) {
 }
+
+JCNewArray::JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens) : JCExpression(NEWARRAY), elementType(elementType), dimens(dimens) {
+}

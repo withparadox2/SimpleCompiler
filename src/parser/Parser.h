@@ -78,9 +78,9 @@ public:
 
     JCExpression* parExpression();
     JCStatement* parseStatement();
-    vector<JCStatement*> * forInit();
-    vector<JCExpressionStatement*> * forUpdate();
-    vector<JCVariableDecl*> * variableDeclarators();//TODO implementation
+    vector<JCStatement*> *forInit();
+    vector<JCExpressionStatement*> *forUpdate();
+    vector<JCVariableDecl*> *variableDeclarators();//TODO implementation
 
     int prec(Token &token);
 

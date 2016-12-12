@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <cassert>
 
 #include "./Parser.h"
 #include "../util/error.h"
@@ -306,24 +307,43 @@ JCExpression *Parser::term3() {
     //TODO handle this
 }
 
+//only support array of primitive type, i.e. int and boolean
 JCExpression *Parser::creator() {
     switch (L.token().id) {
         case Token::ID_INT:
         case Token::ID_BOOLEAN:
-            arrayCreatorRest(basicType());
-            break;
+            return arrayCreatorRest(basicType());
+        default:
+            JCExpression t =
     }
 }
 
 /** ArrayCreatorRest = "[" ( "]" BracketsOpt ArrayInitializer
  *                         | Expression "]" {"[" Expression "]"} BracketsOpt )
+ *
+ *  For now, only support int[][] arr = new int[3][4] and int[][] arr = new int[3][]
  */
 JCExpression *Parser::arrayCreatorRest(JCExpression *elemtype) {
     match(Token::LBRACKET);
     if (L.token() == Token::RBRACKET) {
-
+        error("missing dimension for array");
     } else {
+        vector<JCExpression *> *dimens = new vector<JCExpression *>();
+        dimens->push_back(term(EXPR));
+        match(Token::RBRACKET);
+        while (L.token() == Token::LBRACKET) {
+            L.nextToken();
+            if (L.token() == Token::RBRACKET) {
+                //int[][][] arr = new int[3][][];
+                elemtype = bracketsOptCont(elemtype);
+                assert(L.token() != Token::LBRACKET);
+            } else {
+                dimens->push_back(term(EXPR));
+                match(Token::RBRACKET);
+            }
+        }
 
+        return new JCNewArray(elemtype, dimens);
     }
 }
 

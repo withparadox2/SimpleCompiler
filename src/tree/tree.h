@@ -338,6 +338,13 @@ public:
     JCArrayTypeTree(JCExpression *elementType);
 };
 
+//todo add to visitor
+class JCNewArray: public JCExpression {
+public:
+    JCExpression *elementType;
+    vector<JCExpression *> *dimens;
+    JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens);
+};
 class JCModifiers : public Tree {
 public:
     int flags;
