@@ -287,6 +287,7 @@ JCExpression *Parser::literal() {
     switch (L.token().id) {
         case Token::ID_INTLITERAL:
             //TODO check exception?
+            //TODO include header for atoi
             int value = atoi(L.bufStr.c_str());
             t = new JCLiteral<int>(TypeTags::INT, value);
             break;
