@@ -14,7 +14,9 @@
 
 using namespace std;
 
-Parser::Parser(Lexer &lexer) : L(lexer), mode(0), lastMode(0) {}
+Parser::Parser(Lexer &lexer) : L(lexer), mode(0), lastMode(0) {
+    L.nextToken();
+}
 
 Tree *Parser::parse() {
     return buildClass();

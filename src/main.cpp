@@ -26,6 +26,8 @@ int main() {
     readFileContent(is, sourceCode);
 
     Lexer lexer(sourceCode);
+    Parser parser(lexer);
+    parser.buildClass();
 
 //    Parser parser(lexer);
 //    ClassNode *node = parser.parse();
