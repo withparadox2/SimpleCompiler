@@ -56,10 +56,13 @@ Tree *Parser::classBodyDecl(Name &className) {
             return methodDeclaratorRest(modifiers, nullptr, *Names::instance().init, true);
         }
     } else {
-        L.nextToken();
         name = &ident();
-        match(Token::LPAREN);//TODO support var declaration
-        return methodDeclaratorRest(modifiers, type, *name, isVoid);
+        if (L.token() == Token::LPAREN) {
+            return methodDeclaratorRest(modifiers, type, *name, isVoid);
+        } else {
+            error("method declaration expect (");
+            return nullptr;
+        }
     }
 }
 
@@ -255,6 +258,7 @@ JCExpression *Parser::term3() {
                         L.nextToken();
                         if (L.token() == Token::RBRACKET) {
                             t = bracketOpt(t);
+                            t = new JCArrayTypeTree(t);
                         } else {
                             if ((mode & EXPR) != 0) {
                                 JCExpression *t1 = term();
@@ -443,6 +447,7 @@ vector<JCVariableDecl *> *Parser::formalParameters() {
 
 JCVariableDecl *Parser::formalParameter() {
     JCExpression *type = parseType();
+    L.nextToken();//TODO should do this here?
     return new JCVariableDecl(type, ident());
 }
 
@@ -500,6 +505,7 @@ vector<JCStatement *> *Parser::blockStatements() {
                 stats->push_back(parseStatement());
                 break;
             default:
+                //TODO handle this.===
                 break;
 
         }

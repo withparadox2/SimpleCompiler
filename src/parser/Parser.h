@@ -15,10 +15,6 @@
 using std::vector;
 using std::string;
 
-enum KIND {
-    CLASS,
-};
-
 class Parser {
 private:
     Lexer &L;
@@ -72,15 +68,15 @@ public:
             bool isVoid);
 
     vector<JCVariableDecl*> *formalParameters();
-    JCVariableDecl* formalParameter();
-    JCBlock* block();
+    JCVariableDecl *formalParameter();
+    JCBlock *block();
 
     Name &ident();
 
     vector<JCStatement*> *blockStatements();
 
-    JCExpression* parExpression();
-    JCStatement* parseStatement();
+    JCExpression *parExpression();
+    JCStatement *parseStatement();
     vector<JCStatement*> *forInit();
     vector<JCExpressionStatement*> *forUpdate();
     vector<JCVariableDecl*> *variableDeclarators();//TODO implementation
