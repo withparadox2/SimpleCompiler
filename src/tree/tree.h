@@ -9,6 +9,7 @@
 #include "treevisitor.h"
 #include "../util/names.h"
 #include "../parser/Token.h"
+#include "alltree.h"
 
 using std::vector;
 
@@ -19,7 +20,7 @@ public:
     //Type* type;
     int treeTag;
 
-    virtual void accept(Visitor &v) = 0;
+//    virtual void accept(Visitor &v);
 
     Tree(int tag);
 
@@ -171,13 +172,13 @@ public:
     JCModifiers *mods;
     JCExpression *type;
     Name *name;
-    vector<JCExpression *> *params;
+    vector<JCVariableDecl *> *params;
     JCBlock *body;
 
     JCMethodDecl(JCModifiers *mods,
                  JCExpression *type,
                  Name *name,
-                 vector<JCExpression *> *params,
+                 vector<JCVariableDecl *> *params,
                  JCBlock *body);
 
 };
@@ -319,7 +320,7 @@ public:
     JCIdent(Name &name);
 };
 
-template <typename R>
+template <class R>
 class JCLiteral : public JCExpression {
 public:
     R value;
@@ -327,8 +328,8 @@ public:
     JCLiteral(int typetag, R value);
 };
 
-template <typename R>
-JCLiteral::JCLiteral<R>(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(value) {
+template <class R>
+JCLiteral<R>::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(value) {
 }
 
 class JCPrimitiveTypeTree : public JCExpression {
@@ -399,7 +400,8 @@ public:
 
     void visitIdent(JCIdent &that) { visitTree(that); }
 
-    void visitLiteral(JCLiteral &that) { visitTree(that); }
+    template <class T>
+    void visitLiteral(JCLiteral<T> &that) { visitTree(that); }
 
     void visitTypeIdent(JCPrimitiveTypeTree &that) { visitTree(that); }
 

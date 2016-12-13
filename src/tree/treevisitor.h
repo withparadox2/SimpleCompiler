@@ -5,51 +5,7 @@
 #ifndef SIMPLECOMPILER_TREEVISITOR_H
 #define SIMPLECOMPILER_TREEVISITOR_H
 
-class JCClassDecl;
-
-class JCMethodDecl;
-
-class JCVariableDecl;
-
-class JCBlock;
-
-class JCForLoop;
-
-class JCIf;
-
-class JCExpressionStatement;
-
-class JCBreak;
-
-class JCContinue;
-
-class JCReturn;
-
-class JCMethodInvocation;
-
-class JCNewClass;
-
-class JCParens;
-
-class JCAssign;
-
-class JCBinary;
-
-class JCConditional;
-
-class JCArrayAccess;
-
-class JCFieldAccess;
-
-class JCIdent;
-
-class JCLiteral;
-
-class JCPrimitiveTypeTree;
-
-class JCArrayTypeTree;
-
-class JCModifiers;
+#include "alltree.h"
 
 template<typename R, typename P>
 class TreeVisitor {
@@ -92,7 +48,8 @@ public:
 
     R visitIdent(JCIdent &that, P &p);
 
-    R visitLiteral(JCLiteral &that, P &p);
+    template <class T>
+    R visitLiteral(JCLiteral<T> &that, P &p);
 
     R visitTypeIdent(JCPrimitiveTypeTree &that, P &p);
 

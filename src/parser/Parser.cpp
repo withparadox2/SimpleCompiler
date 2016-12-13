@@ -27,7 +27,7 @@ JCClassDecl *Parser::buildClass() {
 
     vector<Tree *> *defs = new vector<Tree *>();
     while (L.token() != Token::RBRACE && L.token() != Token::_EOF) {
-        defs->push_back(classBodyDecl(Name & className));
+        defs->push_back(classBodyDecl(name));
     }
 
     match(Token::RBRACE);
@@ -48,16 +48,16 @@ Tree *Parser::classBodyDecl(Name &className) {
 
     if (L.token() == Token::LPAREN && type->treeTag == Tree::TYPEIDENT) {
         if (*name != className) {
-            errno("invalid method declaration; return type required");
+            error("invalid method declaration; return type required");
         } else {
             //constructor
-            return methodDeclaratorRest(modifiers, nullptr, Names::instance().init, true);
+            return methodDeclaratorRest(modifiers, nullptr, *Names::instance().init, true);
         }
     } else {
         L.nextToken();
-        name = ident();
+        name = &ident();
         match(Token::LPAREN);//TODO support var declaration
-        return methodDeclaratorRest(modifiers, type, name, isVoid);
+        return methodDeclaratorRest(modifiers, type, *name, isVoid);
     }
 }
 
@@ -65,14 +65,14 @@ Tree *Parser::methodDeclaratorRest(
         JCModifiers *mods,
         JCExpression *type,
         Name &name,
-        boolean isVoid) {
-    vector<JCExpression *> *params = formalParameters();
+        bool isVoid) {
+    vector<JCVariableDecl *> *params = formalParameters();
     if (L.token() != Token::LBRACE) {
         error("need { for method block");
     }
-    JCBlock *block = block();
+    JCBlock *block1 = block();
 
-    return new JCMethodDecl(mods, type, &name, params, block);
+    return new JCMethodDecl(mods, type, &name, params, block1);
 }
 
 JCModifiers *Parser::modifiersOpt() {
@@ -95,7 +95,7 @@ JCModifiers *Parser::modifiersOpt() {
         }
 
         if (flag & flags == flag) {
-            errno("repeated modifier");
+            error("repeated modifier");
         }
 
         flags |= flag;
@@ -137,7 +137,7 @@ JCExpression *Parser::term(int newMode) {
     int prevmode = mode;
     mode = newMode;
     JCExpression *t = term();
-    lastmode = mode;
+//    lastmode = mode;
     mode = prevmode;
     return t;
 }
@@ -157,8 +157,8 @@ JCExpression *Parser::termRest(JCExpression *t) {
     mode = EXPR;//can not be type, since it's an assignment
 
     //use term() to support syntax like: "int a = b = 2";
-    JCExpression t1 = term();
-    return JCAssign(t, t1);
+    JCExpression *t1 = term();
+    return new JCAssign(t, t1);
 }
 
 JCExpression *Parser::term1() {
@@ -218,9 +218,9 @@ JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
         // JCBinary(+, 3, JCBinary(*, 2, 1))
         // remember lhs is the last one being pushed back to stack
         while (opStack.size() > 0 && prec(*topOp) >= prec(L.token())) {
-            Token *lhs = odStack.back();//at top
+            JCExpression *lhs = odStack.back();//at top
             odStack.pop_back();
-            Token *rhs = odStack.back();//at top-1
+            JCExpression *rhs = odStack.back();//at top-1
             odStack.pop_back();
 
             int opcode = treeinfo::opTag(*topOp);
@@ -239,12 +239,13 @@ JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
 }
 
 JCExpression *Parser::term3() {
+    JCExpression *t;
     switch (L.token().id) {
         case Token::ID_INT:
         case Token::ID_BOOLEAN:
             return bracketOpt(basicType());
         case Token::ID_IDENTIFIER:
-            JCExpression *t = new JCIdent(ident());
+            t = new JCIdent(ident());
             while (true) {
                 bool fail = false;
                 switch (L.token().id) {
@@ -295,7 +296,7 @@ JCExpression *Parser::term3() {
             if ((mode & EXPR) != 0) {
                 L.nextToken();
                 //TODO why don't just use term() for simplicity?
-                t = termRest(term1Rest(term2Rest(term3(), treeinfo::opPrec())));
+                t = termRest(term1Rest(term2Rest(term3(), treeinfo::opPrec(treeinfo::orPrec))));
                 match(Token::RPAREN);
                 t = new JCParens(t);
             } else {
@@ -372,7 +373,7 @@ JCExpression *Parser::literal() {
             try {
                 int value = std::stoi(L.bufStr);
                 t = new JCLiteral<int>(TypeTags::INT, value);
-            } catch (std::excetion &e) {
+            } catch (std::exception &e) {
                 error(L.bufStr + " can not be converted to int.");
             }
             break;
@@ -401,9 +402,9 @@ JCExpression *Parser::basicType() {
 
 int Parser::typeTag(Token &token) {
     switch (token.id) {
-        case Token::INT:
+        case Token::ID_INT:
             return TypeTags::INT;
-        case Token::BOOLEAN:
+        case Token::ID_BOOLEAN:
             return TypeTags::BOOLEAN;
         default:
             return -1;
@@ -424,14 +425,14 @@ JCExpression *Parser::bracketsOptCont(JCExpression *e) {
     return new JCArrayTypeTree(e);
 }
 
-vector<JCExpression *> *Parser::formalParameters() {
-    vector<JCExpression *> *vec = new vector<JCExpression *>();
+vector<JCVariableDecl *> *Parser::formalParameters() {
+    vector<JCVariableDecl *> *vec = new vector<JCVariableDecl *>();
     match(Token::LPAREN);
     if (L.token() != Token::RPAREN) {
-        vec.push_back(formalParameter());
+        vec->push_back(formalParameter());
         while (L.token() == Token::COMMA) {
             L.nextToken();
-            vec.push_back(formalParameter());
+            vec->push_back(formalParameter());
         }
     }
     match(Token::RPAREN);
@@ -444,7 +445,7 @@ JCVariableDecl *Parser::formalParameter() {
 }
 
 JCExpression *Parser::qualident() {
-    JCIdent *t = new JCIdent(ident());
+    JCExpression *t = new JCIdent(ident());
     while (L.token() == Token::DOT) {
         L.nextToken();
         t = new JCFieldAccess(t, ident());
@@ -533,7 +534,7 @@ JCStatement *Parser::parseStatement() {
 
             JCStatement *body = parseStatement();
 
-            return JCForLoop(inits, cond, steps, body);
+            return new JCForLoop(inits, cond, steps, body);
         }
         case Token::ID_BREAK: {
             L.nextToken();
@@ -554,7 +555,7 @@ JCStatement *Parser::parseStatement() {
         }
 
         default:
-            errno("not support " + L.token().fullDesc() + " in statement");
+            error("not support " + L.token().fullDesc() + " in statement");
     }
     return nullptr;
 }
@@ -575,7 +576,7 @@ vector<JCStatement *> *Parser::forInit() {
     //only support syntax like: for(int a = 0; ...) or for(a = 2; ...)
     //not for(int a=0, b=2)
     JCExpression *t = term(EXPR | TYPE);
-    stats->push_back(t);
+    stats->push_back(new JCExpressionStatement(t));
     return stats;
 }
 
@@ -586,7 +587,7 @@ vector<JCExpressionStatement *> *Parser::forUpdate() {
         return stats;
     }
 
-    stats->push_back(term(EXPR));
+    stats->push_back(new JCExpressionStatement(term(EXPR)));
     return stats;
 }
 

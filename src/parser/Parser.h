@@ -69,9 +69,9 @@ public:
             JCModifiers *mods,
             JCExpression *type,
             Name &name,
-            boolean isVoid);
+            bool isVoid);
 
-    vector<JCExpression*> *formalParameters();
+    vector<JCVariableDecl*> *formalParameters();
     JCVariableDecl* formalParameter();
     JCBlock* block();
 
