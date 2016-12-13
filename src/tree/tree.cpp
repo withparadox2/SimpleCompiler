@@ -158,15 +158,29 @@ int treeinfo::opPrec(int op) {
     return -1;
 }
 
-JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs) : JCExpression(opcode), opcode(opcode), lhs(lhs), rhs(rhs) {
+JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs) : JCExpression(opcode), opcode(opcode), lhs(lhs),
+                                                                       rhs(rhs) {
 }
 
-JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart) : JCExpression(CONTINUE) {
+JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart) : JCExpression(
+        CONTINUE) {
 
 }
 
 JCParens::JCParens(JCExpression *expr) : JCExpression(PARENS), expr(expr) {
 }
 
-JCNewArray::JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens) : JCExpression(NEWARRAY), elementType(elementType), dimens(dimens) {
+JCNewArray::JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens) : JCExpression(NEWARRAY),
+                                                                                    elementType(elementType),
+                                                                                    dimens(dimens) {
+}
+
+JCNewClass::JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments) : JCExpression(NEWCLASS), clazz(clazz),
+                                                                                 arguments(arguments) {
+
+}
+
+JCMethodInvocation::JCMethodInvocation(vector<JCExpression *> *args, JCExpression *meth) : JCExpression(APPLY),
+                                                                                           args(args), meth(meth) {
+
 }

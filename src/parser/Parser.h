@@ -10,8 +10,10 @@
 #include <deque>
 #include <vector>
 #include "../tree/tree.h"
+#include <string>
 
 using std::vector;
+using std::string;
 
 enum KIND {
     CLASS,
@@ -22,6 +24,7 @@ private:
     Lexer &L;
 
     bool match(Token &token);
+    bool match(Token &token, string errStr);
 
     static const int EXPR = 0x1;
     static const int TYPE = 0x2;
@@ -87,7 +90,9 @@ public:
     JCExpression *literal();
     JCExpression *creator();
     JCExpression *arrayCreatorRest(JCExpression *elemtype);
-
+    JCExpression *qualident();
+    vector<JCExpression *> *arguments();
+    JCMethodInvocation *arguments(JCExpression *t);
 };
 
 

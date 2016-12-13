@@ -250,10 +250,17 @@ public:
 };
 
 class JCMethodInvocation : public JCExpression {
-
+public:
+    vector<JCExpression *> *args;
+    JCExpression *meth;
+    JCMethodInvocation(vector<JCExpression *> *args, JCExpression *meth);
 };
 
 class JCNewClass : public JCExpression {
+public:
+    vector<JCExpression *> *arguments;
+    JCExpression *clazz;
+    JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments);
 
 };
 

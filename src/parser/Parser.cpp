@@ -106,12 +106,17 @@ JCModifiers *Parser::modifiersOpt() {
 }
 
 bool Parser::match(Token &token) {
+    match(token, "expected " + token.fullDesc());
+}
+
+
+bool Parser::match(Token &token, string errStr) {
     if (L.token() == token) {
         L.nextToken();
         return true;
     }
 
-    error("expected " + token.fullDesc());
+    error(errStr);
 }
 
 Name &Parser::ident() {
@@ -262,6 +267,11 @@ JCExpression *Parser::term3() {
                         t = new JCFieldAccess(t, ident());
                         break;
                     }
+                    case Token::ID_LPAREN: {
+                        t = arguments(t);
+                        fail = true;
+                        break;
+                    }
                     default:
                         fail = true;
                         break;
@@ -307,14 +317,21 @@ JCExpression *Parser::term3() {
     //TODO handle this
 }
 
-//only support array of primitive type, i.e. int and boolean
+//For now, only support array of primitive type, i.e. int and boolean
 JCExpression *Parser::creator() {
     switch (L.token().id) {
         case Token::ID_INT:
         case Token::ID_BOOLEAN:
             return arrayCreatorRest(basicType());
         default:
-            JCExpression t =
+            JCExpression *t = qualident();
+            if (L.token() == Token::LPAREN) {
+                vector<JCExpression *> *args = arguments();
+                match(Token::SEMI);
+                return new JCNewClass(t, args);
+            } else {
+                error("missing ( for creating class");
+            }
     }
 }
 
@@ -425,6 +442,36 @@ JCVariableDecl *Parser::formalParameter() {
     JCExpression *type = parseType();
     return new JCVariableDecl(type, ident());
 }
+
+JCExpression *Parser::qualident() {
+    JCIdent *t = new JCIdent(ident());
+    while (L.token() == Token::DOT) {
+        L.nextToken();
+        t = new JCFieldAccess(t, ident());
+    }
+    return t;
+}
+
+vector<JCExpression *> *Parser::arguments() {
+    match(Token::LPAREN, "missing ( for creating object.");
+    vector<JCExpression *> *args = new vector<JCExpression *>();
+    if (L.token() != Token::RPAREN) {
+        L.nextToken();
+        args->push_back(term(EXPR));
+        while (L.token() == Token::COMMA) {
+            L.nextToken();
+            args->push_back(term(EXPR));
+        }
+    }
+    match(Token::RPAREN);
+    return args;
+}
+
+JCMethodInvocation *Parser::arguments(JCExpression *t) {
+    vector<JCExpression *> *args = arguments();
+    return new JCMethodInvocation(args, t);
+}
+
 
 JCBlock *Parser::block() {
     match(Token::LBRACE);
@@ -542,3 +589,5 @@ vector<JCExpressionStatement *> *Parser::forUpdate() {
     stats->push_back(term(EXPR));
     return stats;
 }
+
+
