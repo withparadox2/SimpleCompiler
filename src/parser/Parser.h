@@ -18,6 +18,7 @@ using std::string;
 class Parser {
 private:
     Lexer &L;
+    Names &names;
 
     bool match(Token &token);
     bool match(Token &token, string errStr);
@@ -28,6 +29,7 @@ private:
     int lastMode;
 
     static int typeTag(Token &token);
+    static int unoptag(Token &token);
 
 public:
     Parser(Lexer &lexer);
@@ -83,12 +85,13 @@ public:
 
     int prec(Token &token);
 
-    JCExpression *literal();
+    JCExpression *literal(const string &prefiex);
     JCExpression *creator();
     JCExpression *arrayCreatorRest(JCExpression *elemtype);
     JCExpression *qualident();
     vector<JCExpression *> *arguments();
     JCMethodInvocation *arguments(JCExpression *t);
+    JCExpression *arrayInitializer(JCExpression *t);
 };
 
 

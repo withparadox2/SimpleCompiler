@@ -183,15 +183,6 @@ public:
 
 };
 
-class JCVariableDecl : public Tree {
-public:
-    JCExpression *type;
-    Name &name;
-
-    JCVariableDecl(JCExpression *type, Name &name);
-
-};
-
 class JCBlock : public JCStatement {
 public:
     vector<JCStatement *> *stats;
@@ -254,6 +245,7 @@ class JCMethodInvocation : public JCExpression {
 public:
     vector<JCExpression *> *args;
     JCExpression *meth;
+
     JCMethodInvocation(vector<JCExpression *> *args, JCExpression *meth);
 };
 
@@ -261,6 +253,7 @@ class JCNewClass : public JCExpression {
 public:
     vector<JCExpression *> *arguments;
     JCExpression *clazz;
+
     JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments);
 
 };
@@ -268,6 +261,7 @@ public:
 class JCParens : public JCExpression {
 public:
     JCExpression *expr;
+
     JCParens(JCExpression *expr);
 };
 
@@ -320,15 +314,16 @@ public:
     JCIdent(Name &name);
 };
 
-template <class R>
+template<class R>
 class JCLiteral : public JCExpression {
 public:
     R value;
     int typetag;
+
     JCLiteral(int typetag, R value);
 };
 
-template <class R>
+template<class R>
 JCLiteral<R>::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(value) {
 }
 
@@ -347,12 +342,31 @@ public:
 };
 
 //todo add to visitor
-class JCNewArray: public JCExpression {
+class JCNewArray : public JCExpression {
 public:
     JCExpression *elementType;
     vector<JCExpression *> *dimens;
-    JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens);
+    vector<JCExpression *> *elems;//init list
+
+    JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens, vector<JCExpression *> *elems);
 };
+
+//todo add to visitor
+class JCUnary : public JCExpression {
+public:
+    int opcode;
+    JCExpression *arg;
+    JCUnary(int opcode, JCExpression *arg);
+};
+class JCVariableDecl : public JCStatement {
+public:
+    Name &name;
+    JCExpression *vartype;
+    JCExpression *init;
+    JCVariableDecl(Name &name, JCExpression *vartype);
+    JCVariableDecl(Name &name, JCExpression *vartype, JCExpression *init);
+};
+
 class JCModifiers : public Tree {
 public:
     int flags;
@@ -400,7 +414,7 @@ public:
 
     void visitIdent(JCIdent &that) { visitTree(that); }
 
-    template <class T>
+    template<class T>
     void visitLiteral(JCLiteral<T> &that) { visitTree(that); }
 
     void visitTypeIdent(JCPrimitiveTypeTree &that) { visitTree(that); }

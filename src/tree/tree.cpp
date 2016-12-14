@@ -28,10 +28,6 @@ JCFieldAccess::JCFieldAccess(JCExpression *selected, Name &selector) : JCExpress
 
 }
 
-JCVariableDecl::JCVariableDecl(JCExpression *type, Name &name) : Tree(VARDEF), type(type), name(name) {
-
-}
-
 JCBlock::JCBlock(vector<JCStatement *> *stats) : JCStatement(BLOCK), stats(stats) {
 
 }
@@ -170,9 +166,10 @@ JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpre
 JCParens::JCParens(JCExpression *expr) : JCExpression(PARENS), expr(expr) {
 }
 
-JCNewArray::JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens) : JCExpression(NEWARRAY),
-                                                                                    elementType(elementType),
-                                                                                    dimens(dimens) {
+JCNewArray::JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens, vector<JCExpression *> *elems)
+        : JCExpression(NEWARRAY),
+          elementType(elementType),
+          dimens(dimens), elems(elems) {
 }
 
 JCNewClass::JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments) : JCExpression(NEWCLASS), clazz(clazz),
@@ -182,5 +179,18 @@ JCNewClass::JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments) :
 
 JCMethodInvocation::JCMethodInvocation(vector<JCExpression *> *args, JCExpression *meth) : JCExpression(APPLY),
                                                                                            args(args), meth(meth) {
+
+}
+
+JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype) : JCStatement(VARDEF), name(name), vartype(vartype) {
+
+}
+
+JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype, JCExpression *init) : JCStatement(VARDEF), name(name),
+                                                                                        vartype(vartype), init(init) {
+
+}
+
+JCUnary::JCUnary(int opcode, JCExpression *arg) : JCExpression(opcode), opcode(opcode), arg(arg) {
 
 }

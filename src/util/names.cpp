@@ -19,6 +19,7 @@ Names::Names() {
     init = fromString("<init>");
     _this = fromString("this");
     _class = fromString("class");
+    hyphen = fromString("-");
 }
 
 Name *Names::fromString(const string &str) {
