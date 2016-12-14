@@ -8,7 +8,7 @@ class Computer {
 
     int filterSum(int[] arr) {
         int sum = 0;
-        for(int i = 0; i < arr.length; i++) {
+        for(int i = 0; i < arr.length; i=i+1) {
             if(arr[i] > 0) {
                 sum = sum + arr[i];
             }

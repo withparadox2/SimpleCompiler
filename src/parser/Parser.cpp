@@ -2,15 +2,12 @@
 // Created by withparadox2 on 2016/8/23.
 //
 #include <iostream>
-#include <string>
-#include <exception>
 #include <cassert>
 
 #include "./Parser.h"
 #include "../util/error.h"
 #include "../code/Flags.h"
 #include "../code/TypeTags.h"
-#include "../util/names.h"
 
 using namespace std;
 
@@ -253,6 +250,7 @@ JCExpression *Parser::term3() {
         case Token::ID_BOOLEAN:
             return bracketOpt(basicType());
         case Token::ID_IDENTIFIER:
+            //Identifier { . Identifier } [IdentifierSuffix]
             t = new JCIdent(ident());
             while (true) {
                 bool fail = false;
@@ -275,6 +273,18 @@ JCExpression *Parser::term3() {
                     }
                     case Token::ID_DOT: {
                         L.nextToken();
+
+                        //It's impossible to be indent.this(arg1, arg2),
+                        //i.e. method invocation here is illegal
+                        if (L.token() == Token::THIS) {
+                            mode = EXPR;
+                            t = new JCFieldAccess(t, *names._this);
+                            fail = true;
+                            L.nextToken();
+                            break;
+                        }
+
+                        //not set `fail` to false, continue to parse `ident {. ident}`
                         t = new JCFieldAccess(t, ident());
                         break;
                     }
@@ -334,7 +344,7 @@ JCExpression *Parser::term3() {
                     return new JCUnary(unoptag(L.token()), t);
                 }
             } else {
-                error("no type for + or -" );
+                error("no type for + or -");
             }
             break;
         case Token::ID_THIS:
@@ -363,13 +373,36 @@ JCExpression *Parser::term3() {
             L.nextToken();
             switch (L.token().id) {
                 case Token::ID_IDENTIFIER:
+                    t = new JCFieldAccess(t, ident());
+                    t= argumentsOpt(t);
                     break;
-                case Token::ID_THIS:
+                default:
+                    error("not super or new in selector");
+                    break;
 
-                    break;
-                case Token::ID_:
+            }
+        } else if (L.token() == Token::LBRACKET) {
+            L.nextToken();
+            //mode may be (EXPR|TYPE), first check type, then check expr
+            if ((mode & TYPE) != 0) {
+                if (L.token() == Token::RBRACKET) {
+                    mode = TYPE;
+                    t = bracketOpt(t);
+
+                    //no way to be other things, just return.
+                    return new JCArrayTypeTree(t);
+                }
             }
 
+            if ((mode & EXPR) != 0) {
+                mode = EXPR;
+                JCExpression *t1 = term(EXPR);
+                t = new JCArrayAccess(t, t1);
+            }
+
+            //may be arr[e1][e2] or arr[e1].fun(), so continue to check selector
+        } else {
+            break;
         }
     }
     return t;
@@ -517,10 +550,9 @@ JCExpression *Parser::qualident() {
 }
 
 vector<JCExpression *> *Parser::arguments() {
-    match(Token::LPAREN, "missing ( for creating object.");
+    match(Token::LPAREN);
     vector<JCExpression *> *args = new vector<JCExpression *>();
     if (L.token() != Token::RPAREN) {
-        L.nextToken();
         args->push_back(term(EXPR));
         while (L.token() == Token::COMMA) {
             L.nextToken();
@@ -535,6 +567,15 @@ JCMethodInvocation *Parser::arguments(JCExpression *t) {
     vector<JCExpression *> *args = arguments();
     return new JCMethodInvocation(args, t);
 }
+
+JCExpression *Parser::argumentsOpt(JCExpression *t) {
+    if (L.token() == Token::LPAREN) {
+        return arguments(t);
+    } else {
+        return t;
+    }
+}
+
 
 JCExpression *Parser::arrayInitializer(JCExpression *t) {
     match(Token::LBRACE);
@@ -665,7 +706,18 @@ vector<JCStatement *> *Parser::forInit() {
     //only support syntax like: for(int a = 0; ...) or for(a = 2; ...)
     //not for(int a=0, b=2)
     JCExpression *t = term(EXPR | TYPE);
-    stats->push_back(new JCExpressionStatement(t));
+
+    if ((lastMode & TYPE) != 0 && L.token() == Token::IDENTIFIER) {
+        Name &name = ident();
+        JCExpression *init = nullptr;
+        if (L.token() == Token::EQ) {
+            L.nextToken();
+            init = term(EXPR);
+        }
+        stats->push_back(new JCVariableDecl(name, t, init));
+    } else {
+        stats->push_back(new JCExpressionStatement(t));
+    }
     return stats;
 }
 
@@ -690,5 +742,6 @@ int Parser::unoptag(Token &token) {
             error("not support unary : " + token.fullDesc());
     }
 }
+
 
 

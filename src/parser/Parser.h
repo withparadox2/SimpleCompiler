@@ -91,6 +91,7 @@ public:
     JCExpression *qualident();
     vector<JCExpression *> *arguments();
     JCMethodInvocation *arguments(JCExpression *t);
+    JCExpression *argumentsOpt(JCExpression *t);
     JCExpression *arrayInitializer(JCExpression *t);
 };
 
