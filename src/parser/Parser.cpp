@@ -289,7 +289,7 @@ JCExpression *Parser::term3() {
                 }
                 if (fail) break;
             }
-            return t;
+            return t;//TODO without selector?
         case Token::ID_INTLITERAL:
         case Token::ID_TRUE:
         case Token::ID_FALSE:
