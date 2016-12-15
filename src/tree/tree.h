@@ -376,52 +376,52 @@ public:
 
 class Visitor {
 public:
-    void visitClassDef(JCClassDecl &that) { visitTree(that); }
+    virtual void visitClassDef(JCClassDecl &that) { visitTree(that); }
 
-    void visitMethodDef(JCMethodDecl &that) { visitTree(that); }
+    virtual void visitMethodDef(JCMethodDecl &that) { visitTree(that); }
 
-    void visitVarDef(JCVariableDecl &that) { visitTree(that); }
+    virtual void visitVarDef(JCVariableDecl &that) { visitTree(that); }
 
-    void visitBlock(JCBlock &that) { visitTree(that); }
+    virtual void visitBlock(JCBlock &that) { visitTree(that); }
 
-    void visitForLoop(JCForLoop &that) { visitTree(that); }
+    virtual void visitForLoop(JCForLoop &that) { visitTree(that); }
 
-    void visitIf(JCIf &that) { visitTree(that); }
+    virtual void visitIf(JCIf &that) { visitTree(that); }
 
-    void visitExec(JCExpressionStatement &that) { visitTree(that); }
+    virtual void visitExec(JCExpressionStatement &that) { visitTree(that); }
 
-    void visitBreak(JCBreak &that) { visitTree(that); }
+    virtual void visitBreak(JCBreak &that) { visitTree(that); }
 
-    void visitContinue(JCContinue &that) { visitTree(that); }
+    virtual void visitContinue(JCContinue &that) { visitTree(that); }
 
-    void visitReturn(JCReturn &that) { visitTree(that); }
+    virtual void visitReturn(JCReturn &that) { visitTree(that); }
 
-    void visitApply(JCMethodInvocation &that) { visitTree(that); }
+    virtual void visitApply(JCMethodInvocation &that) { visitTree(that); }
 
-    void visitNewClass(JCNewClass &that) { visitTree(that); }
+    virtual void visitNewClass(JCNewClass &that) { visitTree(that); }
 
-    void visitParens(JCParens &that) { visitTree(that); }
+    virtual void visitParens(JCParens &that) { visitTree(that); }
 
-    void visitAssign(JCAssign &that) { visitTree(that); }
+    virtual void visitAssign(JCAssign &that) { visitTree(that); }
 
-    void visitConditional(JCConditional &that) { visitTree(that); }
+    virtual void visitConditional(JCConditional &that) { visitTree(that); }
 
-    void visitBinary(JCBinary &that) { visitTree(that); }
+    virtual void visitBinary(JCBinary &that) { visitTree(that); }
 
-    void visitIndexed(JCArrayAccess &that) { visitTree(that); }
+    virtual void visitIndexed(JCArrayAccess &that) { visitTree(that); }
 
-    void visitSelect(JCFieldAccess &that) { visitTree(that); }
+    virtual void visitSelect(JCFieldAccess &that) { visitTree(that); }
 
-    void visitIdent(JCIdent &that) { visitTree(that); }
+    virtual void visitIdent(JCIdent &that) { visitTree(that); }
 
     template<class T>
-    void visitLiteral(JCLiteral<T> &that) { visitTree(that); }
+    virtual void visitLiteral(JCLiteral<T> &that) { visitTree(that); }
 
-    void visitTypeIdent(JCPrimitiveTypeTree &that) { visitTree(that); }
+    virtual void visitTypeIdent(JCPrimitiveTypeTree &that) { visitTree(that); }
 
-    void visitTypeArray(JCArrayTypeTree &that) { visitTree(that); }
+    virtual void visitTypeArray(JCArrayTypeTree &that) { visitTree(that); }
 
-    void visitModifiers(JCModifiers &that) { visitTree(that); }
+    virtual void visitModifiers(JCModifiers &that) { visitTree(that); }
 
     void visitTree(Tree &that) {
         //TODO error
