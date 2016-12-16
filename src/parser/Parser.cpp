@@ -474,7 +474,7 @@ JCExpression *Parser::literal(const string &prefiex) {
             }
             break;
         case Token::ID_STRINGLITERAL:
-            t = new JCLiteral(TypeTags::CLASS, L.bufStr);
+            t = new JCLiteral(TypeTags::CLASS, (string)L.bufStr);
             break;
         case Token::ID_NULL_:
             t = new JCLiteral(TypeTags::BOT, 0);

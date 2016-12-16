@@ -33,8 +33,6 @@ int main() {
     Pretty p;
     clazz->accept(p);
 
-
-
 //    Parser parser(lexer);
 //    ClassNode *node = parser.parse();
 //    is.close();

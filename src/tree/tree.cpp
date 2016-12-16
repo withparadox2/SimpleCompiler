@@ -291,3 +291,8 @@ JCUnary::JCUnary(int opcode, JCExpression *arg) : JCExpression(opcode), opcode(o
 void JCUnary::accept(Visitor &visitor) {
     visitor.visitUnary(*this);
 }
+
+
+void JCLiteral::accept(Visitor &visitor) {
+    visitor.visitLiteral(*this);
+}
