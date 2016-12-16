@@ -1,5 +1,5 @@
 //
-// Created by ruancongyong on 2016/12/13.
+// Created by withpradox2 on 2016/12/13.
 //
 
 #ifndef SIMPLECOMPILER_ALLTREE_H
@@ -50,5 +50,9 @@ class JCPrimitiveTypeTree;
 class JCArrayTypeTree;
 
 class JCModifiers;
+
+class JCNewArray;
+
+class JCUnary;
 
 #endif //SIMPLECOMPILER_ALLTREE_H

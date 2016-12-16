@@ -55,6 +55,13 @@ public:
     R visitTypeArray(JCArrayTypeTree &that, P &p);
 
     R visitModifiers(JCModifiers &that, P &p);
+
+    R visitUnary(JCUnary &that, P &p);
+
+    R visitNewArray(JCNewArray &that, P &p);
+
+    R visitMethodInvocation(JCMethodInvocation &that, P &p);
+
 };
 
 #endif //SIMPLECOMPILER_TREEVISITOR_H

@@ -4,6 +4,7 @@
 #include "parser/Parser.h"
 #include "common.h"
 #include "util/layoutchars.h"
+#include "tree/pretty.h"
 
 using namespace std;
 
@@ -27,7 +28,12 @@ int main() {
 
     Lexer lexer(sourceCode);
     Parser parser(lexer);
-    parser.buildClass();
+    JCClassDecl *clazz = parser.buildClass();
+
+    Pretty p;
+    clazz->accept(p);
+
+
 
 //    Parser parser(lexer);
 //    ClassNode *node = parser.parse();
