@@ -468,20 +468,20 @@ JCExpression *Parser::literal(const string &prefiex) {
         case Token::ID_INTLITERAL:
             try {
                 int value = std::stoi(prefiex + L.bufStr);
-                t = new JCLiteral<int>(TypeTags::INT, value);
+                t = new JCLiteral(TypeTags::INT, value);
             } catch (std::exception &e) {
                 error(L.bufStr + " can not be converted to int.");
             }
             break;
         case Token::ID_STRINGLITERAL:
-            t = new JCLiteral<string>(TypeTags::CLASS, L.bufStr);
+            t = new JCLiteral(TypeTags::CLASS, L.bufStr);
             break;
         case Token::ID_NULL_:
-            t = new JCLiteral<int>(TypeTags::BOT, 0);
+            t = new JCLiteral(TypeTags::BOT, 0);
             break;
         case Token::ID_TRUE:
         case Token::ID_FALSE:
-            t = new JCLiteral<int>(TypeTags::BOOLEAN,
+            t = new JCLiteral(TypeTags::BOOLEAN,
                                    L.token() == Token::TRUE ? 1 : 0);
         default:
             error("wrong literal " + L.token().fullDesc());

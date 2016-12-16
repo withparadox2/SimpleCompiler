@@ -43,7 +43,6 @@ class JCFieldAccess;
 
 class JCIdent;
 
-template <class R>
 class JCLiteral;
 
 class JCPrimitiveTypeTree;

@@ -10,6 +10,7 @@
 #include "../util/names.h"
 #include "../parser/Token.h"
 #include "alltree.h"
+#include "../code/TypeTags.h"
 
 using std::vector;
 
@@ -314,17 +315,40 @@ public:
     JCIdent(Name &name);
 };
 
-template<class R>
 class JCLiteral : public JCExpression {
+private:
+    class IValueHolder {
+    };
+
+    template<typename T>
+    class ValueHolder : public IValueHolder {
+    public://let outer class read value
+        T value;
+        ValueHolder(T value);
+    };
+
+    IValueHolder *value;
 public:
-    R value;
     int typetag;
 
+    template<typename R>
     JCLiteral(int typetag, R value);
+
+    template<typename R>
+    R getValue();
 };
 
-template<class R>
-JCLiteral<R>::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(value) {
+template<typename T>
+JCLiteral::ValueHolder<T>::ValueHolder(T value) : value(value) {}
+
+template<typename R>
+JCLiteral::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(new ValueHolder<R>(value)) {
+}
+
+template<typename R>
+R JCLiteral::getValue() {
+    ValueHolder<R> *p = static_cast<ValueHolder<R> *>(value);
+    return p->value;
 }
 
 class JCPrimitiveTypeTree : public JCExpression {
@@ -356,14 +380,18 @@ class JCUnary : public JCExpression {
 public:
     int opcode;
     JCExpression *arg;
+
     JCUnary(int opcode, JCExpression *arg);
 };
+
 class JCVariableDecl : public JCStatement {
 public:
     Name &name;
     JCExpression *vartype;
     JCExpression *init;
+
     JCVariableDecl(Name &name, JCExpression *vartype);
+
     JCVariableDecl(Name &name, JCExpression *vartype, JCExpression *init);
 };
 
@@ -414,8 +442,7 @@ public:
 
     virtual void visitIdent(JCIdent &that) { visitTree(that); }
 
-    template<class T>
-    virtual void visitLiteral(JCLiteral<T> &that) { visitTree(that); }
+    virtual void visitLiteral(JCLiteral &that) { visitTree(that); }
 
     virtual void visitTypeIdent(JCPrimitiveTypeTree &that) { visitTree(that); }
 

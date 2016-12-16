@@ -48,8 +48,7 @@ public:
 
     R visitIdent(JCIdent &that, P &p);
 
-    template <class T>
-    R visitLiteral(JCLiteral<T> &that, P &p);
+    R visitLiteral(JCLiteral &that, P &p);
 
     R visitTypeIdent(JCPrimitiveTypeTree &that, P &p);
 
