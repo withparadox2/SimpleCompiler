@@ -66,9 +66,8 @@ public:
     void addSpace();
 
     void newLine();
+    
     void print(const string &str);
-
-    void printType(JCExpression *type);
 };
 
 

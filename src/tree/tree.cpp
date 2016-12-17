@@ -219,6 +219,39 @@ int treeinfo::opPrec(int op) {
     return -1;
 }
 
+string treeinfo::descByTag(int treeTag) {
+    switch (treeTag) {
+        case Tree::OR:
+            return "||";
+        case Tree::AND:
+            return "&&";
+        case Tree::EQ:
+            return "==";
+        case Tree::NE:
+            return "!=";
+        case Tree::LT:
+            return "<";
+        case Tree::GT:
+            return ">";
+        case Tree::LE:
+            return "<=";
+        case Tree::GE:
+            return ">=";
+        case Tree::PLUS:
+            return "+";
+        case Tree::MINUS:
+            return "-";
+        case Tree::MUL:
+            return "*";
+        case Tree::DIV:
+            return "/";
+        case Tree::MOD:
+            return "%";
+        default:
+            return "unknown optag: " + treeTag;
+    }
+}
+
 JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs) : JCExpression(opcode), opcode(opcode), lhs(lhs),
                                                                        rhs(rhs) {
 }

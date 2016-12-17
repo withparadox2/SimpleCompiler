@@ -535,6 +535,8 @@ namespace treeinfo {
 
     int opPrec(int ot);
 
+    string descByTag (int treeTag);
+
 }
 
 #endif //SIMPLECOMPILER_TREE_H
