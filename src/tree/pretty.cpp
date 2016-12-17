@@ -37,16 +37,8 @@ void Pretty::visitMethodDef(JCMethodDecl &that) {
     addSpace();
     print(that.name->desc);
     addSpace();
-    print("(");
-    bool isFirst = true;
-    for (auto &item : *that.params) {
-        if (!isFirst) {
-            print(", ");
-        }
-        isFirst = false;
-        item->accept(*this);
-    }
-    print(") ");
+
+    printTreeList(*that.params, ",", "(", ") ");
     that.body->accept(*this);
 }
 
@@ -130,35 +122,14 @@ void Pretty::visitReturn(JCReturn &that) {
 
 void Pretty::visitApply(JCMethodInvocation &that) {
     that.meth->accept(*this);
-    print("(");
 
-    bool isFirst = true;
-    for (auto &item : *that.args) {
-        if (!isFirst) {
-            print(", ");
-        } else {
-            isFirst = false;
-        }
-        item->accept(*this);
-    }
-    print(")");
+    printTreeList(*that.args, ",", "(", ")");
 }
 
 void Pretty::visitNewClass(JCNewClass &that) {
     print("new ");
     that.clazz->accept(*this);
-    print("(");
-
-    bool isFirst = true;
-    for (auto &item : *that.arguments) {
-        if (!isFirst) {
-            print(", ");
-        } else {
-            isFirst = false;
-        }
-        item->accept(*this);
-    }
-    print(")");
+    printTreeList(*that.arguments, ",", "(", ")");
 }
 
 void Pretty::visitParens(JCParens &that) {
@@ -292,19 +263,7 @@ void Pretty::visitNewArray(JCNewArray &that) {
     that.elementType->accept(*this);
     print("[]");
     if (that.elems != nullptr) {
-        print(" {");
-
-        bool isFirst = true;
-        for (auto &item : *that.elems) {
-            if (!isFirst) {
-                print(", ");
-            } else {
-                isFirst = false;
-            }
-            item->accept(*this);
-        }
-
-        print("}");
+        printTreeList(*that.elems, ",", " {", "}");
     }
 
 }
@@ -312,26 +271,11 @@ void Pretty::visitNewArray(JCNewArray &that) {
 
 void Pretty::visitMethodInvocation(JCMethodInvocation &that) {
     that.meth->accept(*this);
-    print("(");
-    bool isFirst = true;
-    for (auto &item : *that.args) {
-        if (!isFirst) {
-            print(", ");
-        } else {
-            isFirst = false;
-        }
-        item->accept(*this);
-    }
-    print(")");
+    printTreeList(*that.args, ",", " {", "}");
 }
 
 
 void Pretty::print(const string &str) {
-//    if (needTab) {
-//        for (int i = 0; i < tabCount; i++) {
-//            print("    ");
-//        }
-//    }
     cout << str;
 }
 
@@ -346,7 +290,7 @@ void Pretty::newLine() {
     }
 }
 
-Pretty::Pretty() : tabCount(0), needTab(false) {
+Pretty::Pretty() : tabCount(0) {
 
 }
 
@@ -360,3 +304,20 @@ void Pretty::undent() {
         tabCount = 0;
     }
 }
+
+template<typename T>
+void Pretty::printTreeList(vector<T *> &list, string split, string wLeft, string wRight) {
+    print(wLeft);
+    bool isFirst = true;
+    for (auto &item : list) {
+        if (!isFirst) {
+            print(split);
+            addSpace();
+        } else {
+            isFirst = false;
+        }
+        item->accept(*this);
+    }
+    print(wRight);
+}
+

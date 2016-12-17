@@ -14,7 +14,6 @@ using namespace std;
 class Pretty : public Visitor {
 private:
     int tabCount;
-    bool needTab;
     void indent();
     void undent();
 public:
@@ -79,6 +78,9 @@ public:
     void newLine();
 
     void print(const string &str);
+
+    template <typename T>
+    void printTreeList(vector<T *> &list, string split, string wLeft, string wRight);
 };
 
 
