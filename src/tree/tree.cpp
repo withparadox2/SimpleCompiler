@@ -304,7 +304,8 @@ void JCMethodInvocation::accept(Visitor &visitor) {
     visitor.visitMethodInvocation(*this);
 }
 
-JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype) : JCStatement(VARDEF), name(name), vartype(vartype) {
+JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype) : JCStatement(VARDEF), name(name), vartype(vartype),
+                                                                    init(nullptr) {
 
 }
 

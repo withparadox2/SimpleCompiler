@@ -12,10 +12,19 @@ void Pretty::visitClassDef(JCClassDecl &that) {
     print("class ");
     print(that.name.desc);
     print(" {");
+    indent();
     newLine();
-    for (auto &def : *that.defs) {
-        def->accept(*this);
+
+    auto begin = that.defs->begin();
+    auto end = that.defs->end();
+    for (auto item = begin; item != end; ++item) {
+        (*item)->accept(*this);
+        if (item + 1 == end) {
+            undent();
+        }
+        newLine();
     }
+
     print("}");
 }
 
@@ -37,8 +46,7 @@ void Pretty::visitMethodDef(JCMethodDecl &that) {
         isFirst = false;
         item->accept(*this);
     }
-    print(")");
-    newLine();
+    print(") ");
     that.body->accept(*this);
 }
 
@@ -47,18 +55,25 @@ void Pretty::visitVarDef(JCVariableDecl &that) {
     addSpace();
     print(that.name.desc);
     if (that.init != nullptr) {
+        print(" = ");
         that.init->accept(*this);
     }
 }
 
 void Pretty::visitBlock(JCBlock &that) {
     print("{");
+    indent();
     newLine();
 
-    for (auto &item : *that.stats) {
-        item->accept(*this);
+    auto begin = that.stats->begin();
+    auto end = that.stats->end();
+    for (auto item = begin; item != end; ++item) {
+        (*item)->accept(*this);
+        if (item + 1 == end) {
+            undent();
+        }
+        newLine();
     }
-    newLine();
     print("}");
 }
 
@@ -78,8 +93,7 @@ void Pretty::visitForLoop(JCForLoop &that) {
     for (auto &item : *that.step) {
         item->accept(*this);
     }
-    print(")");
-    newLine();
+    print(") ");
 
     that.body->accept(*this);
 }
@@ -93,7 +107,6 @@ void Pretty::visitIf(JCIf &that) {
         print(" else ");
         that.elsePart->accept(*this);
     }
-    newLine();
 }
 
 void Pretty::visitExec(JCExpressionStatement &that) {
@@ -101,7 +114,7 @@ void Pretty::visitExec(JCExpressionStatement &that) {
 }
 
 void Pretty::visitBreak(JCBreak &that) {
-    print("break;");
+    print("break");
 }
 
 void Pretty::visitContinue(JCContinue &that) {
@@ -113,7 +126,6 @@ void Pretty::visitReturn(JCReturn &that) {
     if (that.expr != nullptr) {
         that.expr->accept(*this);
     }
-    print(";");
 }
 
 void Pretty::visitApply(JCMethodInvocation &that) {
@@ -129,7 +141,7 @@ void Pretty::visitApply(JCMethodInvocation &that) {
         }
         item->accept(*this);
     }
-    print(");");
+    print(")");
 }
 
 void Pretty::visitNewClass(JCNewClass &that) {
@@ -146,7 +158,7 @@ void Pretty::visitNewClass(JCNewClass &that) {
         }
         item->accept(*this);
     }
-    print(");");
+    print(")");
 }
 
 void Pretty::visitParens(JCParens &that) {
@@ -172,11 +184,12 @@ void Pretty::visitConditional(JCConditional &that) {
 }
 
 void Pretty::visitBinary(JCBinary &that) {
-    that.lhs->accept(*this);
+    //TODO is rhs before lhs?
+    that.rhs->accept(*this);
     addSpace();
     print(treeinfo::descByTag(that.treeTag));
     addSpace();
-    that.rhs->accept(*this);
+    that.lhs->accept(*this);
 }
 
 void Pretty::visitIndexed(JCArrayAccess &that) {
@@ -189,9 +202,9 @@ void Pretty::visitIndexed(JCArrayAccess &that) {
 }
 
 void Pretty::visitSelect(JCFieldAccess &that) {
-    print(that.selector.desc);
-    print(".");
     that.selected->accept(*this);
+    print(".");
+    print(that.selector.desc);
 }
 
 void Pretty::visitIdent(JCIdent &that) {
@@ -207,14 +220,16 @@ void Pretty::visitLiteral(JCLiteral &that) {
         }
         case TypeTags::INT: {
             int val = that.getValue<int>();
-            print("" + val);//todo provide template method?
+            print(std::to_string(val));//todo provide template method?
             break;
         }
         case TypeTags::BOT:
             print("null");
             break;
         case TypeTags::CLASS:
+            print("\"");
             print(that.getValue<string>());
+            print("\"");
             break;
         default:
             print("not supported literal " + that.treeTag);
@@ -271,7 +286,52 @@ void Pretty::printModifiers(JCModifiers &modifier) {
     }
 }
 
+void Pretty::visitNewArray(JCNewArray &that) {
+    //todo handle dimens
+    print("new ");
+    that.elementType->accept(*this);
+    print("[]");
+    if (that.elems != nullptr) {
+        print(" {");
+
+        bool isFirst = true;
+        for (auto &item : *that.elems) {
+            if (!isFirst) {
+                print(", ");
+            } else {
+                isFirst = false;
+            }
+            item->accept(*this);
+        }
+
+        print("}");
+    }
+
+}
+
+
+void Pretty::visitMethodInvocation(JCMethodInvocation &that) {
+    that.meth->accept(*this);
+    print("(");
+    bool isFirst = true;
+    for (auto &item : *that.args) {
+        if (!isFirst) {
+            print(", ");
+        } else {
+            isFirst = false;
+        }
+        item->accept(*this);
+    }
+    print(")");
+}
+
+
 void Pretty::print(const string &str) {
+//    if (needTab) {
+//        for (int i = 0; i < tabCount; i++) {
+//            print("    ");
+//        }
+//    }
     cout << str;
 }
 
@@ -281,10 +341,22 @@ void Pretty::addSpace() {
 
 void Pretty::newLine() {
     print("\n");
+    for (int i = 0; i < tabCount; i++) {
+        print("    ");
+    }
 }
 
-//void Pretty::printType(JCExpression *type) {
-//    switch (type->treeTag) {
-//        case Tree:: :
-//    }
-//}
+Pretty::Pretty() : tabCount(0), needTab(false) {
+
+}
+
+void Pretty::indent() {
+    tabCount++;
+}
+
+void Pretty::undent() {
+    tabCount--;
+    if (tabCount < 0) {
+        tabCount = 0;
+    }
+}

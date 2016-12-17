@@ -12,7 +12,14 @@
 using namespace std;
 
 class Pretty : public Visitor {
+private:
+    int tabCount;
+    bool needTab;
+    void indent();
+    void undent();
 public:
+    Pretty();
+
     void visitClassDef(JCClassDecl &that) override;
 
     void visitMethodDef(JCMethodDecl &that) override;
@@ -59,6 +66,10 @@ public:
 
     void visitModifiers(JCModifiers &that) override;
 
+    void visitNewArray(JCNewArray &that) override;
+
+    void visitMethodInvocation(JCMethodInvocation &that) override;
+
     void visitTree(Tree &that) override;
 
     void printModifiers(JCModifiers &modifier);
@@ -66,7 +77,7 @@ public:
     void addSpace();
 
     void newLine();
-    
+
     void print(const string &str);
 };
 
