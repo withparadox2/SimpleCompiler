@@ -114,8 +114,9 @@ void Pretty::visitContinue(JCContinue &that) {
 }
 
 void Pretty::visitReturn(JCReturn &that) {
-    print("return ");
+    print("return");
     if (that.expr != nullptr) {
+        addSpace();
         that.expr->accept(*this);
     }
 }
@@ -155,12 +156,11 @@ void Pretty::visitConditional(JCConditional &that) {
 }
 
 void Pretty::visitBinary(JCBinary &that) {
-    //TODO is rhs before lhs?
-    that.rhs->accept(*this);
+    that.lhs->accept(*this);
     addSpace();
     print(treeinfo::descByTag(that.treeTag));
     addSpace();
-    that.lhs->accept(*this);
+    that.rhs->accept(*this);
 }
 
 void Pretty::visitIndexed(JCArrayAccess &that) {
@@ -191,7 +191,7 @@ void Pretty::visitLiteral(JCLiteral &that) {
         }
         case TypeTags::INT: {
             int val = that.getValue<int>();
-            print(std::to_string(val));//todo provide template method?
+            print(std::to_string(val));
             break;
         }
         case TypeTags::BOT:

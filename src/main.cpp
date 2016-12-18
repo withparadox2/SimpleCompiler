@@ -20,7 +20,6 @@ void readFileContent(std::ifstream &is, std::string &result) {
 }
 
 int main() {
-    //TODO Manage file IO
     string filePath(FILE_PATH);
     std::ifstream is(filePath.c_str());
     std::string sourceCode;
@@ -33,11 +32,6 @@ int main() {
     Pretty p;
     clazz->accept(p);
 
-//    Parser parser(lexer);
-//    ClassNode *node = parser.parse();
-//    is.close();
-//    Code code(node, FILE_PATH_ROOT "HelloWorld.class");
-//    code.start();
     return 0;
 }
 

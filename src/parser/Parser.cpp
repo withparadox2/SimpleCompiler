@@ -220,9 +220,9 @@ JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
         // JCBinary(+, 3, JCBinary(*, 2, 1))
         // remember lhs is the last one being pushed back to stack
         while (opStack.size() > 0 && prec(*topOp) >= prec(L.token())) {
-            JCExpression *lhs = odStack.back();//at top
+            JCExpression *rhs = odStack.back();//at top
             odStack.pop_back();
-            JCExpression *rhs = odStack.back();//at top-1
+            JCExpression *lhs = odStack.back();//at top-1
             odStack.pop_back();
 
             int opcode = treeinfo::opTag(*topOp);
