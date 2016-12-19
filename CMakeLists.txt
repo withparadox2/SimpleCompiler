@@ -9,5 +9,8 @@ set(SOURCE_FILES src/main.cpp
         src/util/names.cpp
         src/util/error.cpp
         src/parser/Parser.cpp
-        src/tree/tree.cpp src/tree/pretty.cpp src/tree/pretty.h)
+        src/tree/tree.cpp
+        src/tree/pretty.cpp
+        src/code/symbol.cpp
+        src/code/type.cpp)
 add_executable(SimpleCompiler ${SOURCE_FILES})
