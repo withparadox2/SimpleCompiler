@@ -12,5 +12,7 @@ set(SOURCE_FILES src/main.cpp
         src/tree/tree.cpp
         src/tree/pretty.cpp
         src/code/symbol.cpp
-        src/code/type.cpp)
+        src/code/type.cpp
+        src/comp/enter.cpp
+        src/jvm/ClassReader.cpp)
 add_executable(SimpleCompiler ${SOURCE_FILES})
