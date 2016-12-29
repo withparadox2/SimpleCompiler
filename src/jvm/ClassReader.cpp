@@ -5,7 +5,7 @@
 #include "ClassReader.h"
 
 
-ClassReader &instance() {
+ClassReader &ClassReader::instance() {
     static ClassReader reader;
     return reader;
 }

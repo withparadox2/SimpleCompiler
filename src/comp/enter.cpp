@@ -5,7 +5,7 @@
 #include "enter.h"
 #include "../util/error.h"
 
-Enter &instance() {
+Enter &Enter::instance() {
     static Enter inst;
     return inst;
 }
