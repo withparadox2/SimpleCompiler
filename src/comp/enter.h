@@ -8,9 +8,12 @@
 #include "../tree/tree.h"
 #include "../code/symbol.h"
 #include "../util/names.h"
+#include "../jvm/ClassReader.h"
 
 class Enter : public Visitor {
 private:
+    ClassReader &reader;
+    Enter();
 public:
     static Enter &instance();
     void complete(Tree *tree);

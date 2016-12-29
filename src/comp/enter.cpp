@@ -26,3 +26,6 @@ void Enter::visitTree(Tree &that) {
     //do nothing
 }
 
+Enter::Enter() : reader(ClassReader::instance()) {
+}
+
