@@ -51,6 +51,8 @@ public :
     /** Is this an environment for evaluating a base clause?
      */
     bool baseClause;
+
+    Env(Tree *tree, AttrContext *info);
 };
 
 class AttrContext {
@@ -67,6 +69,8 @@ class AttrContext {
     /** Are arguments to current function applications boxed into an array for varargs?
      */
     bool varArgs;
+public:
+    AttrContext();
 };
 
 

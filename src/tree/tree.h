@@ -11,6 +11,7 @@
 #include "../parser/Token.h"
 #include "alltree.h"
 #include "../code/TypeTags.h"
+#include "../code/symbol.h"
 
 using std::vector;
 
@@ -158,6 +159,7 @@ public:
     JCModifiers *mods;
     Name &name;
     vector<Tree *> *defs;
+    ClassSymbol *sym;
 
     JCClassDecl(JCModifiers *mods, Name &name, vector<Tree *> *defs);
 

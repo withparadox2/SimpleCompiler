@@ -102,8 +102,8 @@ JCStatement::JCStatement(int tag) : Tree(tag) {
 
 }
 
-JCClassDecl::JCClassDecl(JCModifiers *mods, Name &name, vector<Tree *> *defs) : Tree(CLASSDEF), mods(mods), name(name),
-                                                                                defs(defs) {
+JCClassDecl::JCClassDecl(JCModifiers *mods, Name &name, vector<Tree *> *defs)
+        : Tree(CLASSDEF), mods(mods), name(name), defs(defs), sym(nullptr) {
 
 }
 

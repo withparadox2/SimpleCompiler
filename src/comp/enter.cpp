@@ -16,7 +16,15 @@ void Enter::complete(Tree *tree) {
 
 void Enter::visitClassDef(JCClassDecl &that) {
     ClassSymbol *symbol = reader.enterClass(that.name);
+    that.sym = symbol;
+    Env *env = classEnv(&that);
+    typeEnvs.insert(std::make_pair(symbol, env));
+    //todo calc flags_field
 
+    //enter members
+    for(auto &item : *that.defs) {
+        item->accept(*this);
+    }
 }
 
 void Enter::visitMethodDef(JCMethodDecl &that) {
@@ -28,4 +36,10 @@ void Enter::visitTree(Tree &that) {
 }
 
 Enter::Enter() : reader(ClassReader::instance()) {
+}
+
+Env *Enter::classEnv(JCClassDecl *clazz) {
+    Env *local = new Env(clazz, new AttrContext);
+    local->enclClass = clazz;
+    return local;
 }

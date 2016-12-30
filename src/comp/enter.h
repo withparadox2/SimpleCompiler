@@ -9,12 +9,17 @@
 #include "../code/symbol.h"
 #include "../util/names.h"
 #include "../jvm/ClassReader.h"
+#include "./env.h"
+#include <map>
+
+using std::map;
 
 class Enter : public Visitor {
 private:
     ClassReader &reader;
     Enter();
 public:
+    map<TypeSymbol *, Env *> typeEnvs;
     static Enter &instance();
     void complete(Tree *tree);
 
@@ -23,6 +28,9 @@ public:
     void visitMethodDef(JCMethodDecl &that) override;
 
     void visitTree(Tree &that) override;
+
+    Env *classEnv(JCClassDecl *clazz);
+
 };
 
 
