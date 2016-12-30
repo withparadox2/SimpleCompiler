@@ -30,7 +30,6 @@ public:
 class Names {
 private:
     map<string, Name*> table;
-    static Names inst;
 
     Names();
 

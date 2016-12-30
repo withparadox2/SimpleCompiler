@@ -15,6 +15,7 @@ void Enter::complete(Tree *tree) {
 }
 
 void Enter::visitClassDef(JCClassDecl &that) {
+    ClassSymbol *symbol = reader.enterClass(that.name);
 
 }
 
@@ -28,4 +29,3 @@ void Enter::visitTree(Tree &that) {
 
 Enter::Enter() : reader(ClassReader::instance()) {
 }
-

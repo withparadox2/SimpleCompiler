@@ -20,10 +20,9 @@ public:
 
     void visitClassDef(JCClassDecl &that) override;
 
-    virtual void visitMethodDef(JCMethodDecl &that) override;
+    void visitMethodDef(JCMethodDecl &that) override;
 
-    virtual void visitTree(Tree &that) override;
-
+    void visitTree(Tree &that) override;
 };
 
 

@@ -32,8 +32,8 @@ Name *Names::fromString(const string &str) {
 }
 
 Names &Names::instance() {
+    static Names inst;
     return inst;
 }
 
-Names Names::inst;
 

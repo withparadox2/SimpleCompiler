@@ -6,6 +6,7 @@
 
 ClassSymbol::ClassSymbol(long flags, const Name &name, Symbol *owner)
         : ClassSymbol(flags, name, new Type, owner) {
+    this->type->tsym = this;
 }
 
 ClassSymbol::ClassSymbol(long flags, const Name &name, Type *type, Symbol *owner)

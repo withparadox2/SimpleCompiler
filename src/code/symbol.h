@@ -39,7 +39,11 @@ public:
 
 class ClassSymbol : public TypeSymbol {
 public:
-    Scope *memberField;
+/**
+ * memberFiled is used to store class member, since nested class is not allowed, so
+ * just ignore it.
+ */
+// Scope *memberField;
     Name *fullName;
     ClassSymbol(long flags, const Name &name, Symbol *owner);
     ClassSymbol(long flags, const Name &name, Type *type, Symbol *owner);
