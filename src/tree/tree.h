@@ -539,6 +539,9 @@ namespace treeinfo {
 
     string descByTag (int treeTag);
 
+    bool hasConstructors(const vector<Tree *> &defs);
+
+    bool isConstructor(const Tree& tree);
 }
 
 #endif //SIMPLECOMPILER_TREE_H

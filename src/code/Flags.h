@@ -20,6 +20,10 @@ public:
     static const int INTERFACE = 1 << 9;
     static const int ABSTRACT = 1 << 10;
     static const int STRICTFP = 1 << 11;
+    /** Flag for class symbols is set and later re-set to indicate that a class
+     *  has been entered but has not yet been attributed.
+     */
+    static const int UNATTRIBUTED = 1 << 28;
 };
 
 

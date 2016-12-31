@@ -16,19 +16,19 @@ bool Name::operator!=(Name &name) {
 }
 
 Names::Names() {
-    init = fromString("<init>");
-    _this = fromString("this");
-    _class = fromString("class");
-    hyphen = fromString("-");
+    init = &fromString("<init>");
+    _this = &fromString("this");
+    _class = &fromString("class");
+    hyphen = &fromString("-");
 }
 
-Name *Names::fromString(const string &str) {
+Name &Names::fromString(const string &str) {
     if (table.find(str) == table.end()) {
         Name *name = new Name(*this, str);
         table.insert(make_pair(str, name));
-        return name;
+        return *name;
     }
-    return table[str];
+    return *table[str];
 }
 
 Names &Names::instance() {

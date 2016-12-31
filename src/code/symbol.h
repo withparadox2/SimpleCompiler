@@ -7,7 +7,8 @@
 
 #include "../util/names.h"
 #include "type.h"
-#include "scope.h"
+class Scope;
+
 enum class Kind {
     PKG = 1 << 0,
     /**type symbols (classes, interfaces and type variables).*/

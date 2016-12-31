@@ -16,7 +16,7 @@ class Env {
 public :
     /** The next enclosing environment.
      *
-     * TODO figure out what's this
+     *  If this env is generated from env1, then next point to env1.
      */
     Env *next;
 

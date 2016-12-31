@@ -41,7 +41,7 @@ public:
 
     static Names &instance();
 
-    Name *fromString(const string &str);
+    Name &fromString(const string &str);
 };
 
 #endif //SIMPLECOMPILER_NAMES_H

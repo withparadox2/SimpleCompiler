@@ -252,6 +252,25 @@ string treeinfo::descByTag(int treeTag) {
     }
 }
 
+bool treeinfo::hasConstructors(const vector<Tree *> &defs) {
+    for (auto def : defs) {
+        if (isConstructor(*def)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool treeinfo::isConstructor(const Tree& tree) {
+    if (tree.treeTag == Tree::METHODDEF) {
+        Name *name = dynamic_cast<const JCMethodDecl &>(tree).name;
+        return name == Names::instance().init;
+    } else {
+        return false;
+    }
+}
+
+
 JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs) : JCExpression(opcode), opcode(opcode), lhs(lhs),
                                                                        rhs(rhs) {
 }

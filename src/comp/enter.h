@@ -10,6 +10,7 @@
 #include "../util/names.h"
 #include "../jvm/ClassReader.h"
 #include "./env.h"
+#include "../code/Symtab.h"
 #include <map>
 
 using std::map;
@@ -17,6 +18,7 @@ using std::map;
 class Enter : public Visitor {
 private:
     ClassReader &reader;
+    Symtab &syms;
     Enter();
 public:
     map<TypeSymbol *, Env *> typeEnvs;
@@ -30,6 +32,8 @@ public:
     void visitTree(Tree &that) override;
 
     Env *classEnv(JCClassDecl *clazz);
+
+    void completeMember(ClassSymbol *symbol);
 
 };
 

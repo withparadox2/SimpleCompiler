@@ -19,7 +19,7 @@ Token::Token(const int id) : id(id){
 
 void Token::initToken() {
     if (tokenDesc.length() > 0) {
-        Name *nameObj = Names::instance().fromString(tokenDesc);
+        Name *nameObj = &Names::instance().fromString(tokenDesc);
         nameToToken.insert(make_pair(nameObj, this));
     }
 }

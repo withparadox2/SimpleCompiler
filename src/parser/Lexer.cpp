@@ -204,14 +204,14 @@ void Lexer::scanIdent() {
         nextChar();
     } while (isIdent(ch, false));
 
-    cName = names.fromString(bufStr);
+    cName = &names.fromString(bufStr);
     cToken = &Token::fromName(*cName);
 }
 
 void Lexer::scanOperator() {
     while (true) {
         bufStr += ch;
-        Name *newname = names.fromString(bufStr);
+        Name *newname = &names.fromString(bufStr);
 
         Token &token = Token::fromName(*newname);
         if (token == Token::IDENTIFIER) {

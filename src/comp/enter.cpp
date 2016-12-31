@@ -4,6 +4,7 @@
 
 #include "enter.h"
 #include "../util/error.h"
+#include "../code/Flags.h"
 
 Enter &Enter::instance() {
     static Enter inst;
@@ -21,10 +22,7 @@ void Enter::visitClassDef(JCClassDecl &that) {
     typeEnvs.insert(std::make_pair(symbol, env));
     //todo calc flags_field
 
-    //enter members
-    for(auto &item : *that.defs) {
-        item->accept(*this);
-    }
+    completeMember(symbol);
 }
 
 void Enter::visitMethodDef(JCMethodDecl &that) {
@@ -35,11 +33,29 @@ void Enter::visitTree(Tree &that) {
     //do nothing
 }
 
-Enter::Enter() : reader(ClassReader::instance()) {
+Enter::Enter() : reader(ClassReader::instance()), syms(Symtab::instance()) {
 }
 
 Env *Enter::classEnv(JCClassDecl *clazz) {
     Env *local = new Env(clazz, new AttrContext);
     local->enclClass = clazz;
     return local;
+}
+
+void Enter::completeMember(ClassSymbol *symbol) {
+    Env *classEnv = typeEnvs.at(symbol);
+    JCClassDecl *tree = dynamic_cast<JCClassDecl *>(classEnv->tree);
+
+    symbol->flags |= Flags::UNATTRIBUTED;
+
+    //Not support extend, super type must be Object type.
+    Type *superType = syms.objectType;
+
+    if (!treeinfo::hasConstructors(*tree->defs)) {
+
+    }
+    //enter members
+    for(auto &item : *(tree->defs)) {
+        item->accept(*this);
+    }
 }
