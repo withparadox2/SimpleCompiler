@@ -42,26 +42,39 @@ Env *Enter::classEnv(JCClassDecl *clazz) {
     return local;
 }
 
-void Enter::completeMember(ClassSymbol *symbol) {
-    Env *classEnv = typeEnvs.at(symbol);
+void Enter::completeMember(ClassSymbol *c) {
+    ClassType *ct = static_cast<ClassType *>(c->type);
+
+    Env *classEnv = typeEnvs.at(c);
     JCClassDecl *tree = dynamic_cast<JCClassDecl *>(classEnv->tree);
 
-    symbol->flags |= Flags::UNATTRIBUTED;
+    c->flags |= Flags::UNATTRIBUTED;
 
     //Not support extend, super type must be Object type.
-    Type *superType = syms.objectType;
+    ct->supertype_field = syms.objectType;
 
     if (!treeinfo::hasConstructors(*tree->defs)) {
         //Not support anonymous class
-        Tree *ctor = defaultConstructor(symbol);
+        Tree *ctor = defaultConstructor(c);
         //TODO should prepend?
         tree->defs->push_back(ctor);
     }
 
-    //TODO enter this/super
+    if ((c->flags & Flags::INTERFACE) == 0) {
+        Scope &scope = *classEnv->info->scope;
+        long flag = Flags::FINAL | Flags::HASINIT;
+        VarSymbol *thisSym =
+                new VarSymbol(flag, *names._this, c->type, c);
+        scope.enter(thisSym);
+
+        //TODO exclude Object which shouldn't have super in scope.
+        VarSymbol *superSym =
+                new VarSymbol(flag, *names._super, ct->supertype_field, c);
+        scope.enter(superSym);
+    }
 
     //enter members
-    for(auto &item : *(tree->defs)) {
+    for (auto &item : *(tree->defs)) {
         item->accept(*this);
     }
 }

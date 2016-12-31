@@ -56,6 +56,8 @@ public :
 };
 
 class AttrContext {
+public:
+
     /** The scope of local symbols.
      */
     Scope *scope;
@@ -69,7 +71,6 @@ class AttrContext {
     /** Are arguments to current function applications boxed into an array for varargs?
      */
     bool varArgs;
-public:
     AttrContext();
 };
 

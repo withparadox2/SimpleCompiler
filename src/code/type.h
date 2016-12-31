@@ -13,5 +13,10 @@ public:
     TypeSymbol *tsym;
 };
 
+class ClassType : public Type {
+public:
+    Type *supertype_field;
+};
+
 
 #endif //SIMPLECOMPILER_TYPE_H

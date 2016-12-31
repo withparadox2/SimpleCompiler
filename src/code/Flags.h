@@ -5,6 +5,7 @@
 #ifndef SIMPLECOMPILER_FLAGS_H
 #define SIMPLECOMPILER_FLAGS_H
 
+#include <cstdint>
 
 class Flags {
 public:
@@ -20,6 +21,11 @@ public:
     static const int INTERFACE = 1 << 9;
     static const int ABSTRACT = 1 << 10;
     static const int STRICTFP = 1 << 11;
+
+    /** Flag is set for a variable symbol if the variable's definition
+    *  has an initializer part.
+    */
+    static const int HASINIT = 1 << 18;
     /** Flag for class symbols is set and later re-set to indicate that a class
      *  has been entered but has not yet been attributed.
      */
@@ -27,7 +33,7 @@ public:
 
     /** Flag that marks a generated default constructor.
      */
-    static const long GENERATEDCONSTR = 1L << 36;
+    static const uint64_t GENERATEDCONSTR = (uint64_t)1 << 36;
 
     static const int AccessFlags = PUBLIC | PROTECTED | PRIVATE;
 };

@@ -14,6 +14,7 @@ class Scope {
 private:
     map<const Name *, Symbol *> nameToSym;
 public:
+    void enter(Symbol *symbol);
 
 };
 

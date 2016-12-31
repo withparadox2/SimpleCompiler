@@ -3,3 +3,9 @@
 //
 
 #include "scope.h"
+
+void Scope::enter(Symbol *symbol) {
+    if(nameToSym.find(&symbol->name) == nameToSym.end()) {
+        nameToSym.insert(std::make_pair(&symbol->name, symbol));
+    }
+}

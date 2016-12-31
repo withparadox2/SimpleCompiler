@@ -16,5 +16,6 @@ set(SOURCE_FILES src/main.cpp
         src/comp/enter.cpp
         src/jvm/ClassReader.cpp
         src/comp/env.cpp
-        src/code/Symtab.cpp)
+        src/code/Symtab.cpp
+        src/code/scope.cpp)
 add_executable(SimpleCompiler ${SOURCE_FILES})

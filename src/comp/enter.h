@@ -34,7 +34,7 @@ public:
 
     Env *classEnv(JCClassDecl *clazz);
 
-    void completeMember(ClassSymbol *symbol);
+    void completeMember(ClassSymbol *c);
 
     Tree *defaultConstructor(ClassSymbol *c);
 

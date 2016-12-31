@@ -24,13 +24,15 @@ enum class Kind {
 };
 
 class Symbol {
+private:
+    Kind kindinternal;
 public:
-    int kind;
     long flags;
     const Name& name;
     Symbol* owner;
     Type *type;
-    Symbol(int kind, long flags, const Name &name, Type *type, Symbol *owner);
+    Symbol(Kind kind, long flags, const Name &name, Type *type, Symbol *owner);
+    int kind();
 };
 
 class TypeSymbol : public Symbol {
@@ -52,9 +54,10 @@ public:
 
 
 
-//class VarSymbol : public Symbol {
-//
-//};
+class VarSymbol : public Symbol {
+public:
+    VarSymbol(long flags, const Name &name, Type *type, Symbol *owner);
+};
 //
 //class MethodSymbol : public Symbol {
 //
