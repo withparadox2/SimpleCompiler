@@ -24,6 +24,12 @@ public:
      *  has been entered but has not yet been attributed.
      */
     static const int UNATTRIBUTED = 1 << 28;
+
+    /** Flag that marks a generated default constructor.
+     */
+    static const long GENERATEDCONSTR = 1L << 36;
+
+    static const int AccessFlags = PUBLIC | PROTECTED | PRIVATE;
 };
 
 

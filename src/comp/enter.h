@@ -19,6 +19,7 @@ class Enter : public Visitor {
 private:
     ClassReader &reader;
     Symtab &syms;
+    Names &names;
     Enter();
 public:
     map<TypeSymbol *, Env *> typeEnvs;
@@ -34,6 +35,10 @@ public:
     Env *classEnv(JCClassDecl *clazz);
 
     void completeMember(ClassSymbol *symbol);
+
+    Tree *defaultConstructor(ClassSymbol *c);
+
+    JCExpressionStatement *superCall(ClassSymbol *c);
 
 };
 

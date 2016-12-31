@@ -37,6 +37,7 @@ public:
     Name *init;
     Name *_this;
     Name *_class;
+    Name *_super;
     Name *hyphen;
 
     static Names &instance();

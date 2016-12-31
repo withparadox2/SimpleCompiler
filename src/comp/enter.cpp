@@ -33,7 +33,7 @@ void Enter::visitTree(Tree &that) {
     //do nothing
 }
 
-Enter::Enter() : reader(ClassReader::instance()), syms(Symtab::instance()) {
+Enter::Enter() : reader(ClassReader::instance()), syms(Symtab::instance()), names(Names::instance()) {
 }
 
 Env *Enter::classEnv(JCClassDecl *clazz) {
@@ -52,10 +52,33 @@ void Enter::completeMember(ClassSymbol *symbol) {
     Type *superType = syms.objectType;
 
     if (!treeinfo::hasConstructors(*tree->defs)) {
-
+        //Not support anonymous class
+        Tree *ctor = defaultConstructor(symbol);
+        //TODO should prepend?
+        tree->defs->push_back(ctor);
     }
+
+    //TODO enter this/super
+
     //enter members
     for(auto &item : *(tree->defs)) {
         item->accept(*this);
     }
+}
+
+JCExpressionStatement *Enter::superCall(ClassSymbol *c) {
+    //TODO figure out : x_0.super(x_1, ..., x_n)
+    return new JCExpressionStatement(new JCMethodInvocation(nullptr, new JCIdent(*names._super)));
+}
+
+Tree *Enter::defaultConstructor(ClassSymbol *c) {
+    //According to jls-8.8.9, default ctor shares a same access modifier with Class itself.
+    JCModifiers *modifier = new JCModifiers((c->flags & Flags::AccessFlags) | Flags::GENERATEDCONSTR);
+
+    vector<JCStatement *> *stats = new vector<JCStatement *>();
+    stats->push_back(superCall(c));
+    JCBlock *block = new JCBlock(stats);
+
+    //no type, no arguments
+    return new JCMethodDecl(modifier, nullptr, names.init, nullptr, block);
 }
