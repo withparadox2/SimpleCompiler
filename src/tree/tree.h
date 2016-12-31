@@ -309,7 +309,7 @@ public :
     JCExpression *truepart;
     JCExpression *falsepart;
 
-    JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart);
+    JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *falsepart);
 
     void accept(Visitor &visitor) override;
 };

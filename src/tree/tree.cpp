@@ -279,8 +279,8 @@ void JCBinary::accept(Visitor &visitor) {
     visitor.visitBinary(*this);
 }
 
-JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *flasepart) : JCExpression(
-        CONTINUE) {
+JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *falsepart)
+        : JCExpression(CONDEXPR), cond(cond), truepart(truepart), falsepart(falsepart) {
 
 }
 
