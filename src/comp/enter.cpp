@@ -110,7 +110,7 @@ Tree *Enter::defaultConstructor(ClassSymbol *c) {
 
 Scope &Enter::enterScope(const Env &env) {
     if (env.tree->treeTag == Tree::CLASSDEF) {
-        return *static_cast<JCClassDecl *>(env.tree)->sym->memberField;
+        return *dynamic_cast<JCClassDecl *>(env.tree)->sym->memberField;
     } else {
         return *env.info->scope;
     }
