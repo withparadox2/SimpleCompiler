@@ -53,6 +53,8 @@ public :
     bool baseClause;
 
     Env(Tree *tree, AttrContext *info);
+
+    Env *dup(Tree *tree, AttrContext *info);
 };
 
 class AttrContext {
@@ -72,6 +74,8 @@ public:
      */
     bool varArgs;
     AttrContext();
+
+    AttrContext *dup(Scope *scope);
 };
 
 

@@ -42,11 +42,12 @@ public:
 
 class ClassSymbol : public TypeSymbol {
 public:
-/**
- * memberFiled is used to store class member, since nested class is not allowed, so
- * just ignore it.
- */
-// Scope *memberField;
+    /** a scope for all class members; variables, methods and inner classes
+     *  type parameters are not part of this scope
+     *
+     *  But method's symbol is actually entered into this. TODO check out why.
+     */
+    Scope *memberField;
     Name *fullName;
     ClassSymbol(long flags, const Name &name, Symbol *owner);
     ClassSymbol(long flags, const Name &name, Type *type, Symbol *owner);
@@ -58,10 +59,11 @@ class VarSymbol : public Symbol {
 public:
     VarSymbol(long flags, const Name &name, Type *type, Symbol *owner);
 };
-//
-//class MethodSymbol : public Symbol {
-//
-//};
+
+class MethodSymbol : public Symbol {
+public:
+    MethodSymbol(long flags, const Name &name, Type *type, Symbol *owner);
+};
 
 //class OperatorSymbol : public MethodSymbol {
 //

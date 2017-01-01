@@ -10,7 +10,7 @@ ClassSymbol::ClassSymbol(long flags, const Name &name, Symbol *owner)
 }
 
 ClassSymbol::ClassSymbol(long flags, const Name &name, Type *type, Symbol *owner)
-        : TypeSymbol(flags, name, type, owner) {
+        : TypeSymbol(flags, name, type, owner), memberField(nullptr) {
 }
 
 TypeSymbol::TypeSymbol(long flags, const Name &name, Type *type, Symbol *owner)
@@ -28,4 +28,8 @@ int Symbol::kind() {
 VarSymbol::VarSymbol(long flags, const Name &name, Type *type, Symbol *owner)
         : Symbol(Kind::VAR, flags, name, type, owner) {
 
+}
+
+MethodSymbol::MethodSymbol(long flags, const Name &name, Type *type, Symbol *owner)
+        : Symbol(Kind::MTH, flags, name, type, owner) {
 }

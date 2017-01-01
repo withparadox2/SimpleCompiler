@@ -21,6 +21,7 @@ private:
     Symtab &syms;
     Names &names;
     Enter();
+    Env *env;
 public:
     map<TypeSymbol *, Env *> typeEnvs;
     static Enter &instance();
@@ -39,6 +40,8 @@ public:
     Tree *defaultConstructor(ClassSymbol *c);
 
     JCExpressionStatement *superCall(ClassSymbol *c);
+
+    Scope &enterScope(const Env &env);
 
 };
 

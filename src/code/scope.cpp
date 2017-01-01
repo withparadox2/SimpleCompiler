@@ -9,3 +9,7 @@ void Scope::enter(Symbol *symbol) {
         nameToSym.insert(std::make_pair(&symbol->name, symbol));
     }
 }
+
+Scope::Scope(Symbol *owner) : owner(owner){
+
+}

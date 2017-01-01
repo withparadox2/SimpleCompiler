@@ -86,7 +86,7 @@ void JCForLoop::accept(Visitor &visitor) {
 
 JCMethodDecl::JCMethodDecl(JCModifiers *mods, JCExpression *type, Name *name, vector<JCVariableDecl *> *params,
                            JCBlock *body) : Tree(METHODDEF), mods(mods), type(type), name(name), params(params),
-                                            body(body) {
+                                            body(body), sym(nullptr) {
 
 }
 

@@ -16,16 +16,26 @@ void Enter::complete(Tree *tree) {
 }
 
 void Enter::visitClassDef(JCClassDecl &that) {
-    ClassSymbol *symbol = reader.enterClass(that.name);
-    that.sym = symbol;
+    ClassSymbol *c = reader.enterClass(that.name);
+    c->memberField = new Scope(c);
+    that.sym = c;
     Env *env = classEnv(&that);
-    typeEnvs.insert(std::make_pair(symbol, env));
+    typeEnvs.insert(std::make_pair(c, env));
     //todo calc flags_field
 
-    completeMember(symbol);
+    completeMember(c);
 }
 
-void Enter::visitMethodDef(JCMethodDecl &that) {
+void Enter::visitMethodDef(JCMethodDecl &tree) {
+    Scope &enclScope = enterScope(*this->env);
+    MethodSymbol *m = new MethodSymbol(0, *tree.name, nullptr, enclScope.owner);
+    //TODO   m->flags
+    tree.sym = m;
+
+    //TODO calc type and parameters
+
+    //TODO check unique
+    enclScope.enter(m);
 
 }
 
@@ -33,11 +43,12 @@ void Enter::visitTree(Tree &that) {
     //do nothing
 }
 
-Enter::Enter() : reader(ClassReader::instance()), syms(Symtab::instance()), names(Names::instance()) {
+Enter::Enter() : reader(ClassReader::instance()), syms(Symtab::instance()), names(Names::instance()), env(nullptr) {
 }
 
 Env *Enter::classEnv(JCClassDecl *clazz) {
     Env *local = new Env(clazz, new AttrContext);
+    local->info->scope = new Scope(clazz->sym);
     local->enclClass = clazz;
     return local;
 }
@@ -73,6 +84,7 @@ void Enter::completeMember(ClassSymbol *c) {
         scope.enter(superSym);
     }
 
+    this->env = classEnv;
     //enter members
     for (auto &item : *(tree->defs)) {
         item->accept(*this);
@@ -94,4 +106,12 @@ Tree *Enter::defaultConstructor(ClassSymbol *c) {
 
     //no type, no arguments
     return new JCMethodDecl(modifier, nullptr, names.init, nullptr, block);
+}
+
+Scope &Enter::enterScope(const Env &env) {
+    if (env.tree->treeTag == Tree::CLASSDEF) {
+        return *static_cast<JCClassDecl *>(env.tree)->sym->memberField;
+    } else {
+        return *env.info->scope;
+    }
 }

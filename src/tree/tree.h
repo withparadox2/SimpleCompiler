@@ -183,6 +183,7 @@ public:
     Name *name;
     vector<JCVariableDecl *> *params;
     JCBlock *body;
+    MethodSymbol *sym;
 
     JCMethodDecl(JCModifiers *mods,
                  JCExpression *type,
