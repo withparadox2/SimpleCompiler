@@ -27,7 +27,7 @@ class Symbol {
 private:
     Kind kindinternal;
 public:
-    long flags;
+    long long flags;
     const Name& name;
     Symbol* owner;
     Type *type;

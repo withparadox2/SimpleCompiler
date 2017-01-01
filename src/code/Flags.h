@@ -33,7 +33,7 @@ public:
 
     /** Flag that marks a generated default constructor.
      */
-    static const uint64_t GENERATEDCONSTR = (uint64_t)1 << 36;
+    static const long long GENERATEDCONSTR = 1LL << 36;
 
     static const int AccessFlags = PUBLIC | PROTECTED | PRIVATE;
 };

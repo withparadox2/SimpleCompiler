@@ -11,11 +11,13 @@ class Type {
 public:
     int tag;
     TypeSymbol *tsym;
+    Type(int tag, TypeSymbol *tsym);
 };
 
 class ClassType : public Type {
 public:
     Type *supertype_field;
+    ClassType(TypeSymbol *tsym);
 };
 
 

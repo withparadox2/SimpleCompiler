@@ -4,9 +4,8 @@
 
 #include "symbol.h"
 
-//TODO fill up classtype
 ClassSymbol::ClassSymbol(long flags, const Name &name, Symbol *owner)
-        : ClassSymbol(flags, name, new ClassType, owner) {
+        : ClassSymbol(flags, name, new ClassType(nullptr), owner) {
     this->type->tsym = this;
 }
 

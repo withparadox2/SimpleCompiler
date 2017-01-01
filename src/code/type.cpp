@@ -3,3 +3,12 @@
 //
 
 #include "type.h"
+#include "TypeTags.h"
+
+ClassType::ClassType(TypeSymbol *tsym) : Type(TypeTags::CLASS, tsym) {
+
+}
+
+Type::Type(int tag, TypeSymbol *tsym) : tag(tag), tsym(tsym){
+
+}

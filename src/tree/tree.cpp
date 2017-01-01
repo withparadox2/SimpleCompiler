@@ -5,7 +5,7 @@
 #include "tree.h"
 #include "../util/error.h"
 
-JCModifiers::JCModifiers(int flags) : Tree(MODIFIERS), flags(flags) {
+JCModifiers::JCModifiers(long long flags) : Tree(MODIFIERS), flags(flags) {
 }
 
 void JCModifiers::accept(Visitor &visitor) {

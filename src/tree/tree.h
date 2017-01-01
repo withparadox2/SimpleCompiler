@@ -446,9 +446,9 @@ public:
 
 class JCModifiers : public Tree {
 public:
-    int flags;
+    long long flags;
 
-    JCModifiers(int flags);
+    JCModifiers(long long flags);
 
     void accept(Visitor &visitor) override;
 };
