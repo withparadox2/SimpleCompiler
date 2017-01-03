@@ -5,6 +5,11 @@
 #ifndef SIMPLECOMPILER_TYPE_H
 #define SIMPLECOMPILER_TYPE_H
 
+#include <vector>
+#include "symbol.h"
+
+using std::vector;
+
 class TypeSymbol;
 
 class Type {
@@ -20,5 +25,13 @@ public:
     ClassType(TypeSymbol *tsym);
 };
 
+class MethodType : public Type {
+public:
+    vector<Type *> *argtypes;
+    Type *restype;
+    MethodType(vector<Type *> *argtypes,
+                  Type *restype,
+                  TypeSymbol *methodClass);
+};
 
 #endif //SIMPLECOMPILER_TYPE_H

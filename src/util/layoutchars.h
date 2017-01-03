@@ -5,6 +5,7 @@
 #ifndef SIMPLECOMPILER_LAYOUTCHARS_H
 #define SIMPLECOMPILER_LAYOUTCHARS_H
 
+/** Line character.*/
 namespace lc {
     /** Line feed character.*/
     const char LF = 0xA;

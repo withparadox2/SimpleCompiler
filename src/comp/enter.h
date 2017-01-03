@@ -20,11 +20,15 @@ private:
     ClassReader &reader;
     Symtab &syms;
     Names &names;
+
     Enter();
+
     Env *env;
 public:
     map<TypeSymbol *, Env *> typeEnvs;
+
     static Enter &instance();
+
     void complete(Tree *tree);
 
     void visitClassDef(JCClassDecl &that) override;
@@ -42,6 +46,8 @@ public:
     JCExpressionStatement *superCall(ClassSymbol *c);
 
     Scope &enterScope(const Env &env);
+
+    Type *signature(vector<JCVariableDecl *> *params, Tree *res, Env *env);
 
 };
 

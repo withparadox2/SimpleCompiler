@@ -115,3 +115,8 @@ Scope &Enter::enterScope(const Env &env) {
         return *env.info->scope;
     }
 }
+
+Type *Enter::signature(vector<JCVariableDecl *> *params, Tree *res, Env *env) {
+
+    return nullptr;
+}
