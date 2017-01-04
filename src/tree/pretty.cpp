@@ -72,7 +72,7 @@ void Pretty::visitBlock(JCBlock &that) {
 void Pretty::visitForLoop(JCForLoop &that) {
     print("for(");
     // For now, don't worry about ',',
-    // the init list can has at most one item.
+    // the init list only has one item.
     for (auto &item : *that.init) {
         item->accept(*this);
     }
@@ -242,7 +242,7 @@ void Pretty::visitTree(Tree &that) {
 }
 
 void Pretty::printModifiers(JCModifiers &modifier) {
-    int flags = modifier.flags;
+    long long flags = modifier.flags;
     if ((flags & Flags::PUBLIC) != 0) {
         print("public");
         addSpace();

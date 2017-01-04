@@ -19,10 +19,7 @@ class Visitor;
 
 class Tree {
 public:
-    //Type* type;
     int treeTag;
-
-//    virtual void accept(Visitor &v);
 
     Tree(int tag);
 
@@ -151,8 +148,6 @@ public:
     static const int DIV = MUL + 1;                   // /
     static const int MOD = DIV + 1;                   // %
 };
-
-
 
 class JCClassDecl : public Tree {
 public:
