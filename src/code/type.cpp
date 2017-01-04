@@ -4,6 +4,7 @@
 
 #include "type.h"
 #include "TypeTags.h"
+#include "symbol.h"
 
 ClassType::ClassType(TypeSymbol *tsym) : Type(TypeTags::CLASS, tsym) {
 

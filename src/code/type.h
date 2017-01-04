@@ -6,7 +6,6 @@
 #define SIMPLECOMPILER_TYPE_H
 
 #include <vector>
-#include "symbol.h"
 
 using std::vector;
 

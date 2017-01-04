@@ -7,12 +7,12 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 using std::string;
 using std::map;
 
 class Name;
-
 class Names;
 
 class Name {
@@ -29,7 +29,7 @@ public:
 
 class Names {
 private:
-    map<string, Name*> table;
+    map<string, std::unique_ptr<Name>> table;
 
     Names();
 

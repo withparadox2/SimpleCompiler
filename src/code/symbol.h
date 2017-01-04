@@ -6,7 +6,11 @@
 #define SIMPLECOMPILER_SYMBOL_H
 
 #include "../util/names.h"
-#include "type.h"
+
+class Type;
+class ClassType;
+class MethodType;
+
 class Scope;
 
 enum class Kind {

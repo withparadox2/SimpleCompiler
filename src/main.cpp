@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include "parser/Lexer.h"
 #include "parser/Parser.h"
 #include "common.h"
@@ -8,7 +9,8 @@
 
 using namespace std;
 
-void readFileContent(std::ifstream &is, std::string &result) {
+//Break line at the end of each line.
+void readFileContent(ifstream &is, string &result) {
     if (is.is_open()) {
         string line;
         while (getline(is, line)) {
@@ -19,13 +21,18 @@ void readFileContent(std::ifstream &is, std::string &result) {
     }
 }
 
+string *readByPath(const string &filePath) {
+    string *source = new string;
+    ifstream is(filePath.c_str());
+    readFileContent(is, *source);
+    return source;
+}
+
 int main() {
     string filePath(FILE_PATH);
-    std::ifstream is(filePath.c_str());
-    std::string sourceCode;
-    readFileContent(is, sourceCode);
+    std::unique_ptr<string> sourceCode(readByPath(filePath));
 
-    Lexer lexer(sourceCode);
+    Lexer lexer(*sourceCode);
     Parser parser(lexer);
     JCClassDecl *clazz = parser.buildClass();
 

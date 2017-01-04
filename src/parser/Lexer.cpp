@@ -8,7 +8,11 @@
 
 using namespace std;
 
-Lexer::Lexer(std::string &sourceCode) : sourceCode(sourceCode), head(0), cToken(nullptr), names(Names::instance()) {
+Lexer::Lexer(std::string &sourceCode) :
+        sourceCode(sourceCode),
+        head(0),
+        cToken(nullptr),
+        names(Names::instance()) {
     nextChar();
 }
 
