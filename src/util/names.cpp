@@ -26,8 +26,7 @@ Names::Names() {
 Name &Names::fromString(const string &str) {
     if (table.find(str) == table.end()) {
         std::unique_ptr<Name> name(new Name(*this, str));
-        table.insert(make_pair(str, name));
-        return *name;
+        table.insert(make_pair(str, std::move(name)));
     }
     return *table[str];
 }

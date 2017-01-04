@@ -36,8 +36,8 @@ int main() {
     Parser parser(lexer);
     JCClassDecl *clazz = parser.buildClass();
 
-//    Pretty p;
-//    clazz->accept(p);
+    Pretty p;
+    clazz->accept(p);
 
     return 0;
 }
