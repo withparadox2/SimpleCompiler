@@ -5,7 +5,8 @@
 #include "tree.h"
 #include "../util/error.h"
 
-JCModifiers::JCModifiers(long long flags) : Tree(MODIFIERS), flags(flags) {
+JCModifiers::JCModifiers(long long flags)
+        : Tree(MODIFIERS), flags(flags) {
 }
 
 void JCModifiers::accept(Visitor &visitor) {
@@ -13,14 +14,16 @@ void JCModifiers::accept(Visitor &visitor) {
 }
 
 
-JCPrimitiveTypeTree::JCPrimitiveTypeTree(int tag) : JCExpression(TYPEIDENT), typetag(tag) {
+JCPrimitiveTypeTree::JCPrimitiveTypeTree(int tag)
+        : JCExpression(TYPEIDENT), typetag(tag) {
 }
 
 void JCPrimitiveTypeTree::accept(Visitor &visitor) {
     visitor.visitTypeIdent(*this);
 }
 
-JCArrayTypeTree::JCArrayTypeTree(JCExpression *elementType) : JCExpression(TYPEARRAY), elementType(elementType) {
+JCArrayTypeTree::JCArrayTypeTree(JCExpression *elementType)
+        : JCExpression(TYPEARRAY), elementType(elementType) {
 
 }
 
@@ -40,8 +43,9 @@ void JCIdent::accept(Visitor &visitor) {
     visitor.visitIdent(*this);
 }
 
-JCFieldAccess::JCFieldAccess(JCExpression *selected, Name &selector) : JCExpression(SELECT), selected(selected),
-                                                                       selector(selector) {
+JCFieldAccess::JCFieldAccess(JCExpression *selected, Name &selector)
+        : JCExpression(SELECT), selected(selected),
+          selector(selector) {
 
 }
 
@@ -49,17 +53,16 @@ void JCFieldAccess::accept(Visitor &visitor) {
     visitor.visitSelect(*this);
 }
 
-JCBlock::JCBlock(vector<JCStatement *> *stats) : JCStatement(BLOCK), stats(stats) {
-
+JCBlock::JCBlock(JCStatement::List &stats)
+        : JCStatement(BLOCK), stats(stats) {
 }
 
 void JCBlock::accept(Visitor &visitor) {
     visitor.visitBlock(*this);
 }
 
-JCIf::JCIf(JCExpression *cond, JCStatement *thenpart, JCStatement *elsepart) : JCStatement(IF), cond(cond),
-                                                                               thenPart(thenpart),
-                                                                               elsePart(elsepart) {
+JCIf::JCIf(JCExpression *cond, JCStatement *thenpart, JCStatement *elsepart)
+        : JCStatement(IF), cond(cond), thenPart(thenpart), elsePart(elsepart) {
 
 }
 
@@ -67,7 +70,8 @@ void JCIf::accept(Visitor &visitor) {
     visitor.visitIf(*this);
 }
 
-JCExpressionStatement::JCExpressionStatement(JCExpression *exp) : JCStatement(EXEC), exp(exp) {
+JCExpressionStatement::JCExpressionStatement(JCExpression *exp)
+        : JCStatement(EXEC), exp(exp) {
 
 }
 
@@ -75,8 +79,11 @@ void JCExpressionStatement::accept(Visitor &visitor) {
     visitor.visitExec(*this);
 }
 
-JCForLoop::JCForLoop(vector<JCStatement *> *init, JCExpression *cond, vector<JCExpressionStatement *> *step,
-                     JCStatement *body) : JCStatement(FORLOOP), init(init), cond(cond), step(step), body(body) {
+JCForLoop::JCForLoop(JCStatement::List &init,
+                     JCExpression *cond,
+                     JCExpressionStatement::List step,
+                     JCStatement *body)
+        : JCStatement(FORLOOP), init(init), cond(cond), step(step), body(body) {
 
 }
 
@@ -84,9 +91,13 @@ void JCForLoop::accept(Visitor &visitor) {
     visitor.visitForLoop(*this);
 }
 
-JCMethodDecl::JCMethodDecl(JCModifiers *mods, JCExpression *type, Name *name, vector<JCVariableDecl *> *params,
-                           JCBlock *body) : Tree(METHODDEF), mods(mods), type(type), name(name), params(params),
-                                            body(body), sym(nullptr) {
+JCMethodDecl::JCMethodDecl(JCModifiers *mods,
+                           JCExpression *type,
+                           Name &name,
+                           JCVariableDecl::List &params,
+                           JCBlock *body)
+        : Tree(METHODDEF), mods(mods), type(type), name(name), params(params),
+          body(body), sym(nullptr) {
 
 }
 
@@ -102,9 +113,8 @@ JCStatement::JCStatement(int tag) : Tree(tag) {
 
 }
 
-JCClassDecl::JCClassDecl(JCModifiers *mods, Name &name, vector<Tree *> *defs)
+JCClassDecl::JCClassDecl(JCModifiers *mods, Name &name, Tree::List &defs)
         : Tree(CLASSDEF), mods(mods), name(name), defs(defs), sym(nullptr) {
-
 }
 
 void JCClassDecl::accept(Visitor &visitor) {
@@ -135,8 +145,8 @@ void JCReturn::accept(Visitor &visitor) {
     visitor.visitReturn(*this);
 }
 
-JCArrayAccess::JCArrayAccess(JCExpression *indexed, JCExpression *index) : JCExpression(INDEXED), indexed(indexed),
-                                                                           index(index) {
+JCArrayAccess::JCArrayAccess(JCExpression *indexed, JCExpression *index)
+        : JCExpression(INDEXED), indexed(indexed), index(index) {
 
 }
 
@@ -144,8 +154,8 @@ void JCArrayAccess::accept(Visitor &visitor) {
     visitor.visitIndexed(*this);
 }
 
-JCAssign::JCAssign(JCExpression *lhs, JCExpression *rhs) : JCExpression(ASSIGN), lhs(lhs), rhs(rhs) {
-
+JCAssign::JCAssign(JCExpression *lhs, JCExpression *rhs)
+        : JCExpression(ASSIGN), lhs(lhs), rhs(rhs) {
 }
 
 void JCAssign::accept(Visitor &visitor) {
@@ -252,7 +262,7 @@ string treeinfo::descByTag(int treeTag) {
     }
 }
 
-bool treeinfo::hasConstructors(const vector<Tree *> &defs) {
+bool treeinfo::hasConstructors(const Tree::List &defs) {
     for (auto def : defs) {
         if (isConstructor(*def)) {
             return true;
@@ -261,26 +271,28 @@ bool treeinfo::hasConstructors(const vector<Tree *> &defs) {
     return false;
 }
 
-bool treeinfo::isConstructor(const Tree& tree) {
+bool treeinfo::isConstructor(const Tree &tree) {
     if (tree.treeTag == Tree::METHODDEF) {
-        Name *name = dynamic_cast<const JCMethodDecl &>(tree).name;
-        return name == Names::instance().init;
+        Name &name = dynamic_cast<const JCMethodDecl &>(tree).name;
+        return name == *Names::instance().init;
     } else {
         return false;
     }
 }
 
 
-JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs) : JCExpression(opcode), opcode(opcode), lhs(lhs),
-                                                                       rhs(rhs) {
+JCBinary::JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs)
+        : JCExpression(opcode), opcode(opcode), lhs(lhs), rhs(rhs) {
 }
 
 void JCBinary::accept(Visitor &visitor) {
     visitor.visitBinary(*this);
 }
 
-JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *falsepart)
-        : JCExpression(CONDEXPR), cond(cond), truepart(truepart), falsepart(falsepart) {
+JCConditional::JCConditional(JCExpression *cond, JCExpression *truepart,
+                             JCExpression *falsepart)
+        : JCExpression(CONDEXPR), cond(cond), truepart(truepart),
+          falsepart(falsepart) {
 
 }
 
@@ -295,7 +307,8 @@ void JCParens::accept(Visitor &visitor) {
     visitor.visitParens(*this);
 }
 
-JCNewArray::JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens, vector<JCExpression *> *elems)
+JCNewArray::JCNewArray(JCExpression *elementType, JCExpression::List &dimens,
+                       JCExpression::List &elems)
         : JCExpression(NEWARRAY),
           elementType(elementType),
           dimens(dimens), elems(elems) {
@@ -305,8 +318,8 @@ void JCNewArray::accept(Visitor &visitor) {
     visitor.visitNewArray(*this);
 }
 
-JCNewClass::JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments) : JCExpression(NEWCLASS), clazz(clazz),
-                                                                                 arguments(arguments) {
+JCNewClass::JCNewClass(JCExpression *clazz, JCExpression::List &arguments)
+        : JCExpression(NEWCLASS), clazz(clazz), arguments(arguments) {
 
 }
 
@@ -314,22 +327,21 @@ void JCNewClass::accept(Visitor &visitor) {
     visitor.visitNewClass(*this);
 }
 
-JCMethodInvocation::JCMethodInvocation(vector<JCExpression *> *args, JCExpression *meth) : JCExpression(APPLY),
-                                                                                           args(args), meth(meth) {
-
+JCMethodInvocation::JCMethodInvocation(JCExpression::List &args, JCExpression *meth)
+        : JCExpression(APPLY), args(args), meth(meth) {
 }
 
 void JCMethodInvocation::accept(Visitor &visitor) {
     visitor.visitMethodInvocation(*this);
 }
 
-JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype) : JCStatement(VARDEF), name(name), vartype(vartype),
-                                                                    init(nullptr) {
+JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype)
+        : JCStatement(VARDEF), name(name), vartype(vartype), init(nullptr) {
 
 }
 
-JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype, JCExpression *init) : JCStatement(VARDEF), name(name),
-                                                                                        vartype(vartype), init(init) {
+JCVariableDecl::JCVariableDecl(Name &name, JCExpression *vartype, JCExpression *init)
+        : JCStatement(VARDEF), name(name), vartype(vartype), init(init) {
 
 }
 
@@ -337,7 +349,8 @@ void JCVariableDecl::accept(Visitor &visitor) {
     visitor.visitVarDef(*this);
 }
 
-JCUnary::JCUnary(int opcode, JCExpression *arg) : JCExpression(opcode), opcode(opcode), arg(arg) {
+JCUnary::JCUnary(int opcode, JCExpression *arg)
+        : JCExpression(opcode), opcode(opcode), arg(arg) {
 
 }
 
@@ -348,4 +361,8 @@ void JCUnary::accept(Visitor &visitor) {
 
 void JCLiteral::accept(Visitor &visitor) {
     visitor.visitLiteral(*this);
+}
+
+JCLiteral::~JCLiteral() {
+    delete value;
 }

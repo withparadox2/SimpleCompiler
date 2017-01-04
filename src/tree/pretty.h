@@ -80,7 +80,7 @@ public:
     void print(const string &str);
 
     template <typename T>
-    void printTreeList(vector<T *> &list, string split, string wLeft, string wRight);
+    void printTreeList(vector<T> &list, string split, string wLeft, string wRight);
 };
 
 

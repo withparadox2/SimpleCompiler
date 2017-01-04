@@ -34,8 +34,6 @@ private:
 public:
     Parser(Lexer &lexer);
 
-    Tree *parse();
-
     JCClassDecl *buildClass();
 
     Tree *classBodyDecl(Name &className);
@@ -69,19 +67,19 @@ public:
             Name &name,
             bool isVoid);
 
-    vector<JCVariableDecl*> *formalParameters();
+    JCVariableDecl::List formalParameters();
     JCVariableDecl *formalParameter();
     JCBlock *block();
 
     Name &ident();
 
-    vector<JCStatement*> *blockStatements();
+    JCStatement::List blockStatements();
 
     JCExpression *parExpression();
     JCStatement *parseStatement();
-    vector<JCStatement*> *forInit();
-    vector<JCExpressionStatement*> *forUpdate();
-    vector<JCVariableDecl*> *variableDeclarators();//TODO implementation
+    JCStatement::List forInit();
+    JCExpressionStatement::List forUpdate();
+    JCVariableDecl::List variableDeclarators();//TODO implementation
 
     int prec(Token &token);
 
@@ -89,7 +87,7 @@ public:
     JCExpression *creator();
     JCExpression *arrayCreatorRest(JCExpression *elemtype);
     JCExpression *qualident();
-    vector<JCExpression *> *arguments();
+    JCExpression::List arguments();
     JCMethodInvocation *arguments(JCExpression *t);
     JCExpression *argumentsOpt(JCExpression *t);
     JCExpression *arrayInitializer(JCExpression *t);

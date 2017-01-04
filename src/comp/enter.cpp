@@ -28,7 +28,7 @@ void Enter::visitClassDef(JCClassDecl &that) {
 
 void Enter::visitMethodDef(JCMethodDecl &tree) {
     Scope &enclScope = enterScope(*this->env);
-    MethodSymbol *m = new MethodSymbol(0, *tree.name, nullptr, enclScope.owner);
+    MethodSymbol *m = new MethodSymbol(0, tree.name, nullptr, enclScope.owner);
     //TODO   m->flags
     tree.sym = m;
 
@@ -64,11 +64,11 @@ void Enter::completeMember(ClassSymbol *c) {
     //Not support extend, super type must be Object type.
     ct->supertype_field = syms.objectType;
 
-    if (!treeinfo::hasConstructors(*tree->defs)) {
+    if (!treeinfo::hasConstructors(tree->defs)) {
         //Not support anonymous class
         Tree *ctor = defaultConstructor(c);
         //TODO should prepend?
-        tree->defs->push_back(ctor);
+        tree->defs.push_back(Tree::Ptr(ctor));
     }
 
     if ((c->flags & Flags::INTERFACE) == 0) {
@@ -86,26 +86,28 @@ void Enter::completeMember(ClassSymbol *c) {
 
     this->env = classEnv;
     //enter members
-    for (auto &item : *(tree->defs)) {
+    for (auto &item : tree->defs) {
         item->accept(*this);
     }
 }
 
 JCExpressionStatement *Enter::superCall(ClassSymbol *c) {
     //TODO figure out : x_0.super(x_1, ..., x_n)
-    return new JCExpressionStatement(new JCMethodInvocation(nullptr, new JCIdent(*names._super)));
+    JCExpression::List args;
+    return new JCExpressionStatement(new JCMethodInvocation(args, new JCIdent(*names._super)));
 }
 
 Tree *Enter::defaultConstructor(ClassSymbol *c) {
     //According to jls-8.8.9, default ctor shares a same access modifier with Class itself.
     JCModifiers *modifier = new JCModifiers((c->flags & Flags::AccessFlags) | Flags::GENERATEDCONSTR);
 
-    vector<JCStatement *> *stats = new vector<JCStatement *>();
-    stats->push_back(superCall(c));
+    JCStatement::List stats;
+    stats.push_back(JCStatement::Ptr(superCall(c)));
     JCBlock *block = new JCBlock(stats);
 
     //no type, no arguments
-    return new JCMethodDecl(modifier, nullptr, names.init, nullptr, block);
+    JCVariableDecl::List param;
+    return new JCMethodDecl(modifier, nullptr, *names.init, param, block);
 }
 
 Scope &Enter::enterScope(const Env &env) {

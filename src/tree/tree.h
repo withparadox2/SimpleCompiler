@@ -6,6 +6,7 @@
 #define SIMPLECOMPILER_TREE_H
 
 #include <vector>
+#include <memory>
 #include "treevisitor.h"
 #include "../util/names.h"
 #include "../parser/Token.h"
@@ -14,11 +15,16 @@
 #include "../code/symbol.h"
 
 using std::vector;
+using std::shared_ptr;
+using std::move;
 
 class Visitor;
 
 class Tree {
 public:
+    typedef shared_ptr<Tree> Ptr;
+    typedef vector<Ptr> List;
+
     int treeTag;
 
     Tree(int tag);
@@ -149,66 +155,83 @@ public:
     static const int MOD = DIV + 1;                   // %
 };
 
+class JCModifiers : public Tree {
+public:
+    typedef shared_ptr<JCModifiers> Ptr;
+
+    long long flags;
+
+    JCModifiers(long long flags);
+
+    void accept(Visitor &visitor) override;
+};
+
 class JCClassDecl : public Tree {
 public:
-    JCModifiers *mods;
+    typedef shared_ptr<JCClassDecl> Ptr;
+
+    JCModifiers::Ptr mods;
     Name &name;
-    vector<Tree *> *defs;
+    Tree::List defs;
     ClassSymbol *sym;
 
-    JCClassDecl(JCModifiers *mods, Name &name, vector<Tree *> *defs);
+    JCClassDecl(JCModifiers *mods, Name &name, Tree::List &defs);
 
     void accept(Visitor &visitor) override;
 };
 
 class JCExpression : public Tree {
 public:
+    typedef shared_ptr<JCExpression> Ptr;
+    typedef vector<Ptr> List;
+
     JCExpression(int tag);
 };
 
 class JCStatement : public Tree {
 public:
+    typedef shared_ptr<JCStatement> Ptr;
+    typedef vector<Ptr> List;
+
     JCStatement(int tag);
 };
 
-class JCMethodDecl : public Tree {
-public:
-    JCModifiers *mods;
-    JCExpression *type;
-    Name *name;
-    vector<JCVariableDecl *> *params;
-    JCBlock *body;
-    MethodSymbol *sym;
 
-    JCMethodDecl(JCModifiers *mods,
-                 JCExpression *type,
-                 Name *name,
-                 vector<JCVariableDecl *> *params,
-                 JCBlock *body);
+class JCExpressionStatement : public JCStatement {
+public:
+    typedef shared_ptr<JCExpressionStatement> Ptr;
+    typedef vector<Ptr> List;
+
+    JCExpression *exp;
+
+    JCExpressionStatement(JCExpression *exp);
 
     void accept(Visitor &visitor) override;
-
 };
 
 class JCBlock : public JCStatement {
 public:
-    vector<JCStatement *> *stats;
+    typedef shared_ptr<JCBlock> Ptr;
 
-    JCBlock(vector<JCStatement *> *stats);
+    JCStatement::List stats;
+
+    JCBlock(JCStatement::List &stats);
 
     void accept(Visitor &visitor) override;
 };
 
 class JCForLoop : public JCStatement {
 public:
-    vector<JCStatement *> *init;
-    JCExpression *cond;
-    vector<JCExpressionStatement *> *step;
-    JCStatement *body;
+    typedef shared_ptr<JCForLoop> Ptr;
 
-    JCForLoop(vector<JCStatement *> *init,
+    JCStatement::List init;
+    JCExpression::Ptr cond;
+    JCExpressionStatement::List step;
+    JCStatement::Ptr body;
+
+    JCForLoop(JCStatement::List &init,
               JCExpression *cond,
-              vector<JCExpressionStatement *> *step,
+              JCExpressionStatement::List step,
               JCStatement *body);
 
     void accept(Visitor &visitor) override;
@@ -216,9 +239,11 @@ public:
 
 class JCIf : public JCStatement {
 public:
-    JCExpression *cond;
-    JCStatement *thenPart;
-    JCStatement *elsePart;
+    typedef shared_ptr<JCIf> Ptr;
+
+    JCExpression::Ptr cond;
+    JCStatement::Ptr thenPart;
+    JCStatement::Ptr elsePart;
 
     JCIf(JCExpression *cond,
          JCStatement *thenpart,
@@ -227,17 +252,11 @@ public:
     void accept(Visitor &visitor) override;
 };
 
-class JCExpressionStatement : public JCStatement {
-public:
-    JCExpression *exp;
-
-    JCExpressionStatement(JCExpression *exp);
-
-    void accept(Visitor &visitor) override;
-};
 
 class JCBreak : public JCStatement {
 public:
+    typedef shared_ptr<JCBreak> Ptr;
+
     JCBreak();
 
     void accept(Visitor &visitor) override;
@@ -245,6 +264,8 @@ public:
 
 class JCContinue : public JCStatement {
 public:
+    typedef shared_ptr<JCContinue> Ptr;
+
     JCContinue();
 
     void accept(Visitor &visitor) override;
@@ -252,7 +273,9 @@ public:
 
 class JCReturn : public JCStatement {
 public:
-    JCExpression *expr;
+    typedef shared_ptr<JCReturn> Ptr;
+
+    JCExpression::Ptr expr;
 
     JCReturn(JCExpression *expr);
 
@@ -262,27 +285,33 @@ public:
 
 class JCMethodInvocation : public JCExpression {
 public:
-    vector<JCExpression *> *args;
-    JCExpression *meth;
+    typedef shared_ptr<JCMethodInvocation> Ptr;
 
-    JCMethodInvocation(vector<JCExpression *> *args, JCExpression *meth);
+    JCExpression::List args;
+    JCExpression::Ptr meth;
+
+    JCMethodInvocation(JCExpression::List &args, JCExpression *meth);
 
     void accept(Visitor &visitor) override;
 };
 
 class JCNewClass : public JCExpression {
 public:
-    vector<JCExpression *> *arguments;
-    JCExpression *clazz;
+    typedef shared_ptr<JCNewClass> Ptr;
 
-    JCNewClass(JCExpression *clazz, vector<JCExpression *> *arguments);
+    JCExpression::List arguments;
+    JCExpression::Ptr clazz;
+
+    JCNewClass(JCExpression *clazz, JCExpression::List &arguments);
 
     void accept(Visitor &visitor) override;
 };
 
 class JCParens : public JCExpression {
 public:
-    JCExpression *expr;
+    typedef shared_ptr<JCParens> Ptr;
+
+    JCExpression::Ptr expr;
 
     JCParens(JCExpression *expr);
 
@@ -291,8 +320,10 @@ public:
 
 class JCAssign : public JCExpression {
 public:
-    JCExpression *lhs;
-    JCExpression *rhs;
+    typedef shared_ptr<JCAssign> Ptr;
+
+    JCExpression::Ptr lhs;
+    JCExpression::Ptr rhs;
 
     JCAssign(JCExpression *lhs, JCExpression *rhs);
 
@@ -301,9 +332,11 @@ public:
 
 class JCConditional : public JCExpression {
 public :
-    JCExpression *cond;
-    JCExpression *truepart;
-    JCExpression *falsepart;
+    typedef shared_ptr<JCConditional> Ptr;
+
+    JCExpression::Ptr cond;
+    JCExpression::Ptr truepart;
+    JCExpression::Ptr falsepart;
 
     JCConditional(JCExpression *cond, JCExpression *truepart, JCExpression *falsepart);
 
@@ -312,9 +345,11 @@ public :
 
 class JCBinary : public JCExpression {
 public:
+    typedef shared_ptr<JCBinary> Ptr;
+
     int opcode;
-    JCExpression *lhs;
-    JCExpression *rhs;
+    JCExpression::Ptr lhs;
+    JCExpression::Ptr rhs;
 
     JCBinary(int opcode, JCExpression *lhs, JCExpression *rhs);
 
@@ -323,8 +358,10 @@ public:
 
 class JCArrayAccess : public JCExpression {
 public:
-    JCExpression *indexed;
-    JCExpression *index;
+    typedef shared_ptr<JCArrayAccess> Ptr;
+
+    JCExpression::Ptr indexed;
+    JCExpression::Ptr index;
 
     JCArrayAccess(JCExpression *indexed, JCExpression *index);
 
@@ -333,8 +370,10 @@ public:
 
 class JCFieldAccess : public JCExpression {
 public:
+    typedef shared_ptr<JCFieldAccess> Ptr;
+
     Name &selector;
-    JCExpression *selected;
+    JCExpression::Ptr selected;
 
     JCFieldAccess(JCExpression *selected, Name &selector);
 
@@ -343,6 +382,8 @@ public:
 
 class JCIdent : public JCExpression {
 public:
+    typedef shared_ptr<JCIdent> Ptr;
+
     Name &name;
 
     JCIdent(Name &name);
@@ -352,6 +393,7 @@ public:
 
 class JCLiteral : public JCExpression {
 private:
+
     class IValueHolder {
     };
 
@@ -359,11 +401,14 @@ private:
     class ValueHolder : public IValueHolder {
     public://let outer class read value
         T value;
+
         ValueHolder(T value);
     };
 
     IValueHolder *value;
 public:
+    typedef shared_ptr<JCLiteral> Ptr;
+
     int typetag;
 
     template<typename R>
@@ -373,6 +418,8 @@ public:
     R getValue();
 
     void accept(Visitor &visitor) override;
+
+    ~JCLiteral();
 };
 
 template<typename T>
@@ -390,6 +437,8 @@ R JCLiteral::getValue() {
 
 class JCPrimitiveTypeTree : public JCExpression {
 public:
+    typedef shared_ptr<JCPrimitiveTypeTree> Ptr;
+
     int typetag;
 
     JCPrimitiveTypeTree(int tag);
@@ -399,7 +448,7 @@ public:
 
 class JCArrayTypeTree : public JCExpression {
 public:
-    JCExpression *elementType;
+    JCExpression::Ptr elementType;
 
     JCArrayTypeTree(JCExpression *elementType);
 
@@ -408,11 +457,11 @@ public:
 
 class JCNewArray : public JCExpression {
 public:
-    JCExpression *elementType;
-    vector<JCExpression *> *dimens;
-    vector<JCExpression *> *elems;//init list
+    JCExpression::Ptr elementType;
+    JCExpression::List dimens;
+    JCExpression::List elems;//init list
 
-    JCNewArray(JCExpression *elementType, vector<JCExpression *> *dimens, vector<JCExpression *> *elems);
+    JCNewArray(JCExpression *elementType, JCExpression::List &dimens, JCExpression::List &elems);
 
     void accept(Visitor &visitor) override;
 };
@@ -420,7 +469,7 @@ public:
 class JCUnary : public JCExpression {
 public:
     int opcode;
-    JCExpression *arg;
+    JCExpression::Ptr arg;
 
     JCUnary(int opcode, JCExpression *arg);
 
@@ -429,9 +478,12 @@ public:
 
 class JCVariableDecl : public JCStatement {
 public:
+    typedef shared_ptr<JCVariableDecl> Ptr;
+    typedef vector<Ptr> List;
+
     Name &name;
-    JCExpression *vartype;
-    JCExpression *init;
+    JCExpression::Ptr vartype;
+    JCExpression::Ptr init;
 
     JCVariableDecl(Name &name, JCExpression *vartype);
 
@@ -440,14 +492,28 @@ public:
     void accept(Visitor &visitor) override;
 };
 
-class JCModifiers : public Tree {
-public:
-    long long flags;
 
-    JCModifiers(long long flags);
+class JCMethodDecl : public Tree {
+public:
+    typedef shared_ptr<JCMethodDecl> Ptr;
+
+    JCModifiers::Ptr mods;
+    JCExpression::Ptr type;
+    Name &name;
+    JCVariableDecl::List params;
+    JCBlock::Ptr body;
+    MethodSymbol *sym;
+
+    JCMethodDecl(JCModifiers *mods,
+                 JCExpression *type,
+                 Name &name,
+                 JCVariableDecl::List &params,
+                 JCBlock *body);
 
     void accept(Visitor &visitor) override;
+
 };
+
 
 class Visitor {
 public:
@@ -533,11 +599,11 @@ namespace treeinfo {
 
     int opPrec(int ot);
 
-    string descByTag (int treeTag);
+    string descByTag(int treeTag);
 
-    bool hasConstructors(const vector<Tree *> &defs);
+    bool hasConstructors(const Tree::List &defs);
 
-    bool isConstructor(const Tree& tree);
+    bool isConstructor(const Tree &tree);
 }
 
 #endif //SIMPLECOMPILER_TREE_H

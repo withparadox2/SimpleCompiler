@@ -7,7 +7,6 @@
 #include "./Parser.h"
 #include "../util/error.h"
 #include "../code/Flags.h"
-#include "../code/TypeTags.h"
 
 using namespace std;
 
@@ -15,18 +14,14 @@ Parser::Parser(Lexer &lexer) : L(lexer), mode(0), lastMode(0), names(Names::inst
     L.nextToken();
 }
 
-Tree *Parser::parse() {
-    return buildClass();
-}
-
 JCClassDecl *Parser::buildClass() {
     match(Token::CLASS);
     Name &name = ident();
     match(Token::LBRACE);
 
-    vector<Tree *> *defs = new vector<Tree *>();
+    Tree::List defs;
     while (L.token() != Token::RBRACE && L.token() != Token::_EOF) {
-        defs->push_back(classBodyDecl(name));
+        defs.push_back(Tree::Ptr(classBodyDecl(name)));
     }
 
     match(Token::RBRACE);
@@ -68,13 +63,13 @@ Tree *Parser::methodDeclaratorRest(
         JCExpression *type,
         Name &name,
         bool isVoid) {
-    vector<JCVariableDecl *> *params = formalParameters();
+    JCVariableDecl::List params = formalParameters();
     if (L.token() != Token::LBRACE) {
         error("need { for method block");
     }
     JCBlock *block1 = block();
 
-    return new JCMethodDecl(mods, type, &name, params, block1);
+    return new JCMethodDecl(mods, type, name, params, block1);
 }
 
 JCModifiers *Parser::modifiersOpt() {
@@ -190,7 +185,7 @@ JCExpression *Parser::term1Rest(JCExpression *t) {
 JCExpression *Parser::term2() {
     JCExpression *t = term3();
     if ((mode & EXPR) != 0 && prec(L.token()) >= treeinfo::orPrec) {
-        mode == EXPR;
+        mode = EXPR;
         return term2Rest(t, treeinfo::orPrec);
     } else {
         return t;
@@ -417,7 +412,7 @@ JCExpression *Parser::creator() {
         default:
             JCExpression *t = qualident();
             if (L.token() == Token::LPAREN) {
-                vector<JCExpression *> *args = arguments();
+                JCExpression::List args = arguments();
                 return new JCNewClass(t, args);
             } else {
                 error("missing ( for creating class");
@@ -442,8 +437,8 @@ JCExpression *Parser::arrayCreatorRest(JCExpression *elemtype) {
             error("missing dimension for array");
         }
     } else {
-        vector<JCExpression *> *dimens = new vector<JCExpression *>();
-        dimens->push_back(term(EXPR));
+        JCExpression::List dimens;
+        dimens.push_back(JCExpression::Ptr(term(EXPR)));
         match(Token::RBRACKET);
         while (L.token() == Token::LBRACKET) {
             L.nextToken();
@@ -452,12 +447,13 @@ JCExpression *Parser::arrayCreatorRest(JCExpression *elemtype) {
                 elemtype = bracketsOptCont(elemtype);
                 assert(L.token() != Token::LBRACKET);
             } else {
-                dimens->push_back(term(EXPR));
+                dimens.push_back(JCExpression::Ptr(term(EXPR)));
                 match(Token::RBRACKET);
             }
         }
 
-        return new JCNewArray(elemtype, dimens, nullptr);
+        JCExpression::List elems;
+        return new JCNewArray(elemtype, dimens, elems);
     }
 }
 
@@ -521,14 +517,14 @@ JCExpression *Parser::bracketsOptCont(JCExpression *e) {
     return new JCArrayTypeTree(e);
 }
 
-vector<JCVariableDecl *> *Parser::formalParameters() {
-    vector<JCVariableDecl *> *vec = new vector<JCVariableDecl *>();
+JCVariableDecl::List Parser::formalParameters() {
+    JCVariableDecl::List vec;
     match(Token::LPAREN);
     if (L.token() != Token::RPAREN) {
-        vec->push_back(formalParameter());
+        vec.push_back(JCVariableDecl::Ptr(formalParameter()));
         while (L.token() == Token::COMMA) {
             L.nextToken();
-            vec->push_back(formalParameter());
+            vec.push_back(JCVariableDecl::Ptr(formalParameter()));
         }
     }
     match(Token::RPAREN);
@@ -549,14 +545,14 @@ JCExpression *Parser::qualident() {
     return t;
 }
 
-vector<JCExpression *> *Parser::arguments() {
+JCExpression::List Parser::arguments() {
     match(Token::LPAREN);
-    vector<JCExpression *> *args = new vector<JCExpression *>();
+    JCExpression::List args;
     if (L.token() != Token::RPAREN) {
-        args->push_back(term(EXPR));
+        args.push_back(JCExpression::Ptr(term(EXPR)));
         while (L.token() == Token::COMMA) {
             L.nextToken();
-            args->push_back(term(EXPR));
+            args.push_back(JCExpression::Ptr(term(EXPR)));
         }
     }
     match(Token::RPAREN);
@@ -564,7 +560,7 @@ vector<JCExpression *> *Parser::arguments() {
 }
 
 JCMethodInvocation *Parser::arguments(JCExpression *t) {
-    vector<JCExpression *> *args = arguments();
+    JCExpression::List args = arguments();
     return new JCMethodInvocation(args, t);
 }
 
@@ -579,21 +575,22 @@ JCExpression *Parser::argumentsOpt(JCExpression *t) {
 
 JCExpression *Parser::arrayInitializer(JCExpression *t) {
     match(Token::LBRACE);
-    vector<JCExpression *> *elems = new vector<JCExpression *>();
+    JCExpression::List elems;
     if (L.token() != Token::RBRACE) {
-        elems->push_back(term(EXPR));
+        elems.push_back(JCExpression::Ptr(term(EXPR)));
         while (L.token() == Token::COMMA) {
             L.nextToken();
-            elems->push_back(term(EXPR));
+            elems.push_back(JCExpression::Ptr(term(EXPR)));
         }
     }
     match(Token::RBRACE);
-    return new JCNewArray(t, nullptr, elems);
+    JCExpression::List dimens;
+    return new JCNewArray(t, dimens, elems);
 }
 
 JCBlock *Parser::block() {
     match(Token::LBRACE);
-    vector<JCStatement *> *vec = blockStatements();
+    JCStatement::List vec = blockStatements();
     match(Token::RBRACE);
     return new JCBlock(vec);
 }
@@ -602,8 +599,8 @@ JCBlock *Parser::block() {
  * LocalVariableDeclarationStatement
  * Statement
  */
-vector<JCStatement *> *Parser::blockStatements() {
-    vector<JCStatement *> *stats = new vector<JCStatement *>();
+JCStatement::List Parser::blockStatements() {
+    JCStatement::List stats;
     while (true) {
         switch (L.token().id) {
             case Token::ID_RBRACE:
@@ -612,7 +609,7 @@ vector<JCStatement *> *Parser::blockStatements() {
             case Token::ID_IF:
             case Token::ID_FOR:
             case Token::ID_RETURN:
-                stats->push_back(parseStatement());
+                stats.push_back(JCStatement::Ptr(parseStatement()));
                 break;
             default:
                 JCExpression *t = term(TYPE | EXPR);
@@ -624,15 +621,16 @@ vector<JCStatement *> *Parser::blockStatements() {
                         L.nextToken();
                         init = term(EXPR);
                     }
-                    stats->push_back(new JCVariableDecl(name, t, init));
+                    stats.push_back(JCStatement::Ptr(new JCVariableDecl(name, t, init)));
                     match(Token::SEMI);
                 } else {
-                    stats->push_back(new JCExpressionStatement(t));
+                    stats.push_back(JCStatement::Ptr(new JCExpressionStatement(t)));
                     match(Token::SEMI);
                 }
                 break;
         }
     }
+    return stats;
 }
 
 
@@ -655,11 +653,11 @@ JCStatement *Parser::parseStatement() {
             //todo support for each
             L.nextToken();
             match(Token::LPAREN);
-            vector<JCStatement *> *inits = forInit();
+            JCStatement::List inits = forInit();
             match(Token::SEMI);
             JCExpression *cond = L.token() == Token::SEMI ? nullptr : term(EXPR);
             match(Token::SEMI);
-            vector<JCExpressionStatement *> *steps = forUpdate();
+            JCExpressionStatement::List steps = forUpdate();
             match(Token::RPAREN);
 
             JCStatement *body = parseStatement();
@@ -697,8 +695,8 @@ JCExpression *Parser::parExpression() {
     return t;
 }
 
-vector<JCStatement *> *Parser::forInit() {
-    vector<JCStatement *> *stats = new vector<JCStatement *>();
+JCStatement::List Parser::forInit() {
+    JCStatement::List stats;
     if (L.token() == Token::SEMI) {
         return stats;
     }
@@ -714,21 +712,21 @@ vector<JCStatement *> *Parser::forInit() {
             L.nextToken();
             init = term(EXPR);
         }
-        stats->push_back(new JCVariableDecl(name, t, init));
+        stats.push_back(JCStatement::Ptr(new JCVariableDecl(name, t, init)));
     } else {
-        stats->push_back(new JCExpressionStatement(t));
+        stats.push_back(JCStatement::Ptr(new JCExpressionStatement(t)));
     }
     return stats;
 }
 
 
-vector<JCExpressionStatement *> *Parser::forUpdate() {
-    vector<JCExpressionStatement *> *stats = new vector<JCExpressionStatement *>();
+JCExpressionStatement::List Parser::forUpdate() {
+    JCExpressionStatement::List stats;
     if (L.token() == Token::RPAREN) {
         return stats;
     }
 
-    stats->push_back(new JCExpressionStatement(term(EXPR)));
+    stats.push_back(JCExpressionStatement::Ptr(new JCExpressionStatement(term(EXPR))));
     return stats;
 }
 
