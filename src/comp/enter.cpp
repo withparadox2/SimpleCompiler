@@ -16,8 +16,8 @@ void Enter::complete(Tree *tree) {
 }
 
 void Enter::visitClassDef(JCClassDecl &that) {
-    ClassSymbol *c = reader.enterClass(that.name);
-    c->memberField = new Scope(c);
+    ClassSymbol::Ptr c = ClassSymbol::Ptr(reader.enterClass(that.name));
+    c->memberField = new Scope(std::static_pointer_cast<Symbol>(c));
     that.sym = c;
     Env *env = classEnv(&that);
     typeEnvs.insert(std::make_pair(c, env));

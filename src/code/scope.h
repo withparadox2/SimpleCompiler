@@ -14,9 +14,9 @@ class Scope {
 private:
     map<const Name *, Symbol *> nameToSym;
 public:
-    Symbol *owner;
+    Symbol::Ptr owner;
     void enter(Symbol *symbol);
-    Scope(Symbol *owner);
+    Scope(Symbol::Ptr owner);
 
 };
 

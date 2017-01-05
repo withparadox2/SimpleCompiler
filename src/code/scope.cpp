@@ -10,6 +10,5 @@ void Scope::enter(Symbol *symbol) {
     }
 }
 
-Scope::Scope(Symbol *owner) : owner(owner){
-
+Scope::Scope(Symbol::Ptr owner) : owner(owner){
 }

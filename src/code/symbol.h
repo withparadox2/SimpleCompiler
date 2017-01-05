@@ -6,6 +6,7 @@
 #define SIMPLECOMPILER_SYMBOL_H
 
 #include "../util/names.h"
+#include <memory>
 
 class Type;
 class ClassType;
@@ -31,6 +32,7 @@ class Symbol {
 private:
     Kind kindinternal;
 public:
+    typedef std::shared_ptr<Symbol> Ptr;
     long long flags;
     const Name& name;
     Symbol* owner;
@@ -46,6 +48,8 @@ public:
 
 class ClassSymbol : public TypeSymbol {
 public:
+    typedef std::shared_ptr<ClassSymbol> Ptr;
+
     /** a scope for all class members; variables, methods and inner classes
      *  type parameters are not part of this scope
      *
@@ -57,15 +61,16 @@ public:
     ClassSymbol(long flags, const Name &name, Type *type, Symbol *owner);
 };
 
-
-
 class VarSymbol : public Symbol {
 public:
+    typedef std::shared_ptr<VarSymbol> Ptr;
     VarSymbol(long flags, const Name &name, Type *type, Symbol *owner);
 };
 
 class MethodSymbol : public Symbol {
 public:
+    typedef std::shared_ptr<MethodSymbol> Ptr;
+
     MethodSymbol(long flags, const Name &name, Type *type, Symbol *owner);
 };
 

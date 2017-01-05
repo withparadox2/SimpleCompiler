@@ -173,7 +173,7 @@ public:
     JCModifiers::Ptr mods;
     Name &name;
     Tree::List defs;
-    ClassSymbol *sym;
+    ClassSymbol::Ptr sym;
 
     JCClassDecl(JCModifiers *mods, Name &name, Tree::List &defs);
 
@@ -502,7 +502,7 @@ public:
     Name &name;
     JCVariableDecl::List params;
     JCBlock::Ptr body;
-    MethodSymbol *sym;
+    MethodSymbol::Ptr sym;
 
     JCMethodDecl(JCModifiers *mods,
                  JCExpression *type,
