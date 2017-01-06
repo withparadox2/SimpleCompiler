@@ -12,10 +12,12 @@ using std::map;
 
 class Scope {
 private:
-    map<const Name *, Symbol *> nameToSym;
+    map<const Name *, Symbol::Ptr> nameToSym;
 public:
-    Symbol::Ptr owner;
-    void enter(Symbol *symbol);
+    typedef std::shared_ptr<Scope> Ptr;
+
+    Symbol::WeakPtr owner;
+    void enter(Symbol::Ptr symbol);
     Scope(Symbol::Ptr owner);
 
 };

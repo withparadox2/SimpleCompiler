@@ -25,7 +25,7 @@ private:
 
     Env *env;
 public:
-    map<TypeSymbol *, Env *> typeEnvs;
+    map<TypeSymbol::Ptr, Env *> typeEnvs;
 
     static Enter &instance();
 
@@ -39,11 +39,11 @@ public:
 
     Env *classEnv(JCClassDecl *clazz);
 
-    void completeMember(ClassSymbol *c);
+    void completeMember(ClassSymbol::Ptr& c);
 
-    Tree *defaultConstructor(ClassSymbol *c);
+    Tree *defaultConstructor(ClassSymbol::Ptr& c);
 
-    JCExpressionStatement *superCall(ClassSymbol *c);
+    JCExpressionStatement *superCall(ClassSymbol::Ptr& c);
 
     Scope &enterScope(const Env &env);
 

@@ -11,12 +11,12 @@ using std::map;
 
 class ClassReader {
 private:
-    map<const Name *, ClassSymbol *> classes;
+    map<const Name *, ClassSymbol::Ptr> classes;
 public:
     static ClassReader &instance();
 
     //there exists no concept about package.
-    ClassSymbol *enterClass(const Name &name);
+    ClassSymbol::Ptr& enterClass(const Name &name);
 
     ClassSymbol *defineClass(const Name &name);
 };

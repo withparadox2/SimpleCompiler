@@ -33,45 +33,49 @@ private:
     Kind kindinternal;
 public:
     typedef std::shared_ptr<Symbol> Ptr;
+    typedef std::weak_ptr<Symbol> WeakPtr;
     long long flags;
     const Name& name;
-    Symbol* owner;
+    Symbol::Ptr owner;
     Type *type;
-    Symbol(Kind kind, long flags, const Name &name, Type *type, Symbol *owner);
+    Symbol(Kind kind, long flags, const Name &name, Type *type, Symbol::Ptr owner);
     int kind();
 };
 
 class TypeSymbol : public Symbol {
 public:
-    TypeSymbol(long flags, const Name &name, Type *type, Symbol *owner);
+    typedef std::shared_ptr<TypeSymbol> Ptr;
+    typedef std::weak_ptr<TypeSymbol> WeakPtr;
+    TypeSymbol(long flags, const Name &name, Type *type, Symbol::Ptr owner);
 };
 
 class ClassSymbol : public TypeSymbol {
 public:
     typedef std::shared_ptr<ClassSymbol> Ptr;
+    typedef std::weak_ptr<ClassSymbol> WeakPtr;
 
     /** a scope for all class members; variables, methods and inner classes
      *  type parameters are not part of this scope
      *
      *  But method's symbol is actually entered into this. TODO check out why.
      */
-    Scope *memberField;
+    std::shared_ptr<Scope> memberField;
     Name *fullName;
-    ClassSymbol(long flags, const Name &name, Symbol *owner);
-    ClassSymbol(long flags, const Name &name, Type *type, Symbol *owner);
+    ClassSymbol(long flags, const Name &name, Symbol::Ptr owner);
+    ClassSymbol(long flags, const Name &name, Type *type, Symbol::Ptr owner);
 };
 
 class VarSymbol : public Symbol {
 public:
     typedef std::shared_ptr<VarSymbol> Ptr;
-    VarSymbol(long flags, const Name &name, Type *type, Symbol *owner);
+    VarSymbol(long flags, const Name &name, Type *type, Symbol::Ptr owner);
 };
 
 class MethodSymbol : public Symbol {
 public:
     typedef std::shared_ptr<MethodSymbol> Ptr;
 
-    MethodSymbol(long flags, const Name &name, Type *type, Symbol *owner);
+    MethodSymbol(long flags, const Name &name, Type *type, Symbol::Ptr owner);
 };
 
 //class OperatorSymbol : public MethodSymbol {

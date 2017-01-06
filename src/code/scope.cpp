@@ -4,7 +4,7 @@
 
 #include "scope.h"
 
-void Scope::enter(Symbol *symbol) {
+void Scope::enter(Symbol::Ptr symbol) {
     if(nameToSym.find(&symbol->name) == nameToSym.end()) {
         nameToSym.insert(std::make_pair(&symbol->name, symbol));
     }

@@ -3,6 +3,7 @@
 //
 
 #include "ClassReader.h"
+
 using std::make_pair;
 
 ClassReader &ClassReader::instance() {
@@ -11,14 +12,13 @@ ClassReader &ClassReader::instance() {
 }
 
 
-ClassSymbol *ClassReader::enterClass(const Name &name) {
+ClassSymbol::Ptr& ClassReader::enterClass(const Name &name) {
     auto iter = classes.find(&name);
-    ClassSymbol *symbol = iter == classes.end() ? nullptr : iter->second;
-    if (symbol == nullptr) {
-        symbol = defineClass(name);
+    if (iter == classes.end()) {
+        ClassSymbol::Ptr symbol(defineClass(name));
         classes.insert(make_pair(&name, symbol));
     }
-    return symbol;
+    return classes.at(&name);
 }
 
 ClassSymbol *ClassReader::defineClass(const Name &name) {
