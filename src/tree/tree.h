@@ -20,7 +20,7 @@ using std::move;
 
 class Visitor;
 
-class Tree {
+class Tree : public std::enable_shared_from_this<Tree>{
 public:
     typedef shared_ptr<Tree> Ptr;
     typedef vector<Ptr> List;

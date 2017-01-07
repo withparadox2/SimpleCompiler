@@ -17,37 +17,37 @@ using std::map;
 
 class Enter : public Visitor {
 private:
-    ClassReader &reader;
-    Symtab &syms;
-    Names &names;
+    ClassReader& reader;
+    Symtab& syms;
+    Names& names;
 
     Enter();
 
-    Env *env;
+    Env* env;
 public:
-    map<TypeSymbol::Ptr, Env *> typeEnvs;
+    map<TypeSymbol::Ptr, Env*> typeEnvs;
 
-    static Enter &instance();
+    static Enter& instance();
 
-    void complete(Tree *tree);
+    void complete(Tree* tree);
 
-    void visitClassDef(JCClassDecl &that) override;
+    void visitClassDef(JCClassDecl& that) override;
 
-    void visitMethodDef(JCMethodDecl &that) override;
+    void visitMethodDef(JCMethodDecl& that) override;
 
-    void visitTree(Tree &that) override;
+    void visitTree(Tree& that) override;
 
-    Env *classEnv(JCClassDecl *clazz);
+    Env* classEnv(JCClassDecl::Ptr& clazz);
 
     void completeMember(ClassSymbol::Ptr& c);
 
-    Tree *defaultConstructor(ClassSymbol::Ptr& c);
+    Tree* defaultConstructor(ClassSymbol::Ptr& c);
 
-    JCExpressionStatement *superCall(ClassSymbol::Ptr& c);
+    JCExpressionStatement* superCall(ClassSymbol::Ptr& c);
 
-    Scope &enterScope(const Env &env);
+    Scope::Ptr& enterScope(const Env& env);
 
-    Type *signature(vector<JCVariableDecl *> *params, Tree *res, Env *env);
+    Type* signature(vector<JCVariableDecl*>* params, Tree* res, Env* env);
 
 };
 

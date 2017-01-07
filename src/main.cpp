@@ -30,10 +30,9 @@ string *readByPath(const string &filePath) {
 
 int main() {
     string filePath(FILE_PATH);
-    std::unique_ptr<string> sourceCode(readByPath(filePath));
-
-    Lexer lexer(*sourceCode);
+    Lexer lexer(*readByPath(filePath));
     Parser parser(lexer);
+
     JCClassDecl *clazz = parser.buildClass();
 
     Pretty p;
