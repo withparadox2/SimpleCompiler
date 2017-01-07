@@ -5,7 +5,7 @@
 #include "pretty.h"
 #include "../code/Flags.h"
 
-void Pretty::visitClassDef(JCClassDecl &that) {
+void Pretty::visitClassDef(JCClassDecl& that) {
     if (that.mods != nullptr) {
         that.mods->accept(*this);
     }
@@ -28,7 +28,7 @@ void Pretty::visitClassDef(JCClassDecl &that) {
     print("}");
 }
 
-void Pretty::visitMethodDef(JCMethodDecl &that) {
+void Pretty::visitMethodDef(JCMethodDecl& that) {
     if (that.mods != nullptr) {
         that.mods->accept(*this);
     }
@@ -42,7 +42,7 @@ void Pretty::visitMethodDef(JCMethodDecl &that) {
     that.body->accept(*this);
 }
 
-void Pretty::visitVarDef(JCVariableDecl &that) {
+void Pretty::visitVarDef(JCVariableDecl& that) {
     that.vartype->accept(*this);
     addSpace();
     print(that.name.desc);
@@ -52,7 +52,7 @@ void Pretty::visitVarDef(JCVariableDecl &that) {
     }
 }
 
-void Pretty::visitBlock(JCBlock &that) {
+void Pretty::visitBlock(JCBlock& that) {
     print("{");
     indent();
     newLine();
@@ -69,11 +69,11 @@ void Pretty::visitBlock(JCBlock &that) {
     print("}");
 }
 
-void Pretty::visitForLoop(JCForLoop &that) {
+void Pretty::visitForLoop(JCForLoop& that) {
     print("for(");
     // For now, don't worry about ',',
     // the init list only has one item.
-    for (auto &item : that.init) {
+    for (auto& item : that.init) {
         item->accept(*this);
     }
     print("; ");
@@ -82,7 +82,7 @@ void Pretty::visitForLoop(JCForLoop &that) {
     }
     print("; ");
 
-    for (auto &item : that.step) {
+    for (auto& item : that.step) {
         item->accept(*this);
     }
     print(") ");
@@ -90,7 +90,7 @@ void Pretty::visitForLoop(JCForLoop &that) {
     that.body->accept(*this);
 }
 
-void Pretty::visitIf(JCIf &that) {
+void Pretty::visitIf(JCIf& that) {
     print("if (");
     that.cond->accept(*this);
     print(") ");
@@ -101,19 +101,19 @@ void Pretty::visitIf(JCIf &that) {
     }
 }
 
-void Pretty::visitExec(JCExpressionStatement &that) {
+void Pretty::visitExec(JCExpressionStatement& that) {
     that.exp->accept(*this);
 }
 
-void Pretty::visitBreak(JCBreak &that) {
+void Pretty::visitBreak(JCBreak& that) {
     print("break");
 }
 
-void Pretty::visitContinue(JCContinue &that) {
+void Pretty::visitContinue(JCContinue& that) {
     print("continue");
 }
 
-void Pretty::visitReturn(JCReturn &that) {
+void Pretty::visitReturn(JCReturn& that) {
     print("return");
     if (that.expr != nullptr) {
         addSpace();
@@ -121,19 +121,19 @@ void Pretty::visitReturn(JCReturn &that) {
     }
 }
 
-void Pretty::visitApply(JCMethodInvocation &that) {
+void Pretty::visitApply(JCMethodInvocation& that) {
     that.meth->accept(*this);
 
     printTreeList(that.args, ",", "(", ")");
 }
 
-void Pretty::visitNewClass(JCNewClass &that) {
+void Pretty::visitNewClass(JCNewClass& that) {
     print("new ");
     that.clazz->accept(*this);
     printTreeList(that.arguments, ",", "(", ")");
 }
 
-void Pretty::visitParens(JCParens &that) {
+void Pretty::visitParens(JCParens& that) {
     print("(");
     if (that.expr != nullptr) {
         that.expr->accept(*this);
@@ -141,13 +141,13 @@ void Pretty::visitParens(JCParens &that) {
     print(")");
 }
 
-void Pretty::visitAssign(JCAssign &that) {
+void Pretty::visitAssign(JCAssign& that) {
     that.lhs->accept(*this);
     print(" = ");
     that.rhs->accept(*this);
 }
 
-void Pretty::visitConditional(JCConditional &that) {
+void Pretty::visitConditional(JCConditional& that) {
     that.cond->accept(*this);
     print(" ? ");
     that.truepart->accept(*this);
@@ -155,7 +155,7 @@ void Pretty::visitConditional(JCConditional &that) {
     that.falsepart->accept(*this);
 }
 
-void Pretty::visitBinary(JCBinary &that) {
+void Pretty::visitBinary(JCBinary& that) {
     that.lhs->accept(*this);
     addSpace();
     print(treeinfo::descByTag(that.treeTag));
@@ -163,7 +163,7 @@ void Pretty::visitBinary(JCBinary &that) {
     that.rhs->accept(*this);
 }
 
-void Pretty::visitIndexed(JCArrayAccess &that) {
+void Pretty::visitIndexed(JCArrayAccess& that) {
     that.indexed->accept(*this);
     print("[");
     if (that.index != nullptr) {
@@ -172,17 +172,17 @@ void Pretty::visitIndexed(JCArrayAccess &that) {
     print("]");
 }
 
-void Pretty::visitSelect(JCFieldAccess &that) {
+void Pretty::visitSelect(JCFieldAccess& that) {
     that.selected->accept(*this);
     print(".");
     print(that.selector.desc);
 }
 
-void Pretty::visitIdent(JCIdent &that) {
+void Pretty::visitIdent(JCIdent& that) {
     print(that.name.desc);
 }
 
-void Pretty::visitLiteral(JCLiteral &that) {
+void Pretty::visitLiteral(JCLiteral& that) {
     switch (that.typetag) {
         case TypeTags::BOOLEAN: {
             int val = that.getValue<int>();
@@ -208,7 +208,7 @@ void Pretty::visitLiteral(JCLiteral &that) {
 
 }
 
-void Pretty::visitTypeIdent(JCPrimitiveTypeTree &that) {
+void Pretty::visitTypeIdent(JCPrimitiveTypeTree& that) {
     switch (that.typetag) {
         case TypeTags::INT:
             print("int");
@@ -228,20 +228,20 @@ void Pretty::visitTypeIdent(JCPrimitiveTypeTree &that) {
     }
 }
 
-void Pretty::visitTypeArray(JCArrayTypeTree &that) {
+void Pretty::visitTypeArray(JCArrayTypeTree& that) {
     that.elementType->accept(*this);
     print("[]");
 }
 
-void Pretty::visitModifiers(JCModifiers &that) {
+void Pretty::visitModifiers(JCModifiers& that) {
     printModifiers(that);
 }
 
-void Pretty::visitTree(Tree &that) {
+void Pretty::visitTree(Tree& that) {
     Visitor::visitTree(that);
 }
 
-void Pretty::printModifiers(JCModifiers &modifier) {
+void Pretty::printModifiers(JCModifiers& modifier) {
     long long flags = modifier.flags;
     if ((flags & Flags::PUBLIC) != 0) {
         print("public");
@@ -257,7 +257,7 @@ void Pretty::printModifiers(JCModifiers &modifier) {
     }
 }
 
-void Pretty::visitNewArray(JCNewArray &that) {
+void Pretty::visitNewArray(JCNewArray& that) {
     //todo handle dimens
     print("new ");
     that.elementType->accept(*this);
@@ -266,13 +266,13 @@ void Pretty::visitNewArray(JCNewArray &that) {
 }
 
 
-void Pretty::visitMethodInvocation(JCMethodInvocation &that) {
+void Pretty::visitMethodInvocation(JCMethodInvocation& that) {
     that.meth->accept(*this);
     printTreeList(that.args, ",", " {", "}");
 }
 
 
-void Pretty::print(const string &str) {
+void Pretty::print(const string& str) {
     cout << str;
 }
 
@@ -303,10 +303,10 @@ void Pretty::undent() {
 }
 
 template<typename T>
-void Pretty::printTreeList(vector<T> &list, string split, string wLeft, string wRight) {
+void Pretty::printTreeList(vector<T>& list, string split, string wLeft, string wRight) {
     print(wLeft);
     bool isFirst = true;
-    for (auto &item : list) {
+    for (auto& item : list) {
         if (!isFirst) {
             print(split);
             addSpace();

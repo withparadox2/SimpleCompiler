@@ -11,21 +11,26 @@
 #include "../util/names.h"
 
 using std::string;
+
 /**
  * predefined symbol, type
  */
 class Symtab {
 private:
-    ClassReader &reader;
-    Names &names;
+    ClassReader& reader;
+    Names& names;
+
     Symtab();
-    Type *enterClass(const string &fullName);
+
+    Type* enterClass(const string& fullName);
+
 public:
-    static Symtab &instance();
-    Type *objectType;
-    Type *classType;
-    Type *stringType;
-    Type *systemType;
+    static Symtab& instance();
+
+    Type* objectType;
+    Type* classType;
+    Type* stringType;
+    Type* systemType;
 };
 
 

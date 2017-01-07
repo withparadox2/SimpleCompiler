@@ -5,13 +5,13 @@
 
 using std::make_pair;
 
-Name::Name(Names &names, const string &desc) : names(names), desc(desc) {}
+Name::Name(Names& names, const string& desc) : names(names), desc(desc) {}
 
-bool Name::operator==(Name &name) {
+bool Name::operator==(Name& name) {
     return desc.compare(name.desc) == 0;
 }
 
-bool Name::operator!=(Name &name) {
+bool Name::operator!=(Name& name) {
     return desc.compare(name.desc) != 0;;
 }
 
@@ -23,7 +23,7 @@ Names::Names() {
     hyphen = &fromString("-");
 }
 
-Name &Names::fromString(const string &str) {
+Name& Names::fromString(const string& str) {
     if (table.find(str) == table.end()) {
         std::unique_ptr<Name> name(new Name(*this, str));
         table.insert(make_pair(str, std::move(name)));
@@ -31,7 +31,7 @@ Name &Names::fromString(const string &str) {
     return *table[str];
 }
 
-Names &Names::instance() {
+Names& Names::instance() {
     static Names inst;
     return inst;
 }

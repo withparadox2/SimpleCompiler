@@ -13,18 +13,19 @@ using std::string;
 using std::map;
 
 class Name;
+
 class Names;
 
 class Name {
 public:
-    Names &names;
+    Names& names;
     string desc;
 
-    Name(Names &names, const string &desc);
+    Name(Names& names, const string& desc);
 
-    bool operator==(Name &name);
+    bool operator==(Name& name);
 
-    bool operator!=(Name &name);
+    bool operator!=(Name& name);
 };
 
 class Names {
@@ -34,15 +35,15 @@ private:
     Names();
 
 public:
-    Name *init;
-    Name *_this;
-    Name *_class;
-    Name *_super;
-    Name *hyphen;
+    Name* init;
+    Name* _this;
+    Name* _class;
+    Name* _super;
+    Name* hyphen;
 
-    static Names &instance();
+    static Names& instance();
 
-    Name &fromString(const string &str);
+    Name& fromString(const string& str);
 };
 
 #endif //SIMPLECOMPILER_NAMES_H

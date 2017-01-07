@@ -17,80 +17,98 @@ using std::string;
 
 class Parser {
 private:
-    Lexer &L;
-    Names &names;
+    Lexer& L;
+    Names& names;
 
-    bool match(Token &token);
-    bool match(Token &token, string errStr);
+    bool match(Token& token);
+
+    bool match(Token& token, string errStr);
 
     static const int EXPR = 0x1;
     static const int TYPE = 0x2;
     int mode;
     int lastMode;
 
-    static int typeTag(Token &token);
-    static int unoptag(Token &token);
+    static int typeTag(Token& token);
+
+    static int unoptag(Token& token);
 
 public:
-    Parser(Lexer &lexer);
+    Parser(Lexer& lexer);
 
-    JCClassDecl *buildClass();
+    JCClassDecl* buildClass();
 
-    Tree *classBodyDecl(Name &className);
+    Tree* classBodyDecl(Name& className);
 
-    JCModifiers *modifiersOpt();
+    JCModifiers* modifiersOpt();
 
-    JCExpression *parseType();
+    JCExpression* parseType();
 
-    JCExpression *term(int mode);
+    JCExpression* term(int mode);
 
-    JCExpression *term();
-    JCExpression *termRest(JCExpression *t);
+    JCExpression* term();
 
-    JCExpression *term1();
-    JCExpression *term1Rest(JCExpression *t);
+    JCExpression* termRest(JCExpression* t);
 
-    JCExpression *term2();
-    JCExpression *term2Rest(JCExpression *t, int prec);
+    JCExpression* term1();
 
-    JCExpression *term3();
+    JCExpression* term1Rest(JCExpression* t);
 
-    JCExpression *basicType();
+    JCExpression* term2();
 
-    JCExpression *bracketOpt(JCExpression *e);
+    JCExpression* term2Rest(JCExpression* t, int prec);
 
-    JCExpression *bracketsOptCont(JCExpression *e);
+    JCExpression* term3();
 
-    Tree *methodDeclaratorRest(
-            JCModifiers *mods,
-            JCExpression *type,
-            Name &name,
+    JCExpression* basicType();
+
+    JCExpression* bracketOpt(JCExpression* e);
+
+    JCExpression* bracketsOptCont(JCExpression* e);
+
+    Tree* methodDeclaratorRest(
+            JCModifiers* mods,
+            JCExpression* type,
+            Name& name,
             bool isVoid);
 
     JCVariableDecl::List formalParameters();
-    JCVariableDecl *formalParameter();
-    JCBlock *block();
 
-    Name &ident();
+    JCVariableDecl* formalParameter();
+
+    JCBlock* block();
+
+    Name& ident();
 
     JCStatement::List blockStatements();
 
-    JCExpression *parExpression();
-    JCStatement *parseStatement();
+    JCExpression* parExpression();
+
+    JCStatement* parseStatement();
+
     JCStatement::List forInit();
+
     JCExpressionStatement::List forUpdate();
+
     JCVariableDecl::List variableDeclarators();//TODO implementation
 
-    int prec(Token &token);
+    int prec(Token& token);
 
-    JCExpression *literal(const string &prefiex);
-    JCExpression *creator();
-    JCExpression *arrayCreatorRest(JCExpression *elemtype);
-    JCExpression *qualident();
+    JCExpression* literal(const string& prefiex);
+
+    JCExpression* creator();
+
+    JCExpression* arrayCreatorRest(JCExpression* elemtype);
+
+    JCExpression* qualident();
+
     JCExpression::List arguments();
-    JCMethodInvocation *arguments(JCExpression *t);
-    JCExpression *argumentsOpt(JCExpression *t);
-    JCExpression *arrayInitializer(JCExpression *t);
+
+    JCMethodInvocation* arguments(JCExpression* t);
+
+    JCExpression* argumentsOpt(JCExpression* t);
+
+    JCExpression* arrayInitializer(JCExpression* t);
 };
 
 

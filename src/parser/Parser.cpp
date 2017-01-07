@@ -10,13 +10,13 @@
 
 using namespace std;
 
-Parser::Parser(Lexer &lexer) : L(lexer), mode(0), lastMode(0), names(Names::instance()) {
+Parser::Parser(Lexer& lexer) : L(lexer), mode(0), lastMode(0), names(Names::instance()) {
     L.nextToken();
 }
 
-JCClassDecl *Parser::buildClass() {
+JCClassDecl* Parser::buildClass() {
     match(Token::CLASS);
-    Name &name = ident();
+    Name& name = ident();
     match(Token::LBRACE);
 
     Tree::List defs;
@@ -28,10 +28,10 @@ JCClassDecl *Parser::buildClass() {
     return new JCClassDecl(nullptr, name, defs);
 }
 
-Tree *Parser::classBodyDecl(Name &className) {
-    JCModifiers *modifiers = modifiersOpt();
-    JCExpression *type;
-    Name *name = &L.name();
+Tree* Parser::classBodyDecl(Name& className) {
+    JCModifiers* modifiers = modifiersOpt();
+    JCExpression* type;
+    Name* name = &L.name();
     bool isVoid = L.token() == Token::VOID;
     if (isVoid) {
         type = new JCPrimitiveTypeTree(TypeTags::VOID);
@@ -58,21 +58,21 @@ Tree *Parser::classBodyDecl(Name &className) {
     }
 }
 
-Tree *Parser::methodDeclaratorRest(
-        JCModifiers *mods,
-        JCExpression *type,
-        Name &name,
+Tree* Parser::methodDeclaratorRest(
+        JCModifiers* mods,
+        JCExpression* type,
+        Name& name,
         bool isVoid) {
     JCVariableDecl::List params = formalParameters();
     if (L.token() != Token::LBRACE) {
         error("need { for method block");
     }
-    JCBlock *block1 = block();
+    JCBlock* block1 = block();
 
     return new JCMethodDecl(mods, type, name, params, block1);
 }
 
-JCModifiers *Parser::modifiersOpt() {
+JCModifiers* Parser::modifiersOpt() {
     long flags = 0;
     while (true) {
         long flag = 0;
@@ -102,12 +102,12 @@ JCModifiers *Parser::modifiersOpt() {
     return new JCModifiers(flags);
 }
 
-bool Parser::match(Token &token) {
+bool Parser::match(Token& token) {
     match(token, "expected " + token.fullDesc());
 }
 
 
-bool Parser::match(Token &token, string errStr) {
+bool Parser::match(Token& token, string errStr) {
     if (L.token() == token) {
         L.nextToken();
         return true;
@@ -116,9 +116,9 @@ bool Parser::match(Token &token, string errStr) {
     error(errStr);
 }
 
-Name &Parser::ident() {
+Name& Parser::ident() {
     if (L.token() == Token::IDENTIFIER) {
-        Name &name = L.name();
+        Name& name = L.name();
         L.nextToken();
         return name;
     } else {
@@ -126,21 +126,21 @@ Name &Parser::ident() {
     }
 }
 
-JCExpression *Parser::parseType() {
+JCExpression* Parser::parseType() {
     return term(TYPE);
 }
 
-JCExpression *Parser::term(int newMode) {
+JCExpression* Parser::term(int newMode) {
     int prevmode = mode;
     mode = newMode;
-    JCExpression *t = term();
+    JCExpression* t = term();
     lastMode = mode;
     mode = prevmode;
     return t;
 }
 
-JCExpression *Parser::term() {
-    JCExpression *t = term1();
+JCExpression* Parser::term() {
+    JCExpression* t = term1();
     //only support =, not -=, +=, ^=...
     if ((mode & EXPR) != 0 && L.token() == Token::EQ) {
         return termRest(t);
@@ -149,17 +149,17 @@ JCExpression *Parser::term() {
     }
 }
 
-JCExpression *Parser::termRest(JCExpression *t) {
+JCExpression* Parser::termRest(JCExpression* t) {
     match(Token::EQ);
     mode = EXPR;//can not be type, since it's an assignment
 
     //use term() to support syntax like: "int a = b = 2";
-    JCExpression *t1 = term();
+    JCExpression* t1 = term();
     return new JCAssign(t, t1);
 }
 
-JCExpression *Parser::term1() {
-    JCExpression *t = term2();
+JCExpression* Parser::term1() {
+    JCExpression* t = term2();
 
     if ((mode & EXPR) != 0 && L.token() == Token::QUES) {
         mode = EXPR;
@@ -169,21 +169,21 @@ JCExpression *Parser::term1() {
     }
 }
 
-JCExpression *Parser::term1Rest(JCExpression *t) {
+JCExpression* Parser::term1Rest(JCExpression* t) {
     if (L.token() == Token::QUES) {
         L.nextToken();
         //TODO why does t1 use term(), while t2 use term1()
-        JCExpression *t1 = term();
+        JCExpression* t1 = term();
         match(Token::COLON);
-        JCExpression *t2 = term1();
+        JCExpression* t2 = term1();
         return new JCConditional(t, t1, t2);
     } else {
         return t;
     }
 }
 
-JCExpression *Parser::term2() {
-    JCExpression *t = term3();
+JCExpression* Parser::term2() {
+    JCExpression* t = term3();
     if ((mode & EXPR) != 0 && prec(L.token()) >= treeinfo::orPrec) {
         mode = EXPR;
         return term2Rest(t, treeinfo::orPrec);
@@ -192,18 +192,18 @@ JCExpression *Parser::term2() {
     }
 }
 
-int Parser::prec(Token &token) {
+int Parser::prec(Token& token) {
     int oc = treeinfo::opTag(token);
     return (oc >= 0) ? treeinfo::opPrec(oc) : -1;
 }
 
 //TODO using array for efficiency
-JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
-    vector<Token *> opStack;
-    vector<JCExpression *> odStack;
+JCExpression* Parser::term2Rest(JCExpression* t, int minprec) {
+    vector<Token*> opStack;
+    vector<JCExpression*> odStack;
     odStack.push_back(t);
 
-    Token *topOp = &Token::ERROR;
+    Token* topOp = &Token::ERROR;
     while (prec(L.token()) >= minprec) {
         opStack.push_back(topOp);
 
@@ -215,9 +215,9 @@ JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
         // JCBinary(+, 3, JCBinary(*, 2, 1))
         // remember lhs is the last one being pushed back to stack
         while (opStack.size() > 0 && prec(*topOp) >= prec(L.token())) {
-            JCExpression *rhs = odStack.back();//at top
+            JCExpression* rhs = odStack.back();//at top
             odStack.pop_back();
-            JCExpression *lhs = odStack.back();//at top-1
+            JCExpression* lhs = odStack.back();//at top-1
             odStack.pop_back();
 
             int opcode = treeinfo::opTag(*topOp);
@@ -236,8 +236,8 @@ JCExpression *Parser::term2Rest(JCExpression *t, int minprec) {
 }
 
 //Primary {Selector} {PostfixOp}, PostifxOp is not supported
-JCExpression *Parser::term3() {
-    JCExpression *t = nullptr;
+JCExpression* Parser::term3() {
+    JCExpression* t = nullptr;
 
     //below is Primary
     switch (L.token().id) {
@@ -258,7 +258,7 @@ JCExpression *Parser::term3() {
                             t = new JCArrayTypeTree(t);
                         } else {
                             if ((mode & EXPR) != 0) {
-                                JCExpression *t1 = term();
+                                JCExpression* t1 = term();
                                 t = new JCArrayAccess(t, t1);
                             }
                             match(Token::RBRACKET);
@@ -369,7 +369,7 @@ JCExpression *Parser::term3() {
             switch (L.token().id) {
                 case Token::ID_IDENTIFIER:
                     t = new JCFieldAccess(t, ident());
-                    t= argumentsOpt(t);
+                    t = argumentsOpt(t);
                     break;
                 default:
                     error("not super or new in selector");
@@ -391,7 +391,7 @@ JCExpression *Parser::term3() {
 
             if ((mode & EXPR) != 0) {
                 mode = EXPR;
-                JCExpression *t1 = term(EXPR);
+                JCExpression* t1 = term(EXPR);
                 t = new JCArrayAccess(t, t1);
             }
 
@@ -404,13 +404,13 @@ JCExpression *Parser::term3() {
 }
 
 //For now, only support array of primitive type, i.e. int and boolean
-JCExpression *Parser::creator() {
+JCExpression* Parser::creator() {
     switch (L.token().id) {
         case Token::ID_INT:
         case Token::ID_BOOLEAN:
             return arrayCreatorRest(basicType());
         default:
-            JCExpression *t = qualident();
+            JCExpression* t = qualident();
             if (L.token() == Token::LPAREN) {
                 JCExpression::List args = arguments();
                 return new JCNewClass(t, args);
@@ -426,7 +426,7 @@ JCExpression *Parser::creator() {
  *  For now, only support int[][] arr = new int[3][4] and int[][] arr = new int[3][]
  *  also array init: int[] arr = new int[]{1, 2, 3};
  */
-JCExpression *Parser::arrayCreatorRest(JCExpression *elemtype) {
+JCExpression* Parser::arrayCreatorRest(JCExpression* elemtype) {
     match(Token::LBRACKET);
     if (L.token() == Token::RBRACKET) {
         L.nextToken();
@@ -458,19 +458,19 @@ JCExpression *Parser::arrayCreatorRest(JCExpression *elemtype) {
 }
 
 
-JCExpression *Parser::literal(const string &prefiex) {
-    JCExpression *t = nullptr;
+JCExpression* Parser::literal(const string& prefiex) {
+    JCExpression* t = nullptr;
     switch (L.token().id) {
         case Token::ID_INTLITERAL:
             try {
                 int value = std::stoi(prefiex + L.bufStr);
                 t = new JCLiteral(TypeTags::INT, value);
-            } catch (std::exception &e) {
+            } catch (std::exception& e) {
                 error(L.bufStr + " can not be converted to int.");
             }
             break;
         case Token::ID_STRINGLITERAL:
-            t = new JCLiteral(TypeTags::CLASS, (string)L.bufStr);
+            t = new JCLiteral(TypeTags::CLASS, (string) L.bufStr);
             break;
         case Token::ID_NULL_:
             t = new JCLiteral(TypeTags::BOT, 0);
@@ -478,7 +478,7 @@ JCExpression *Parser::literal(const string &prefiex) {
         case Token::ID_TRUE:
         case Token::ID_FALSE:
             t = new JCLiteral(TypeTags::BOOLEAN,
-                                   L.token() == Token::TRUE ? 1 : 0);
+                              L.token() == Token::TRUE ? 1 : 0);
         default:
             error("wrong literal " + L.token().fullDesc());
     }
@@ -486,13 +486,13 @@ JCExpression *Parser::literal(const string &prefiex) {
     return t;
 }
 
-JCExpression *Parser::basicType() {
-    JCPrimitiveTypeTree *t = new JCPrimitiveTypeTree(typeTag(L.token()));
+JCExpression* Parser::basicType() {
+    JCPrimitiveTypeTree* t = new JCPrimitiveTypeTree(typeTag(L.token()));
     L.nextToken();
     return t;
 }
 
-int Parser::typeTag(Token &token) {
+int Parser::typeTag(Token& token) {
     switch (token.id) {
         case Token::ID_INT:
             return TypeTags::INT;
@@ -503,7 +503,7 @@ int Parser::typeTag(Token &token) {
     }
 }
 
-JCExpression *Parser::bracketOpt(JCExpression *e) {
+JCExpression* Parser::bracketOpt(JCExpression* e) {
     if (L.token() == Token::LBRACKET) {
         L.nextToken();
         e = bracketsOptCont(e);
@@ -511,7 +511,7 @@ JCExpression *Parser::bracketOpt(JCExpression *e) {
     return e;
 }
 
-JCExpression *Parser::bracketsOptCont(JCExpression *e) {
+JCExpression* Parser::bracketsOptCont(JCExpression* e) {
     match(Token::RBRACKET);
     e = bracketOpt(e);
     return new JCArrayTypeTree(e);
@@ -531,13 +531,13 @@ JCVariableDecl::List Parser::formalParameters() {
     return vec;
 }
 
-JCVariableDecl *Parser::formalParameter() {
-    JCExpression *type = parseType();
+JCVariableDecl* Parser::formalParameter() {
+    JCExpression* type = parseType();
     return new JCVariableDecl(ident(), type);
 }
 
-JCExpression *Parser::qualident() {
-    JCExpression *t = new JCIdent(ident());
+JCExpression* Parser::qualident() {
+    JCExpression* t = new JCIdent(ident());
     while (L.token() == Token::DOT) {
         L.nextToken();
         t = new JCFieldAccess(t, ident());
@@ -559,12 +559,12 @@ JCExpression::List Parser::arguments() {
     return args;
 }
 
-JCMethodInvocation *Parser::arguments(JCExpression *t) {
+JCMethodInvocation* Parser::arguments(JCExpression* t) {
     JCExpression::List args = arguments();
     return new JCMethodInvocation(args, t);
 }
 
-JCExpression *Parser::argumentsOpt(JCExpression *t) {
+JCExpression* Parser::argumentsOpt(JCExpression* t) {
     if (L.token() == Token::LPAREN) {
         return arguments(t);
     } else {
@@ -573,7 +573,7 @@ JCExpression *Parser::argumentsOpt(JCExpression *t) {
 }
 
 
-JCExpression *Parser::arrayInitializer(JCExpression *t) {
+JCExpression* Parser::arrayInitializer(JCExpression* t) {
     match(Token::LBRACE);
     JCExpression::List elems;
     if (L.token() != Token::RBRACE) {
@@ -588,7 +588,7 @@ JCExpression *Parser::arrayInitializer(JCExpression *t) {
     return new JCNewArray(t, dimens, elems);
 }
 
-JCBlock *Parser::block() {
+JCBlock* Parser::block() {
     match(Token::LBRACE);
     JCStatement::List vec = blockStatements();
     match(Token::RBRACE);
@@ -612,11 +612,11 @@ JCStatement::List Parser::blockStatements() {
                 stats.push_back(JCStatement::Ptr(parseStatement()));
                 break;
             default:
-                JCExpression *t = term(TYPE | EXPR);
+                JCExpression* t = term(TYPE | EXPR);
                 //local var decl
                 if ((lastMode & TYPE) != 0 && L.token() == Token::IDENTIFIER) {
-                    Name &name = ident();
-                    JCExpression *init = nullptr;
+                    Name& name = ident();
+                    JCExpression* init = nullptr;
                     if (L.token() == Token::EQ) {
                         L.nextToken();
                         init = term(EXPR);
@@ -634,15 +634,15 @@ JCStatement::List Parser::blockStatements() {
 }
 
 
-JCStatement *Parser::parseStatement() {
+JCStatement* Parser::parseStatement() {
     switch (L.token().id) {
         case Token::ID_LBRACE:
             return block();
         case Token::ID_IF: {
             L.nextToken();
-            JCExpression *cond = parExpression();
-            JCStatement *thenpart = parseStatement();
-            JCStatement *elsepart = nullptr;
+            JCExpression* cond = parExpression();
+            JCStatement* thenpart = parseStatement();
+            JCStatement* elsepart = nullptr;
             if (L.token() == Token::ELSE) {
                 L.nextToken();
                 elsepart = parseStatement();
@@ -655,12 +655,12 @@ JCStatement *Parser::parseStatement() {
             match(Token::LPAREN);
             JCStatement::List inits = forInit();
             match(Token::SEMI);
-            JCExpression *cond = L.token() == Token::SEMI ? nullptr : term(EXPR);
+            JCExpression* cond = L.token() == Token::SEMI ? nullptr : term(EXPR);
             match(Token::SEMI);
             JCExpressionStatement::List steps = forUpdate();
             match(Token::RPAREN);
 
-            JCStatement *body = parseStatement();
+            JCStatement* body = parseStatement();
 
             return new JCForLoop(inits, cond, steps, body);
         }
@@ -677,7 +677,7 @@ JCStatement *Parser::parseStatement() {
 
         case Token::ID_RETURN: {
             L.nextToken();
-            JCExpression *e = term(EXPR);
+            JCExpression* e = term(EXPR);
             match(Token::SEMI);
             return new JCReturn(e);
         }
@@ -688,9 +688,9 @@ JCStatement *Parser::parseStatement() {
     return nullptr;
 }
 
-JCExpression *Parser::parExpression() {
+JCExpression* Parser::parExpression() {
     match(Token::LPAREN);
-    JCExpression *t = term(EXPR);
+    JCExpression* t = term(EXPR);
     match(Token::RPAREN);
     return t;
 }
@@ -703,11 +703,11 @@ JCStatement::List Parser::forInit() {
 
     //only support syntax like: for(int a = 0; ...) or for(a = 2; ...)
     //not for(int a=0, b=2)
-    JCExpression *t = term(EXPR | TYPE);
+    JCExpression* t = term(EXPR | TYPE);
 
     if ((lastMode & TYPE) != 0 && L.token() == Token::IDENTIFIER) {
-        Name &name = ident();
-        JCExpression *init = nullptr;
+        Name& name = ident();
+        JCExpression* init = nullptr;
         if (L.token() == Token::EQ) {
             L.nextToken();
             init = term(EXPR);
@@ -730,7 +730,7 @@ JCExpressionStatement::List Parser::forUpdate() {
     return stats;
 }
 
-int Parser::unoptag(Token &token) {
+int Parser::unoptag(Token& token) {
     switch (token.id) {
         case Token::ID_SUB:
             return Tree::NEG;

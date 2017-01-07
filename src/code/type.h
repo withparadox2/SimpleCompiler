@@ -14,23 +14,26 @@ class TypeSymbol;
 class Type {
 public:
     int tag;
-    TypeSymbol *tsym;
-    Type(int tag, TypeSymbol *tsym);
+    TypeSymbol* tsym;
+
+    Type(int tag, TypeSymbol* tsym);
 };
 
 class ClassType : public Type {
 public:
-    Type *supertype_field;
-    ClassType(TypeSymbol *tsym);
+    Type* supertype_field;
+
+    ClassType(TypeSymbol* tsym);
 };
 
 class MethodType : public Type {
 public:
-    vector<Type *> *argtypes;
-    Type *restype;
-    MethodType(vector<Type *> *argtypes,
-                  Type *restype,
-                  TypeSymbol *methodClass);
+    vector<Type*>* argtypes;
+    Type* restype;
+
+    MethodType(vector<Type*>* argtypes,
+               Type* restype,
+               TypeSymbol* methodClass);
 };
 
 #endif //SIMPLECOMPILER_TYPE_H

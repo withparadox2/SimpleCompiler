@@ -14,22 +14,27 @@ class Lexer {
 private:
     int head;
     char ch;
-    Token *cToken;
+    Token* cToken;
+
     bool isSpecial(char c);
 
     bool isIdent(char c, bool isHead);
+
     bool isDigit(char c);
+
     void scanIdent();
+
     void scanOperator();
+
     void scanNumber();
 
     void nextChar();
 
     std::string& sourceCode;
 
-    Names &names;
+    Names& names;
 
-    Name *cName;
+    Name* cName;
 
 
 public:
@@ -40,7 +45,9 @@ public:
     void nextToken();
 
     Token& token();
+
     Name& name();
+
     void printTokens();
 };
 

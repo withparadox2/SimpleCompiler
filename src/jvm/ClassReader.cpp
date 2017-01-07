@@ -6,13 +6,13 @@
 
 using std::make_pair;
 
-ClassReader &ClassReader::instance() {
+ClassReader& ClassReader::instance() {
     static ClassReader reader;
     return reader;
 }
 
 
-ClassSymbol::Ptr& ClassReader::enterClass(const Name &name) {
+ClassSymbol::Ptr& ClassReader::enterClass(const Name& name) {
     auto iter = classes.find(&name);
     if (iter == classes.end()) {
         ClassSymbol::Ptr symbol(defineClass(name));
@@ -21,7 +21,7 @@ ClassSymbol::Ptr& ClassReader::enterClass(const Name &name) {
     return classes.at(&name);
 }
 
-ClassSymbol *ClassReader::defineClass(const Name &name) {
-    ClassSymbol *symbol = new ClassSymbol(0, name, nullptr);
+ClassSymbol* ClassReader::defineClass(const Name& name) {
+    ClassSymbol* symbol = new ClassSymbol(0, name, nullptr);
     return symbol;
 }

@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Lexer::Lexer(std::string &sourceCode) :
+Lexer::Lexer(std::string& sourceCode) :
         sourceCode(sourceCode),
         head(0),
         cToken(nullptr),
@@ -117,7 +117,7 @@ void Lexer::nextChar() {
     ch = sourceCode[head++];
 }
 
-Token &Lexer::token() {
+Token& Lexer::token() {
     return *cToken;
 }
 
@@ -215,9 +215,9 @@ void Lexer::scanIdent() {
 void Lexer::scanOperator() {
     while (true) {
         bufStr += ch;
-        Name *newname = &names.fromString(bufStr);
+        Name* newname = &names.fromString(bufStr);
 
-        Token &token = Token::fromName(*newname);
+        Token& token = Token::fromName(*newname);
         if (token == Token::IDENTIFIER) {
             bufStr.pop_back();
             break;
@@ -240,7 +240,7 @@ void Lexer::scanNumber() {
     cToken = &Token::INTLITERAL;
 }
 
-Name &Lexer::name() {
+Name& Lexer::name() {
     return *cName;
 }
 

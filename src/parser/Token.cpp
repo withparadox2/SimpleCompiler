@@ -12,20 +12,20 @@ Token::Token(const int id, string name) : id(id), tokenDesc(name) {
 }
 
 
-Token::Token(const int id) : id(id){
+Token::Token(const int id) : id(id) {
     initToken();
 }
 
 
 void Token::initToken() {
     if (tokenDesc.length() > 0) {
-        Name *nameObj = &Names::instance().fromString(tokenDesc);
+        Name* nameObj = &Names::instance().fromString(tokenDesc);
         nameToToken.insert(make_pair(nameObj, this));
     }
 }
 
 
-Token &Token::fromName(Name &name) {
+Token& Token::fromName(Name& name) {
     if (nameToToken.find(&name) != nameToToken.end()) {
         return *nameToToken[&name];
     }
@@ -33,7 +33,7 @@ Token &Token::fromName(Name &name) {
 }
 
 
-std::string &Token::desc() {
+std::string& Token::desc() {
     return tokenDesc;
 }
 
@@ -48,16 +48,16 @@ std::string Token::fullDesc() {
 }
 
 
-bool Token::operator==(Token &t) {
+bool Token::operator==(Token& t) {
     return &t != nullptr && t.id == this->id;
 }
 
 
-bool Token::operator!=(Token &t) {
+bool Token::operator!=(Token& t) {
     return &t == nullptr || t.id != this->id;
 }
 
-std::map<Name *, Token *> Token::nameToToken;
+std::map<Name*, Token*> Token::nameToToken;
 
 
 Token Token::_EOF(ID_EOF);

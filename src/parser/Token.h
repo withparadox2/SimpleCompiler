@@ -15,20 +15,22 @@ private:
 
     void initToken();
 
-    static std::map<Name *, Token *> nameToToken;
+    static std::map<Name*, Token*> nameToToken;
 
 public:
     const int id;//unique id of current token
     Token(const int id, std::string name);
+
     Token(const int id);
 
-    std::string &desc();//plain text describing current token
+    std::string& desc();//plain text describing current token
     std::string fullDesc();
-    bool operator==(Token &a);
 
-    bool operator!=(Token &a);
+    bool operator==(Token& a);
 
-    static Token &fromName(Name &name);
+    bool operator!=(Token& a);
+
+    static Token& fromName(Name& name);
 
     static Token ERROR;
     static Token _EOF;
