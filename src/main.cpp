@@ -33,8 +33,7 @@ int main() {
     Lexer lexer(*readByPath(filePath));
     Parser parser(lexer);
 
-    JCClassDecl *clazz = parser.buildClass();
-
+    JCClassDecl::Ptr clazz(parser.buildClass());
     Pretty p;
     clazz->accept(p);
 
