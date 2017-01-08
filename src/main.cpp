@@ -37,7 +37,7 @@ int main() {
 
     JCClassDecl::Ptr clazz(parser.buildClass());
     Pretty p;
-    clazz->accept(p);
+    clazz->accept(&p);
 
     Enter::instance().complete(clazz.get(), nullptr);
     return 0;

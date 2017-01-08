@@ -35,13 +35,13 @@ public:
 
     void complete(Tree* tree, Env* env);
 
-    void visitClassDef(JCClassDecl& that) override;
+    void visitClassDef(JCClassDecl* that) override;
 
-    void visitMethodDef(JCMethodDecl& that) override;
+    void visitMethodDef(JCMethodDecl* that) override;
 
-    void visitVarDef(JCVariableDecl& that) override;
+    void visitVarDef(JCVariableDecl* that) override;
 
-    void visitTree(Tree& that) override;
+    void visitTree(Tree* that) override;
 
     Env* classEnv(JCClassDecl::Ptr& clazz);
 

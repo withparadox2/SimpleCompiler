@@ -14,15 +14,15 @@ Enter& Enter::instance() {
 void Enter::complete(Tree* tree, Env* env) {
     Env* preEnv = this->env;
     this->env = env;
-    tree->accept(*this);
+    tree->accept(this);
     this->env = preEnv;
 }
 
-void Enter::visitClassDef(JCClassDecl& that) {
-    ClassSymbol::Ptr& c = reader.enterClass(that.name);
+void Enter::visitClassDef(JCClassDecl* that) {
+    ClassSymbol::Ptr& c = reader.enterClass(that->name);
     c->memberField = Scope::Ptr(new Scope(std::static_pointer_cast<Symbol>(c)));
-    that.sym = c;
-    std::shared_ptr<JCClassDecl> classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that.shared_from_this());
+    that->sym = c;
+    std::shared_ptr<JCClassDecl> classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
     Env* env = classEnv(classSharedPtr);
     typeEnvs.insert(std::make_pair(c, env));
     //TODO calc flags_field
@@ -30,24 +30,24 @@ void Enter::visitClassDef(JCClassDecl& that) {
     completeMember(c);
 }
 
-void Enter::visitMethodDef(JCMethodDecl& tree) {
+void Enter::visitMethodDef(JCMethodDecl* tree) {
     Scope::Ptr& enclScope = enterScope(this->env);
-    MethodSymbol::Ptr m(new MethodSymbol(0, tree.name, nullptr, enclScope->owner.lock()));
+    MethodSymbol::Ptr m(new MethodSymbol(0, tree->name, nullptr, enclScope->owner.lock()));
     //TODO   m->flags
-    tree.sym = m;
-    m->type = signature(tree.params, tree.resType, this->env);
+    tree->sym = m;
+    m->type = signature(tree->params, tree->resType, this->env);
     //TODO calc type and parameters
 
     //TODO check unique
     enclScope->enter(m);
 }
 
-void Enter::visitVarDef(JCVariableDecl& that) {
+void Enter::visitVarDef(JCVariableDecl* that) {
     //ignore static or interface
-    attr.attribType(that.vartype.get(), env);
+    attr.attribType(that->vartype.get(), env);
 }
 
-void Enter::visitTree(Tree& that) {
+void Enter::visitTree(Tree* that) {
     //do nothing
 }
 
@@ -96,7 +96,7 @@ void Enter::completeMember(ClassSymbol::Ptr& c) {
     this->env = classEnv;
     //enter members
     for (auto& item : tree->defs) {
-        item->accept(*this);
+        item->accept(this);
     }
 }
 

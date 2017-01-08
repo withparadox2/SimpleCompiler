@@ -27,11 +27,11 @@ public:
 
     Type::Ptr attribTree(Tree* tree, Env* env, int pkind);
 
-    void visitVarDef(JCVariableDecl& that);
+    void visitVarDef(JCVariableDecl* that);
 
-    void visitIdent(JCIdent& that);
+    void visitIdent(JCIdent* that);
 
-    void visitTypeArray(JCArrayTypeTree& that);
+    void visitTypeArray(JCArrayTypeTree* that);
 
     Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
 

@@ -18,7 +18,7 @@ Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind) {
     this->pKind = pkind;
     this->env = env;
 
-    tree->accept(*this);
+    tree->accept(this);
 
     this->pKind = preKind;
     this->env = preEnv;
@@ -29,22 +29,22 @@ Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()){
 
 }
 
-void Attr::visitVarDef(JCVariableDecl& that) {
+void Attr::visitVarDef(JCVariableDecl* that) {
 
 }
 
-void Attr::visitIdent(JCIdent& that) {
+void Attr::visitIdent(JCIdent* that) {
     Symbol::Ptr sym;
     //TODO why it is necessary to check kind()
-    if (that.sym && that.sym->kind != Kind::VAR) {
-        sym = that.sym;
+    if (that->sym && that->sym->kind != Kind::VAR) {
+        sym = that->sym;
     } else {
-        sym = Symbol::Ptr(resolveIdent(env, that.name, pKind));
+        sym = Symbol::Ptr(resolveIdent(env, that->name, pKind));
     }
 }
 
-void Attr::visitTypeArray(JCArrayTypeTree& that) {
-    TypePtr eType = attribType(that.elementType.get(), this->env);
+void Attr::visitTypeArray(JCArrayTypeTree* that) {
+    TypePtr eType = attribType(that->elementType.get(), this->env);
     result = TypePtr(new ArrayType(eType, syms.arrayClass));
 }
 

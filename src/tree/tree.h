@@ -32,7 +32,7 @@ public:
     template<typename R, typename D>
     R accept(TreeVisitor<R, D> v, D& d);
 
-    virtual void accept(Visitor& visitor) = 0;
+    virtual void accept(Visitor* visitor) = 0;
 
     static const int CLASSDEF = 1;
 
@@ -163,7 +163,7 @@ public:
 
     JCModifiers(long long flags);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCClassDecl : public Tree {
@@ -177,7 +177,7 @@ public:
 
     JCClassDecl(JCModifiers* mods, Name& name, Tree::List& defs);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCExpression : public Tree {
@@ -206,7 +206,7 @@ public:
 
     JCExpressionStatement(JCExpression* exp);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCBlock : public JCStatement {
@@ -217,7 +217,7 @@ public:
 
     JCBlock(JCStatement::List& stats);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCForLoop : public JCStatement {
@@ -234,7 +234,7 @@ public:
               JCExpressionStatement::List step,
               JCStatement* body);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCIf : public JCStatement {
@@ -249,7 +249,7 @@ public:
          JCStatement* thenpart,
          JCStatement* elsepart);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 
@@ -259,7 +259,7 @@ public:
 
     JCBreak();
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCContinue : public JCStatement {
@@ -268,7 +268,7 @@ public:
 
     JCContinue();
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCReturn : public JCStatement {
@@ -279,7 +279,7 @@ public:
 
     JCReturn(JCExpression* expr);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 
 };
 
@@ -292,7 +292,7 @@ public:
 
     JCMethodInvocation(JCExpression::List& args, JCExpression* meth);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCNewClass : public JCExpression {
@@ -304,7 +304,7 @@ public:
 
     JCNewClass(JCExpression* clazz, JCExpression::List& arguments);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCParens : public JCExpression {
@@ -315,7 +315,7 @@ public:
 
     JCParens(JCExpression* expr);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCAssign : public JCExpression {
@@ -327,7 +327,7 @@ public:
 
     JCAssign(JCExpression* lhs, JCExpression* rhs);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCConditional : public JCExpression {
@@ -340,7 +340,7 @@ public :
 
     JCConditional(JCExpression* cond, JCExpression* truepart, JCExpression* falsepart);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCBinary : public JCExpression {
@@ -353,7 +353,7 @@ public:
 
     JCBinary(int opcode, JCExpression* lhs, JCExpression* rhs);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCArrayAccess : public JCExpression {
@@ -365,7 +365,7 @@ public:
 
     JCArrayAccess(JCExpression* indexed, JCExpression* index);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCFieldAccess : public JCExpression {
@@ -377,7 +377,7 @@ public:
 
     JCFieldAccess(JCExpression* selected, Name& selector);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCIdent : public JCExpression {
@@ -388,7 +388,7 @@ public:
 
     JCIdent(Name& name);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCLiteral : public JCExpression {
@@ -417,7 +417,7 @@ public:
     template<typename R>
     R getValue();
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 
     ~JCLiteral();
 };
@@ -443,7 +443,7 @@ public:
 
     JCPrimitiveTypeTree(int tag);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCArrayTypeTree : public JCExpression {
@@ -452,7 +452,7 @@ public:
 
     JCArrayTypeTree(JCExpression* elementType);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCNewArray : public JCExpression {
@@ -463,7 +463,7 @@ public:
 
     JCNewArray(JCExpression* elementType, JCExpression::List& dimens, JCExpression::List& elems);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCUnary : public JCExpression {
@@ -473,7 +473,7 @@ public:
 
     JCUnary(int opcode, JCExpression* arg);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 class JCVariableDecl : public JCStatement {
@@ -489,7 +489,7 @@ public:
 
     JCVariableDecl(Name& name, JCExpression* vartype, JCExpression* init);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 };
 
 
@@ -510,66 +510,66 @@ public:
                  JCVariableDecl::List& params,
                  JCBlock* body);
 
-    void accept(Visitor& visitor) override;
+    void accept(Visitor* visitor) override;
 
 };
 
 
 class Visitor {
 public:
-    virtual void visitClassDef(JCClassDecl& that) { visitTree(that); }
+    virtual void visitClassDef(JCClassDecl* that) { visitTree(that); }
 
-    virtual void visitMethodDef(JCMethodDecl& that) { visitTree(that); }
+    virtual void visitMethodDef(JCMethodDecl* that) { visitTree(that); }
 
-    virtual void visitVarDef(JCVariableDecl& that) { visitTree(that); }
+    virtual void visitVarDef(JCVariableDecl* that) { visitTree(that); }
 
-    virtual void visitBlock(JCBlock& that) { visitTree(that); }
+    virtual void visitBlock(JCBlock* that) { visitTree(that); }
 
-    virtual void visitForLoop(JCForLoop& that) { visitTree(that); }
+    virtual void visitForLoop(JCForLoop* that) { visitTree(that); }
 
-    virtual void visitIf(JCIf& that) { visitTree(that); }
+    virtual void visitIf(JCIf* that) { visitTree(that); }
 
-    virtual void visitExec(JCExpressionStatement& that) { visitTree(that); }
+    virtual void visitExec(JCExpressionStatement* that) { visitTree(that); }
 
-    virtual void visitBreak(JCBreak& that) { visitTree(that); }
+    virtual void visitBreak(JCBreak* that) { visitTree(that); }
 
-    virtual void visitContinue(JCContinue& that) { visitTree(that); }
+    virtual void visitContinue(JCContinue* that) { visitTree(that); }
 
-    virtual void visitReturn(JCReturn& that) { visitTree(that); }
+    virtual void visitReturn(JCReturn* that) { visitTree(that); }
 
-    virtual void visitApply(JCMethodInvocation& that) { visitTree(that); }
+    virtual void visitApply(JCMethodInvocation* that) { visitTree(that); }
 
-    virtual void visitNewClass(JCNewClass& that) { visitTree(that); }
+    virtual void visitNewClass(JCNewClass* that) { visitTree(that); }
 
-    virtual void visitParens(JCParens& that) { visitTree(that); }
+    virtual void visitParens(JCParens* that) { visitTree(that); }
 
-    virtual void visitAssign(JCAssign& that) { visitTree(that); }
+    virtual void visitAssign(JCAssign* that) { visitTree(that); }
 
-    virtual void visitConditional(JCConditional& that) { visitTree(that); }
+    virtual void visitConditional(JCConditional* that) { visitTree(that); }
 
-    virtual void visitBinary(JCBinary& that) { visitTree(that); }
+    virtual void visitBinary(JCBinary* that) { visitTree(that); }
 
-    virtual void visitIndexed(JCArrayAccess& that) { visitTree(that); }
+    virtual void visitIndexed(JCArrayAccess* that) { visitTree(that); }
 
-    virtual void visitSelect(JCFieldAccess& that) { visitTree(that); }
+    virtual void visitSelect(JCFieldAccess* that) { visitTree(that); }
 
-    virtual void visitIdent(JCIdent& that) { visitTree(that); }
+    virtual void visitIdent(JCIdent* that) { visitTree(that); }
 
-    virtual void visitLiteral(JCLiteral& that) { visitTree(that); }
+    virtual void visitLiteral(JCLiteral* that) { visitTree(that); }
 
-    virtual void visitTypeIdent(JCPrimitiveTypeTree& that) { visitTree(that); }
+    virtual void visitTypeIdent(JCPrimitiveTypeTree* that) { visitTree(that); }
 
-    virtual void visitTypeArray(JCArrayTypeTree& that) { visitTree(that); }
+    virtual void visitTypeArray(JCArrayTypeTree* that) { visitTree(that); }
 
-    virtual void visitModifiers(JCModifiers& that) { visitTree(that); }
+    virtual void visitModifiers(JCModifiers* that) { visitTree(that); }
 
-    virtual void visitUnary(JCUnary& that) { visitTree(that); }
+    virtual void visitUnary(JCUnary* that) { visitTree(that); }
 
-    virtual void visitNewArray(JCNewArray& that) { visitTree(that); }
+    virtual void visitNewArray(JCNewArray* that) { visitTree(that); }
 
-    virtual void visitMethodInvocation(JCMethodInvocation& that) { visitTree(that); }
+    virtual void visitMethodInvocation(JCMethodInvocation* that) { visitTree(that); }
 
-    virtual void visitTree(Tree& that) {
+    virtual void visitTree(Tree* that) {
         //TODO error
     }
 };
