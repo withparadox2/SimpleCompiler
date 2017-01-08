@@ -11,7 +11,7 @@
 using namespace std;
 
 //Break line at the end of each line.
-void readFileContent(ifstream &is, string &result) {
+void readFileContent(ifstream& is, string& result) {
     if (is.is_open()) {
         string line;
         while (getline(is, line)) {
@@ -22,8 +22,8 @@ void readFileContent(ifstream &is, string &result) {
     }
 }
 
-string *readByPath(const string &filePath) {
-    string *source = new string;
+string* readByPath(const string& filePath) {
+    string* source = new string;
     ifstream is(filePath.c_str());
     readFileContent(is, *source);
     return source;
