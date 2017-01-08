@@ -11,8 +11,11 @@ Enter& Enter::instance() {
     return inst;
 }
 
-void Enter::complete(Tree* tree) {
+void Enter::complete(Tree* tree, Env* env) {
+    Env* preEnv = this->env;
+    this->env = env;
     tree->accept(*this);
+    this->env = preEnv;
 }
 
 void Enter::visitClassDef(JCClassDecl& that) {
@@ -22,29 +25,37 @@ void Enter::visitClassDef(JCClassDecl& that) {
     std::shared_ptr<JCClassDecl> classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that.shared_from_this());
     Env* env = classEnv(classSharedPtr);
     typeEnvs.insert(std::make_pair(c, env));
-    //todo calc flags_field
+    //TODO calc flags_field
 
     completeMember(c);
 }
 
 void Enter::visitMethodDef(JCMethodDecl& tree) {
-    Scope::Ptr& enclScope = enterScope(*this->env);
+    Scope::Ptr& enclScope = enterScope(this->env);
     MethodSymbol::Ptr m(new MethodSymbol(0, tree.name, nullptr, enclScope->owner.lock()));
     //TODO   m->flags
     tree.sym = m;
-
+    m->type = signature(tree.params, tree.resType, this->env);
     //TODO calc type and parameters
 
     //TODO check unique
     enclScope->enter(m);
+}
 
+void Enter::visitVarDef(JCVariableDecl& that) {
+    //ignore static or interface
+    attr.attribType(that.vartype.get(), env);
 }
 
 void Enter::visitTree(Tree& that) {
     //do nothing
 }
 
-Enter::Enter() : reader(ClassReader::instance()), syms(Symtab::instance()), names(Names::instance()), env(nullptr) {
+Enter::Enter() : reader(ClassReader::instance()),
+                 syms(Symtab::instance()),
+                 names(Names::instance()),
+                 env(nullptr),
+                 attr(Attr::instance()) {
 }
 
 Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
@@ -68,7 +79,6 @@ void Enter::completeMember(ClassSymbol::Ptr& c) {
     if (!treeinfo::hasConstructors(tree->defs)) {
         //Not support anonymous class
         Tree* ctor = defaultConstructor(c);
-        //TODO should prepend?
         tree->defs.push_back(Tree::Ptr(ctor));
     }
 
@@ -109,15 +119,18 @@ Tree* Enter::defaultConstructor(ClassSymbol::Ptr& c) {
     return new JCMethodDecl(modifier, nullptr, *names.init, param, block);
 }
 
-Scope::Ptr& Enter::enterScope(const Env& env) {
-    if (env.tree->treeTag == Tree::CLASSDEF) {
-        return dynamic_cast<JCClassDecl*>(env.tree.get())->sym->memberField;
+Scope::Ptr& Enter::enterScope(Env* env) {
+    if (env->tree->treeTag == Tree::CLASSDEF) {
+        return dynamic_cast<JCClassDecl*>(env->tree.get())->sym->memberField;
     } else {
-        return env.info->scope;
+        return env->info->scope;
     }
 }
 
-Type* Enter::signature(vector<JCVariableDecl*>* params, Tree* res, Env* env) {
+Type::Ptr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env) {
 
+    for (auto iter = params.begin(); iter != params.end(); iter++) {
+        complete(iter->get(), env);
+    }
     return nullptr;
 }

@@ -9,6 +9,7 @@
 #include <memory>
 
 class Type;
+
 typedef std::shared_ptr<Type> TypePtr;
 
 class ClassType;
@@ -31,7 +32,7 @@ enum class Kind {
             ERR = (1 << 5)
 };
 
-class Symbol : public std::enable_shared_from_this<Symbol>{
+class Symbol : public std::enable_shared_from_this<Symbol> {
 private:
     Kind kindinternal;
 public:
@@ -67,6 +68,8 @@ public:
      */
     std::shared_ptr<Scope> memberField;
     Name* fullName;
+
+    void initOnShared();
 
     ClassSymbol(long flags, const Name& name, Symbol::Ptr owner);
 

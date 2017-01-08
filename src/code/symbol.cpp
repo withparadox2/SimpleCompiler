@@ -6,12 +6,19 @@
 #include "type.h"
 
 ClassSymbol::ClassSymbol(long flags, const Name& name, Symbol::Ptr owner)
-        : ClassSymbol(flags, name, TypePtr(nullptr), owner) {
-    this->type->tsym = std::static_pointer_cast<TypeSymbol>(shared_from_this());
+        : ClassSymbol(flags, name, TypePtr(new ClassType(nullptr)), owner) {
 }
 
 ClassSymbol::ClassSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
         : TypeSymbol(flags, name, type, owner), memberField(nullptr) {
+}
+
+/**
+ * Since this meth calls shared_from_this, it can not be inserted into a constructor.
+ */
+void ClassSymbol::initOnShared() {
+    TypeSymbol::Ptr ptr = std::static_pointer_cast<TypeSymbol>(shared_from_this());
+    this->type->tsym = ptr;
 }
 
 TypeSymbol::TypeSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
@@ -20,6 +27,7 @@ TypeSymbol::TypeSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr
 
 Symbol::Symbol(Kind kind, long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
         : kindinternal(kind), flags(flags), name(name), type(type), owner(owner) {
+
 }
 
 int Symbol::kind() {

@@ -96,7 +96,7 @@ JCMethodDecl::JCMethodDecl(JCModifiers* mods,
                            Name& name,
                            JCVariableDecl::List& params,
                            JCBlock* body)
-        : Tree(METHODDEF), mods(mods), type(type), name(name), params(params),
+        : Tree(METHODDEF), mods(mods), resType(type), name(name), params(params),
           body(body), sym(nullptr) {
 
 }

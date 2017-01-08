@@ -498,7 +498,7 @@ public:
     typedef shared_ptr<JCMethodDecl> Ptr;
 
     JCModifiers::Ptr mods;
-    JCExpression::Ptr type;
+    JCExpression::Ptr resType;
     Name& name;
     JCVariableDecl::List params;
     JCBlock::Ptr body;

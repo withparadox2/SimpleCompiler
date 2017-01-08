@@ -6,6 +6,7 @@
 #include "common.h"
 #include "util/layoutchars.h"
 #include "tree/pretty.h"
+#include "comp/enter.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ int main() {
     Pretty p;
     clazz->accept(p);
 
+    Enter::instance().complete(clazz.get(), nullptr);
     return 0;
 }
 

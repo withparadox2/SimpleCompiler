@@ -33,7 +33,7 @@ void Pretty::visitMethodDef(JCMethodDecl& that) {
         that.mods->accept(*this);
     }
 
-    that.type->accept(*this);
+    that.resType->accept(*this);
     addSpace();
     print(that.name.desc);
     addSpace();

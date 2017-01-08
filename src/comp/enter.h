@@ -5,13 +5,16 @@
 #ifndef SIMPLECOMPILER_ENTER_H
 #define SIMPLECOMPILER_ENTER_H
 
+#include <map>
+
 #include "../tree/tree.h"
 #include "../code/symbol.h"
 #include "../util/names.h"
 #include "../jvm/ClassReader.h"
 #include "./env.h"
 #include "../code/Symtab.h"
-#include <map>
+#include "attr.h"
+
 
 using std::map;
 
@@ -20,6 +23,7 @@ private:
     ClassReader& reader;
     Symtab& syms;
     Names& names;
+    Attr& attr;
 
     Enter();
 
@@ -29,11 +33,13 @@ public:
 
     static Enter& instance();
 
-    void complete(Tree* tree);
+    void complete(Tree* tree, Env* env);
 
     void visitClassDef(JCClassDecl& that) override;
 
     void visitMethodDef(JCMethodDecl& that) override;
+
+    void visitVarDef(JCVariableDecl& that) override;
 
     void visitTree(Tree& that) override;
 
@@ -45,9 +51,9 @@ public:
 
     JCExpressionStatement* superCall(ClassSymbol::Ptr& c);
 
-    Scope::Ptr& enterScope(const Env& env);
+    Scope::Ptr& enterScope(Env* env);
 
-    Type* signature(vector<JCVariableDecl*>* params, Tree* res, Env* env);
+    Type::Ptr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env);
 
 };
 
