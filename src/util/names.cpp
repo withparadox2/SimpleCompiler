@@ -21,6 +21,7 @@ Names::Names() {
     _class = &fromString("class");
     _super = &fromString("super");
     hyphen = &fromString("-");
+    Array = &fromString("Array");
 }
 
 Name& Names::fromString(const string& str) {

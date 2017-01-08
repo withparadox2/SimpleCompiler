@@ -18,3 +18,7 @@ MethodType::MethodType(vector<Type::Ptr> argtypes, Type::Ptr restype, TypeSymbol
         : Type(TypeTags::METHOD, methodClass), argtypes(argtypes), restype(restype) {
 
 }
+
+ArrayType::ArrayType(Type::Ptr elemtype, TypeSymbol::Ptr arrayClass)
+        : Type(TypeTags::ARRAY, arrayClass), elemtype(elemtype) {
+}

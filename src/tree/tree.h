@@ -383,7 +383,7 @@ public:
 class JCIdent : public JCExpression {
 public:
     typedef shared_ptr<JCIdent> Ptr;
-
+    Symbol::Ptr sym;
     Name& name;
 
     JCIdent(Name& name);

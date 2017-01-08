@@ -18,23 +18,21 @@ class MethodType;
 
 class Scope;
 
-enum class Kind {
-    PKG = 1 << 0,
-    /**type symbols (classes, interfaces and type variables).*/
-            TYP = 1 << 1,
-    /**variable symbols.*/
-            VAR = 1 << 2,
-    /**values (variables or non-variable expressions), includes VAR.*/
-            VAL = (1 << 3) | static_cast<int>(VAR),
-    /**methods*/
-            MTH = (1 << 4),
-    /**The error kind, which includes all other kinds.*/
-            ERR = (1 << 5)
+namespace Kind {
+    extern int PKG;
+/**type symbols (classes, interfaces and type variables).*/
+    extern int TYP;
+/**variable symbols.*/
+    extern int VAR;
+/**values (variables or non-variable expressions), includes VAR.*/
+    extern int VAL;
+/**methods*/
+    extern int MTH;
+/**The error kind, which includes all other kinds.*/
+    extern int ERR;
 };
 
 class Symbol : public std::enable_shared_from_this<Symbol> {
-private:
-    Kind kindinternal;
 public:
     typedef std::shared_ptr<Symbol> Ptr;
     typedef std::weak_ptr<Symbol> WeakPtr;
@@ -42,10 +40,9 @@ public:
     const Name& name;
     Symbol::Ptr owner;
     TypePtr type;
+    int kind;
 
-    Symbol(Kind kind, long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
-
-    int kind();
+    Symbol(int kind, long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
 
 class TypeSymbol : public Symbol {
@@ -64,7 +61,7 @@ public:
     /** a scope for all class members; variables, methods and inner classes
      *  type parameters are not part of this scope
      *
-     *  But method's symbol is actually entered into this. TODO check out why.
+     *  But the method's symbol is actually entered into this. TODO check out why.
      */
     std::shared_ptr<Scope> memberField;
     Name* fullName;

@@ -22,6 +22,8 @@ public:
 
     Scope(Symbol::Ptr owner);
 
+    Symbol::Ptr lookUp(const Name& name);
+
 };
 
 

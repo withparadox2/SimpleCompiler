@@ -9,6 +9,7 @@
 #include "../jvm/ClassReader.h"
 #include <string>
 #include "../util/names.h"
+#include "Flags.h"
 
 using std::string;
 
@@ -27,10 +28,14 @@ private:
 public:
     static Symtab& instance();
 
+    ClassSymbol::Ptr arrayClass;
+    TypeSymbol::Ptr noSymbol;
+
     Type::Ptr objectType;
     Type::Ptr classType;
     Type::Ptr stringType;
     Type::Ptr systemType;
+
 };
 
 

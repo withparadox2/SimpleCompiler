@@ -40,6 +40,7 @@ public:
     Name* _class;
     Name* _super;
     Name* hyphen;
+    Name* Array;
 
     static Names& instance();
 

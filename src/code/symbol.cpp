@@ -5,6 +5,21 @@
 #include "symbol.h"
 #include "type.h"
 
+namespace Kind {
+    int PKG = 1 << 0;
+/**type symbols (classes, interfaces and type variables).*/
+    int TYP = 1 << 1;
+/**variable symbols.*/
+    int VAR = 1 << 2;
+/**values (variables or non-variable expressions), includes VAR.*/
+    int VAL = (1 << 3) | VAR;
+/**methods*/
+    int MTH = (1 << 4);
+/**The error kind, which includes all other kinds.*/
+    int ERR = (1 << 5);
+};
+
+
 ClassSymbol::ClassSymbol(long flags, const Name& name, Symbol::Ptr owner)
         : ClassSymbol(flags, name, TypePtr(new ClassType(nullptr)), owner) {
 }
@@ -25,15 +40,10 @@ TypeSymbol::TypeSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr
         : Symbol(Kind::TYP, flags, name, type, owner) {
 }
 
-Symbol::Symbol(Kind kind, long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
-        : kindinternal(kind), flags(flags), name(name), type(type), owner(owner) {
+Symbol::Symbol(int kind, long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
+        : kind(kind), flags(flags), name(name), type(type), owner(owner) {
 
 }
-
-int Symbol::kind() {
-    return static_cast<int>(kindinternal);
-}
-
 
 VarSymbol::VarSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
         : Symbol(Kind::VAR, flags, name, type, owner) {

@@ -41,4 +41,10 @@ public:
                TypeSymbol::Ptr methodClass);
 };
 
+class ArrayType : public Type {
+public:
+    Type::Ptr elemtype;
+    ArrayType(Type::Ptr elemtype, TypeSymbol::Ptr arrayClass);
+};
+
 #endif //SIMPLECOMPILER_TYPE_H

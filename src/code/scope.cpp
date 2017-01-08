@@ -12,3 +12,10 @@ void Scope::enter(Symbol::Ptr symbol) {
 
 Scope::Scope(Symbol::Ptr owner) : owner(owner){
 }
+
+Symbol::Ptr Scope::lookUp(const Name& name) {
+    if(nameToSym.find(&name) != nameToSym.end()) {
+        return nameToSym.at(&name);
+    }
+    return Symbol::Ptr();
+}
