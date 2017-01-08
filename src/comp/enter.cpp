@@ -55,7 +55,7 @@ Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
 }
 
 void Enter::completeMember(ClassSymbol::Ptr& c) {
-    ClassType* ct = static_cast<ClassType*>(c->type);
+    ClassType* ct = static_cast<ClassType*>(c->type.get());
 
     Env* classEnv = typeEnvs.at(c);
     JCClassDecl* tree = dynamic_cast<JCClassDecl*>(classEnv->tree.get());

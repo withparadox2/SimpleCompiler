@@ -16,7 +16,7 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()) {
     systemType = enterClass("java.lang.System");
 }
 
-Type* Symtab::enterClass(const string& fullName) {
+Type::Ptr Symtab::enterClass(const string& fullName) {
     Name& name = names.fromString(fullName);
     return reader.enterClass(name)->type;
 }

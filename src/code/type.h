@@ -6,34 +6,39 @@
 #define SIMPLECOMPILER_TYPE_H
 
 #include <vector>
+#include <memory>
+#include "symbol.h"
 
 using std::vector;
 
-class TypeSymbol;
-
 class Type {
 public:
+    typedef std::shared_ptr<Type> Ptr;
     int tag;
-    TypeSymbol* tsym;
+    TypeSymbol::WeakPtr tsym;
 
-    Type(int tag, TypeSymbol* tsym);
+    Type(int tag, TypeSymbol::Ptr tsym);
 };
 
 class ClassType : public Type {
 public:
-    Type* supertype_field;
+    typedef std::shared_ptr<ClassType> Ptr;
 
-    ClassType(TypeSymbol* tsym);
+    Type::Ptr supertype_field;
+
+    ClassType(TypeSymbol::Ptr tsym);
 };
 
 class MethodType : public Type {
 public:
-    vector<Type*>* argtypes;
-    Type* restype;
+    typedef std::shared_ptr<MethodType> Ptr;
 
-    MethodType(vector<Type*>* argtypes,
-               Type* restype,
-               TypeSymbol* methodClass);
+    vector<Type::Ptr> argtypes;
+    Type::Ptr restype;
+
+    MethodType(vector<Type::Ptr> argtypes,
+               Type::Ptr restype,
+               TypeSymbol::Ptr methodClass);
 };
 
 #endif //SIMPLECOMPILER_TYPE_H

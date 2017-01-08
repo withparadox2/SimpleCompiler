@@ -22,15 +22,15 @@ private:
 
     Symtab();
 
-    Type* enterClass(const string& fullName);
+    Type::Ptr enterClass(const string& fullName);
 
 public:
     static Symtab& instance();
 
-    Type* objectType;
-    Type* classType;
-    Type* stringType;
-    Type* systemType;
+    Type::Ptr objectType;
+    Type::Ptr classType;
+    Type::Ptr stringType;
+    Type::Ptr systemType;
 };
 
 

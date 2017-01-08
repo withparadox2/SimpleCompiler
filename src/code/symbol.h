@@ -9,6 +9,7 @@
 #include <memory>
 
 class Type;
+typedef std::shared_ptr<Type> TypePtr;
 
 class ClassType;
 
@@ -30,7 +31,7 @@ enum class Kind {
             ERR = (1 << 5)
 };
 
-class Symbol {
+class Symbol : public std::enable_shared_from_this<Symbol>{
 private:
     Kind kindinternal;
 public:
@@ -39,9 +40,9 @@ public:
     long long flags;
     const Name& name;
     Symbol::Ptr owner;
-    Type* type;
+    TypePtr type;
 
-    Symbol(Kind kind, long flags, const Name& name, Type* type, Symbol::Ptr owner);
+    Symbol(Kind kind, long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 
     int kind();
 };
@@ -51,7 +52,7 @@ public:
     typedef std::shared_ptr<TypeSymbol> Ptr;
     typedef std::weak_ptr<TypeSymbol> WeakPtr;
 
-    TypeSymbol(long flags, const Name& name, Type* type, Symbol::Ptr owner);
+    TypeSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
 
 class ClassSymbol : public TypeSymbol {
@@ -69,21 +70,21 @@ public:
 
     ClassSymbol(long flags, const Name& name, Symbol::Ptr owner);
 
-    ClassSymbol(long flags, const Name& name, Type* type, Symbol::Ptr owner);
+    ClassSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
 
 class VarSymbol : public Symbol {
 public:
     typedef std::shared_ptr<VarSymbol> Ptr;
 
-    VarSymbol(long flags, const Name& name, Type* type, Symbol::Ptr owner);
+    VarSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
 
 class MethodSymbol : public Symbol {
 public:
     typedef std::shared_ptr<MethodSymbol> Ptr;
 
-    MethodSymbol(long flags, const Name& name, Type* type, Symbol::Ptr owner);
+    MethodSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
 
 //class OperatorSymbol : public MethodSymbol {
