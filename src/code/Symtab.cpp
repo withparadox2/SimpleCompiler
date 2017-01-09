@@ -9,7 +9,7 @@ Symtab& Symtab::instance() {
     return inst;
 }
 
-Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), noSymbol2(Flags::PUBLIC, *names.Array, nullptr) {
+Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()) {
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");

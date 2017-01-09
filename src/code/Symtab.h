@@ -21,16 +21,15 @@ private:
     ClassReader& reader;
     Names& names;
 
+    Symtab();
+
     Type::Ptr enterClass(const string& fullName);
 
 public:
-    Symtab();
-
     static Symtab& instance();
 
     ClassSymbol::Ptr arrayClass;
     Symbol::Ptr noSymbol;
-    ClassSymbol noSymbol2;
 
     Type::Ptr objectType;
     Type::Ptr classType;
