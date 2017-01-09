@@ -6,6 +6,7 @@
 #define SIMPLECOMPILER_SYMBOL_H
 
 #include "../util/names.h"
+#include "scope.h"
 #include <memory>
 
 class Type;
@@ -86,7 +87,6 @@ public:
 
     MethodSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
-
 //class OperatorSymbol : public MethodSymbol {
 //
 //};

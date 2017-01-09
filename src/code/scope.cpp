@@ -56,4 +56,16 @@ Scope::Ptr Scope::leave() {
     return next;
 }
 
+StarImportScope::StarImportScope() : Scope(Symtab::instance().noSymbol) {
+    importAll();
+}
+
+void StarImportScope::importAll() {
+    enter()
+}
+
+StarImportScope& StarImportScope::instance() {
+    static StarImportScope instance;
+    return instance;
+}
 

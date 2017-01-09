@@ -19,7 +19,7 @@ private:
      * real items inserted into current scope.
      */
     MapPtr nameToSym;
-    std::set<const Name *> elems;
+    std::set<const Name*> elems;
 public:
     typedef std::shared_ptr<Scope> Ptr;
 
@@ -48,6 +48,15 @@ public:
     Scope* dup();
 
     Scope::Ptr leave();
+};
+
+class StarImportScope : public Scope {
+private:
+    StarImportScope();
+public:
+    StarImportScope& instance();
+
+    void importAll();
 };
 
 
