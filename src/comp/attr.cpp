@@ -49,10 +49,10 @@ void Attr::visitTypeArray(JCArrayTypeTree* that) {
 }
 
 Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
-    if (kind & Kind::TYP != 0) {
+    if ((kind & Kind::TYP) != 0) {
         return findType(env, name);
     }
-    return nullptr;
+    return syms.noSymbol;
 }
 
 Symbol::Ptr Attr::findType(Env* env, const Name& name) {
@@ -62,4 +62,5 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
             return sym;
         }
     }
+    return syms.noSymbol;
 }

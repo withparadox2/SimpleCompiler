@@ -9,13 +9,14 @@ Symtab& Symtab::instance() {
     return inst;
 }
 
-Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()) {
+Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), noSymbol2(Flags::PUBLIC, *names.Array, nullptr) {
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");
     systemType = enterClass("java.lang.System");
 
     arrayClass = ClassSymbol::Ptr(new ClassSymbol(Flags::PUBLIC, *names.Array, nullptr));
+    noSymbol = TypeSymbol::Ptr(nullptr);
 }
 
 Type::Ptr Symtab::enterClass(const string& fullName) {

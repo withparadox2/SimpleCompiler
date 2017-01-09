@@ -6,24 +6,48 @@
 #define SIMPLECOMPILER_SCOPE_H
 
 #include <map>
-#include "./symbol.h"
+#include <set>
+#include "symbol.h"
+#include "Symtab.h"
 
-using std::map;
-
-class Scope {
+class Scope : public std::enable_shared_from_this<Scope> {
 private:
-    map<const Name*, Symbol::Ptr> nameToSym;
+    typedef std::map<const Name*, Symbol::Ptr> Map;
+    typedef std::shared_ptr<Map> MapPtr;
+    /**
+     * May be shared with other scope, using elems to track
+     * real items inserted into current scope.
+     */
+    MapPtr nameToSym;
+    std::set<const Name *> elems;
 public:
     typedef std::shared_ptr<Scope> Ptr;
+
+    std::shared_ptr<Scope> next;
 
     Symbol::WeakPtr owner;
 
     void enter(Symbol::Ptr symbol);
 
+    void remove(const Name& name);
+
     Scope(Symbol::Ptr owner);
 
-    Symbol::Ptr lookUp(const Name& name);
+    Symbol::Ptr& lookUp(const Name& name);
 
+    Scope(const Scope& s, const MapPtr& nameToSym);
+
+    /**
+     * Share everything except nameToSym which need to be deep copied.
+     */
+    Scope* dupUnshared();
+
+    /**
+     * Share everything, including nameToSym.
+     */
+    Scope* dup();
+
+    Scope::Ptr leave();
 };
 
 

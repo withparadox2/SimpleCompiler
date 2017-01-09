@@ -134,3 +134,7 @@ Type::Ptr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res,
     }
     return nullptr;
 }
+
+Env *Enter::methodEnv(JCMethodDecl::Ptr &tree, Env *env) {
+    return nullptr;
+}
