@@ -5,6 +5,7 @@
 #include "ClassReader.h"
 #include "../util/error.h"
 #include <cstddef>
+#include "../code/scope.h"
 
 const Name& shortName(const Name& src) {
     size_t pos = src.desc.find_last_of('.');
@@ -46,4 +47,9 @@ ClassSymbol* ClassReader::defineClass(const Name& name) {
 
 void ClassReader::complete(ClassSymbol::Ptr& sym) {
     Names& names = sym->name.names;
+    sym->memberField = Scope::Ptr(new Scope(sym));
+    if (sym->name == names.fromString("String")) {
+    } else if (sym->name == names.fromString("System")) {
+
+    }
 }

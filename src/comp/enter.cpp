@@ -20,7 +20,7 @@ void Enter::complete(Tree* tree, Env* env) {
 
 void Enter::visitClassDef(JCClassDecl* that) {
     ClassSymbol::Ptr& c = reader.enterClass(that->name);
-    c->memberField = Scope::Ptr(new Scope(std::static_pointer_cast<Symbol>(c)));
+    c->memberField = Scope::Ptr(new Scope(c));
     that->sym = c;
     std::shared_ptr<JCClassDecl> classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
     Env* env = classEnv(classSharedPtr);
