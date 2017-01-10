@@ -3,6 +3,7 @@
 //
 
 #include "Symtab.h"
+#include "../code/TypeTags.h"
 
 Symtab& Symtab::instance() {
     static Symtab inst;
@@ -10,6 +11,7 @@ Symtab& Symtab::instance() {
 }
 
 Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()) {
+    voidType = Type::Ptr(new Type(TypeTags::VOID, nullptr));
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");

@@ -31,6 +31,7 @@ public:
     ClassSymbol::Ptr arrayClass;
     Symbol::Ptr noSymbol;
 
+    Type::Ptr voidType;
     Type::Ptr objectType;
     Type::Ptr classType;
     Type::Ptr stringType;

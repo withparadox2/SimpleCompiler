@@ -7,6 +7,9 @@
 #include <cstddef>
 #include "../code/scope.h"
 #include "../code/type.h"
+#include "../code/Symtab.h"
+
+using std::vector;
 
 const Name& shortName(const Name& src) {
     size_t pos = src.desc.find_last_of('.');
@@ -57,11 +60,12 @@ void ClassReader::complete(ClassSymbol::Ptr& sym) {
                               sym));
         sym->memberField->enter(outSym);
     } else if (sym->name == names.fromString("PrintStream")) {
+        vector<TypePtr> args;
+        args.push_back(TypePtr(classes.at(&names.fromString("java.lang.String"))->type));
+        MethodType::Ptr printType(new MethodType(args, Symtab::instance().voidType, sym));
+
         MethodSymbol::Ptr printSym(
-                new MethodSymbol(0,
-                                 names.fromString("println"),
-                                 //TODO finish method type
-                                 MethodType::Ptr(nullptr), sym));
+                new MethodSymbol(0, names.fromString("println"), printType, sym));
         sym->memberField->enter(printSym);
     } else if (sym->name == names.fromString("String")) {
     }
