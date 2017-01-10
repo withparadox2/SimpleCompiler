@@ -6,7 +6,6 @@
 #define SIMPLECOMPILER_SYMBOL_H
 
 #include "../util/names.h"
-#include "scope.h"
 #include <memory>
 
 class Type;

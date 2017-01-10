@@ -23,9 +23,12 @@ public:
 
     Name(Names& names, const string& desc);
 
-    bool operator==(Name& name);
+    bool operator==(const Name& name) const;
 
-    bool operator!=(Name& name);
+    bool operator!=(const Name& name) const;
+
+    bool operator!=(const Name& name);
+    bool operator==(const Name& name);
 };
 
 class Names {

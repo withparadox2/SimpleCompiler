@@ -3,6 +3,7 @@
 //
 
 #include "scope.h"
+#include "Symtab.h"
 
 void Scope::enter(Symbol::Ptr symbol) {
     if (nameToSym->find(&symbol->name) == nameToSym->end()) {
@@ -61,7 +62,7 @@ StarImportScope::StarImportScope() : Scope(Symtab::instance().noSymbol) {
 }
 
 void StarImportScope::importAll() {
-    enter()
+
 }
 
 StarImportScope& StarImportScope::instance() {

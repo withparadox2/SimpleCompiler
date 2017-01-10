@@ -7,12 +7,20 @@ using std::make_pair;
 
 Name::Name(Names& names, const string& desc) : names(names), desc(desc) {}
 
-bool Name::operator==(Name& name) {
+bool Name::operator==(const Name& name) const {
     return desc.compare(name.desc) == 0;
 }
 
-bool Name::operator!=(Name& name) {
+bool Name::operator!=(const Name& name) const {
     return desc.compare(name.desc) != 0;;
+}
+
+bool Name::operator!=(const Name& name) {
+    return static_cast<const Name&>(*this) != name;
+}
+
+bool Name::operator==(const Name& name) {
+    return static_cast<const Name&>(*this) == name;
 }
 
 Names::Names() {

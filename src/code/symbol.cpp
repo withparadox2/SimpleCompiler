@@ -3,6 +3,7 @@
 //
 
 #include "symbol.h"
+#include "type.h"
 
 namespace Kind {
     int PKG = 1 << 0;

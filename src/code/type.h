@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <memory>
-#include "symbol.h"
+#include "./symbol.h"
 
 using std::vector;
 

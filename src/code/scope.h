@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 #include "symbol.h"
-#include "Symtab.h"
 
 class Scope : public std::enable_shared_from_this<Scope> {
 private:
