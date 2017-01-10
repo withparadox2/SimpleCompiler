@@ -13,6 +13,9 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()) {
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");
+
+    //PrintStream must before System, TODO correct it.
+    printStreamType = enterClass("java.io.PrintStream");
     systemType = enterClass("java.lang.System");
 
     arrayClass = ClassSymbol::Ptr(new ClassSymbol(Flags::PUBLIC, *names.Array, nullptr));

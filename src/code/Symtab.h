@@ -35,6 +35,7 @@ public:
     Type::Ptr classType;
     Type::Ptr stringType;
     Type::Ptr systemType;
+    Type::Ptr printStreamType;
 };
 
 

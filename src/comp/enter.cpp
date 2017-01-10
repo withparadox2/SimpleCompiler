@@ -22,7 +22,7 @@ void Enter::visitClassDef(JCClassDecl* that) {
     ClassSymbol::Ptr& c = reader.enterClass(that->name);
     c->memberField = Scope::Ptr(new Scope(c));
     that->sym = c;
-    std::shared_ptr<JCClassDecl> classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
+    JCClassDecl::Ptr classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
     Env* env = classEnv(classSharedPtr);
     typeEnvs.insert(std::make_pair(c, env));
     //TODO calc flags_field

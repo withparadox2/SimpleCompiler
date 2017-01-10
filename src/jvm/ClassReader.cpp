@@ -6,6 +6,7 @@
 #include "../util/error.h"
 #include <cstddef>
 #include "../code/scope.h"
+#include "../code/type.h"
 
 const Name& shortName(const Name& src) {
     size_t pos = src.desc.find_last_of('.');
@@ -48,8 +49,20 @@ ClassSymbol* ClassReader::defineClass(const Name& name) {
 void ClassReader::complete(ClassSymbol::Ptr& sym) {
     Names& names = sym->name.names;
     sym->memberField = Scope::Ptr(new Scope(sym));
-    if (sym->name == names.fromString("String")) {
-    } else if (sym->name == names.fromString("System")) {
-
+    if (sym->name == names.fromString("System")) {
+        VarSymbol::Ptr outSym(
+                new VarSymbol(0,
+                              names.fromString("out"),
+                              classes.at(&names.fromString("java.io.PrintStream"))->type,
+                              sym));
+        sym->memberField->enter(outSym);
+    } else if (sym->name == names.fromString("PrintStream")) {
+        MethodSymbol::Ptr printSym(
+                new MethodSymbol(0,
+                                 names.fromString("println"),
+                                 //TODO finish method type
+                                 MethodType::Ptr(nullptr), sym));
+        sym->memberField->enter(printSym);
+    } else if (sym->name == names.fromString("String")) {
     }
 }
