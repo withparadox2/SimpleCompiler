@@ -21,7 +21,7 @@ class Symtab {
 private:
     ClassReader& reader;
     Names& names;
-    // For int, boolean types, the symbol is dangling, so we provided
+    // Symbol of primitive type (int, boolean, void, null) is dangling, so we provided
     // a root for it.
     Symbol::List noRootSymbols;
     Symtab();
