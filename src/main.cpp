@@ -3,10 +3,10 @@
 #include <memory>
 #include "parser/Lexer.h"
 #include "parser/Parser.h"
-#include "common.h"
 #include "util/layoutchars.h"
 #include "tree/pretty.h"
 #include "comp/enter.h"
+#include "main.h"
 
 using namespace std;
 

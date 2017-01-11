@@ -1,7 +1,0 @@
-#ifndef SIMPLECOMPILER_COMMON_H
-#define SIMPLECOMPILER_COMMON_H
-
-#define FILE_PATH_ROOT "../TestHelloWorld/"
-#define FILE_PATH FILE_PATH_ROOT "HelloWorld.java"
-
-#endif //SIMPLECOMPILER_COMMON_H
