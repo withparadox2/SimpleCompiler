@@ -14,6 +14,7 @@ using std::vector;
 class Type {
 public:
     typedef std::shared_ptr<Type> Ptr;
+    typedef vector<Ptr> List;
     int tag;
     TypeSymbol::WeakPtr tsym;
 

@@ -7,6 +7,7 @@
 
 #include "../util/names.h"
 #include <memory>
+#include <vector>
 #include "../comp/completer.h"
 
 class Type;
@@ -38,6 +39,7 @@ namespace Kind {
 class Symbol : public std::enable_shared_from_this<Symbol> {
 public:
     typedef std::shared_ptr<Symbol> Ptr;
+    typedef std::vector<Ptr> List;
     typedef std::weak_ptr<Symbol> WeakPtr;
     long long flags;
     const Name& name;

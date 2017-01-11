@@ -33,6 +33,8 @@ public:
 
     void visitTypeArray(JCArrayTypeTree* that);
 
+    void visitTypeIdent(JCPrimitiveTypeTree* that);
+
     Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
 
     Symbol::Ptr findType(Env* env, const Name& name);

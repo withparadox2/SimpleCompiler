@@ -25,7 +25,7 @@ Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind) {
 
     this->pKind = preKind;
     this->env = preEnv;
-    return Type::Ptr();
+    return result;
 }
 
 Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()){
@@ -49,6 +49,7 @@ void Attr::visitIdent(JCIdent* that) {
 void Attr::visitTypeArray(JCArrayTypeTree* that) {
     TypePtr eType = attribType(that->elementType.get(), this->env);
     result = TypePtr(new ArrayType(eType, syms.arrayClass));
+    that->type = result;
 }
 
 Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
@@ -73,4 +74,8 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
         log("find type : " + sym->name.desc);
     }
     return syms.noSymbol;
+}
+
+void Attr::visitTypeIdent(JCPrimitiveTypeTree* that) {
+    result = syms.typeOfTag[that->typetag];
 }

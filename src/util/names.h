@@ -44,6 +44,7 @@ public:
     Name* _super;
     Name* hyphen;
     Name* Array;
+    Name* METHOD;
 
     static Names& instance();
 

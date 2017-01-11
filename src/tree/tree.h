@@ -29,6 +29,8 @@ public:
 
     Tree(int tag);
 
+    TypePtr type;
+
     template<typename R, typename D>
     R accept(TreeVisitor<R, D> v, D& d);
 
@@ -484,6 +486,7 @@ public:
     Name& name;
     JCExpression::Ptr vartype;
     JCExpression::Ptr init;
+    VarSymbol::Ptr sym;
 
     JCVariableDecl(Name& name, JCExpression* vartype);
 

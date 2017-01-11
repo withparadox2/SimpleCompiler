@@ -30,6 +30,7 @@ Names::Names() {
     _super = &fromString("super");
     hyphen = &fromString("-");
     Array = &fromString("Array");
+    METHOD = &fromString("METHOD");
 }
 
 Name& Names::fromString(const string& str) {

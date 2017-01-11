@@ -36,7 +36,6 @@ void Enter::visitMethodDef(JCMethodDecl* tree) {
     //TODO   m->flags
     tree->sym = m;
     m->type = signature(tree->params, tree->resType, this->env);
-    //TODO calc type and parameters
 
     //TODO check unique
     enclScope->enter(m);
@@ -45,6 +44,10 @@ void Enter::visitMethodDef(JCMethodDecl* tree) {
 void Enter::visitVarDef(JCVariableDecl* that) {
     //ignore static or interface
     attr.attribType(that->vartype.get(), env);
+    Scope::Ptr enclScope = enterScope(env);
+    VarSymbol::Ptr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
+    that->sym = v;
+    //TODO init var
 }
 
 void Enter::visitTree(Tree* that) {
@@ -128,11 +131,14 @@ Scope::Ptr& Enter::enterScope(Env* env) {
 }
 
 Type::Ptr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env) {
-
+    Type::List args;
     for (auto iter = params.begin(); iter != params.end(); iter++) {
         complete(iter->get(), env);
+        args.push_back(iter->get()->vartype->type);
     }
-    return nullptr;
+    Type::Ptr restype = !res ? syms.voidType : attr.attribType(res.get(), env);
+
+    return MethodType::Ptr(new MethodType(args, restype, syms.methodClass));
 }
 
 Env *Enter::methodEnv(JCMethodDecl::Ptr &tree, Env *env) {
