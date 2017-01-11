@@ -20,7 +20,7 @@ ClassReader& ClassReader::instance() {
 ClassSymbol::Ptr& ClassReader::enterClass(const Name& flatName) {
     auto iter = classes.find(&flatName);
     if (iter != classes.end()) {
-        error(flatName.desc + " can not enter twice");
+        return classes.at(&flatName);
     }
 
     //default means symbol is under package of java.lang
@@ -29,7 +29,7 @@ ClassSymbol::Ptr& ClassReader::enterClass(const Name& flatName) {
     ClassSymbol::Ptr symbol(defineClass(shortName(flatName)));
     symbol->initOnShared();
     if (isDefault) {
-        complete(symbol);
+        symbol->completer = this;
     }
     classes.insert(std::make_pair(&flatName, symbol));
     return classes.at(&flatName);
@@ -40,7 +40,8 @@ ClassSymbol* ClassReader::defineClass(const Name& name) {
     return symbol;
 }
 
-void ClassReader::complete(ClassSymbol::Ptr& sym) {
+void ClassReader::complete(Symbol::Ptr symP) {
+    ClassSymbol::Ptr sym = std::static_pointer_cast<ClassSymbol>(symP);
     Names& names = sym->name.names;
     sym->memberField = Scope::Ptr(new Scope(sym));
     if (sym->name == names.fromString("System")) {
@@ -52,7 +53,7 @@ void ClassReader::complete(ClassSymbol::Ptr& sym) {
         sym->memberField->enter(outSym);
     } else if (sym->name == names.fromString("PrintStream")) {
         vector<TypePtr> args;
-        args.push_back(TypePtr(classes.at(&names.fromString("java.lang.String"))->type));
+        args.push_back(classes.at(&names.fromString("java.lang.String"))->type);
         MethodType::Ptr printType(new MethodType(args, Symtab::instance().voidType, sym));
 
         MethodSymbol::Ptr printSym(

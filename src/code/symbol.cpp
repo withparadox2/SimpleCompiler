@@ -36,12 +36,20 @@ void ClassSymbol::initOnShared() {
     this->type->tsym = ptr;
 }
 
+ScopePtr ClassSymbol::member() {
+    if (completer != nullptr) {
+        completer->complete(shared_from_this());
+        completer = nullptr;
+    }
+    return memberField;
+}
+
 TypeSymbol::TypeSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
         : Symbol(Kind::TYP, flags, name, type, owner) {
 }
 
 Symbol::Symbol(int kind, long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
-        : kind(kind), flags(flags), name(name), type(type), owner(owner) {
+        : kind(kind), flags(flags), name(name), type(type), owner(owner), completer(nullptr) {
 
 }
 

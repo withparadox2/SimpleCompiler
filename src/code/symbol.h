@@ -7,6 +7,7 @@
 
 #include "../util/names.h"
 #include <memory>
+#include "../comp/completer.h"
 
 class Type;
 
@@ -17,6 +18,8 @@ class ClassType;
 class MethodType;
 
 class Scope;
+typedef std::shared_ptr<Scope> ScopePtr;
+
 
 namespace Kind {
     extern int PKG;
@@ -41,7 +44,8 @@ public:
     Symbol::Ptr owner;
     TypePtr type;
     int kind;
-
+    //TODO ClassReader(static instance) is ok, how about a new Completer
+    Completer* completer;
     Symbol(int kind, long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
 
@@ -63,7 +67,8 @@ public:
      *
      *  But the method's symbol is actually entered into this. TODO check out why.
      */
-    std::shared_ptr<Scope> memberField;
+    ScopePtr memberField;
+    ScopePtr member();
     Name* fullName;
 
     void initOnShared();

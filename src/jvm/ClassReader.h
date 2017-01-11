@@ -7,13 +7,14 @@
 
 #include <map>
 #include "../code/symbol.h"
+#include "../comp/completer.h"
 
 using std::map;
 
-class ClassReader {
+class ClassReader : public Completer {
 private:
     map<const Name*, ClassSymbol::Ptr> classes;
-    void complete(ClassSymbol::Ptr& sym);
+
 public:
     static ClassReader& instance();
 
@@ -22,6 +23,7 @@ public:
 
     ClassSymbol* defineClass(const Name& name);
 
+    void complete(Symbol::Ptr sym);
 };
 
 

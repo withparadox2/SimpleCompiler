@@ -2,6 +2,7 @@
 // Created by withparadox2 on 2017/1/8.
 //
 
+#include <iostream>
 #include "attr.h"
 Attr& Attr::instance() {
     static Attr attr;
@@ -62,5 +63,13 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
             return sym;
         }
     }
+
+    StarImportScope& gScope = StarImportScope::instance();
+
+    Symbol::Ptr sym = gScope.lookUp(name);
+    if (sym) {
+        std::cout << sym->name.desc << std::endl;
+    }
+
     return syms.noSymbol;
 }

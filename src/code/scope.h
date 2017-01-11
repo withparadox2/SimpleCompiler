@@ -53,7 +53,7 @@ class StarImportScope : public Scope {
 private:
     StarImportScope();
 public:
-    StarImportScope& instance();
+    static StarImportScope& instance();
 
     void importAll();
 };

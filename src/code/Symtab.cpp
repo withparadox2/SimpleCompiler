@@ -16,7 +16,6 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()) {
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");
 
-    //PrintStream must before System, TODO correct it.
     printStreamType = enterClass("java.io.PrintStream");
     systemType = enterClass("java.lang.System");
 

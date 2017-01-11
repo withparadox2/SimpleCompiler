@@ -62,7 +62,12 @@ StarImportScope::StarImportScope() : Scope(Symtab::instance().noSymbol) {
 }
 
 void StarImportScope::importAll() {
-
+    ClassReader& reader = ClassReader::instance();
+    Names& names = Names::instance();
+    enter(reader.enterClass(names.fromString("java.lang.String")));
+    enter(reader.enterClass(names.fromString("java.io.PrintStream")));
+    enter(reader.enterClass(names.fromString("java.lang.System")));
+    enter(reader.enterClass(names.fromString("java.lang.Object")));
 }
 
 StarImportScope& StarImportScope::instance() {
