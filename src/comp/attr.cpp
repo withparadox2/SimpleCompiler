@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include "attr.h"
+#include "../util/log.h"
+
 Attr& Attr::instance() {
     static Attr attr;
     return attr;
@@ -68,8 +70,7 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
 
     Symbol::Ptr sym = gScope.lookUp(name);
     if (sym) {
-        std::cout << sym->name.desc << std::endl;
+        log("find type : " + sym->name.desc);
     }
-
     return syms.noSymbol;
 }
