@@ -8,18 +8,9 @@
 #include "../code/scope.h"
 #include "../code/type.h"
 #include "../code/Symtab.h"
+#include "../util/tools.h"
 
 using std::vector;
-
-const Name& shortName(const Name& src) {
-    size_t pos = src.desc.find_last_of('.');
-    if (pos == std::string::npos) {
-        return src;
-    }
-
-    Name& shortName = Names::instance().fromString(src.desc.substr(pos + 1));
-    return shortName;
-}
 
 ClassReader& ClassReader::instance() {
     static ClassReader reader;

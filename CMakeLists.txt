@@ -18,5 +18,6 @@ set(SOURCE_FILES src/main.cpp
         src/comp/env.cpp
         src/code/Symtab.cpp
         src/code/scope.cpp
-        src/comp/attr.cpp)
+        src/comp/attr.cpp
+        src/util/tools.cpp)
 add_executable(SimpleCompiler ${SOURCE_FILES})
