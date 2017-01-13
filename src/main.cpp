@@ -40,6 +40,9 @@ int main() {
     clazz->accept(&p);
 
     Enter::instance().complete(clazz.get(), nullptr);
+
+    Env* env = Enter::instance().typeEnvs.at(clazz->sym);
+    Attr::instance().attrib(env);
     return 0;
 }
 

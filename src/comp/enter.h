@@ -29,6 +29,8 @@ private:
 
     Env* env;
 public:
+
+    //TODO delete env
     map<TypeSymbol::Ptr, Env*> typeEnvs;
 
     static Enter& instance();

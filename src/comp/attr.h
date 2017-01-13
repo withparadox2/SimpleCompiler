@@ -23,6 +23,10 @@ private:
 public:
     static Attr& instance();
 
+    void attrib(Env* env);
+
+    void attribClass(ClassSymbol::Ptr c);
+
     Type::Ptr attribType(Tree* tree, Env* env);
 
     Type::Ptr attribTree(Tree* tree, Env* env, int pkind);

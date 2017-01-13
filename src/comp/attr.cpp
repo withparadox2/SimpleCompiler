@@ -79,3 +79,11 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
 void Attr::visitTypeIdent(JCPrimitiveTypeTree* that) {
     result = syms.typeOfTag[that->typetag];
 }
+
+void Attr::attrib(Env* env) {
+    attribClass(env->enclClass->sym);
+}
+
+void Attr::attribClass(ClassSymbol::Ptr c) {
+
+}
