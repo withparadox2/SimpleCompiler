@@ -5,6 +5,9 @@
 #include <iostream>
 #include "attr.h"
 #include "../util/log.h"
+#include "../code/Symtab.h"
+#include "enter.h"
+#include "../code/type.h"
 
 Attr& Attr::instance() {
     static Attr attr;
@@ -60,7 +63,7 @@ Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
 }
 
 Symbol::Ptr Attr::findType(Env* env, const Name& name) {
-    for(Env* env1 = env; env1->outer; env1 = env1->outer.get()) {
+    for (Env* env1 = env; env1->outer; env1 = env1->outer.get()) {
         Symbol::Ptr sym = env1->info->scope->lookUp(name);
         if (sym && sym->kind == Kind::TYP) {
             return sym;
@@ -94,4 +97,8 @@ void Attr::attribClass(ClassSymbol::Ptr c) {
 
 void Attr::visitMethodDef(JCMethodDecl* that) {
     log("attr method : " + that->name.desc);
+}
+
+Enter& Attr::enter() {
+    return Enter::instance();
 }

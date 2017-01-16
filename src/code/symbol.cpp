@@ -4,6 +4,7 @@
 
 #include "symbol.h"
 #include "type.h"
+#include "../util/names.h"
 
 namespace Kind {
     int PKG = 1 << 0;

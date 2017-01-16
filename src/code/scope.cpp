@@ -4,6 +4,9 @@
 
 #include "scope.h"
 #include "Symtab.h"
+#include "../jvm/ClassReader.h"
+#include "../util/names.h"
+#include "symbol.h"
 
 void Scope::enter(Symbol::Ptr symbol) {
     if (nameToSym->find(&symbol->name) == nameToSym->end()) {

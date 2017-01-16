@@ -8,17 +8,18 @@
 #include <vector>
 #include <memory>
 #include "treevisitor.h"
-#include "../util/names.h"
 #include "../parser/Token.h"
 #include "alltree.h"
 #include "../code/TypeTags.h"
-#include "../code/symbol.h"
+#include "../code/symbols.h"
+#include "../code/types.h"
 
 using std::vector;
 using std::shared_ptr;
 using std::move;
 
 class Visitor;
+class Name;
 
 class Tree : public std::enable_shared_from_this<Tree> {
 public:
@@ -175,7 +176,7 @@ public:
     JCModifiers::Ptr mods;
     Name& name;
     Tree::List defs;
-    ClassSymbol::Ptr sym;
+    ClassSymbolPtr sym;
 
     JCClassDecl(JCModifiers* mods, Name& name, Tree::List& defs);
 
@@ -385,7 +386,7 @@ public:
 class JCIdent : public JCExpression {
 public:
     typedef shared_ptr<JCIdent> Ptr;
-    Symbol::Ptr sym;
+    SymbolPtr sym;
     Name& name;
 
     JCIdent(Name& name);
@@ -486,7 +487,7 @@ public:
     Name& name;
     JCExpression::Ptr vartype;
     JCExpression::Ptr init;
-    VarSymbol::Ptr sym;
+    VarSymbolPtr sym;
 
     JCVariableDecl(Name& name, JCExpression* vartype);
 
@@ -505,7 +506,7 @@ public:
     Name& name;
     JCVariableDecl::List params;
     JCBlock::Ptr body;
-    MethodSymbol::Ptr sym;
+    MethodSymbolPtr sym;
 
     JCMethodDecl(JCModifiers* mods,
                  JCExpression* type,

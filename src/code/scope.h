@@ -7,11 +7,13 @@
 
 #include <map>
 #include <set>
-#include "symbol.h"
+#include "symbols.h"
+
+class Name;
 
 class Scope : public std::enable_shared_from_this<Scope> {
 private:
-    typedef std::map<const Name*, Symbol::Ptr> Map;
+    typedef std::map<const Name*, SymbolPtr> Map;
     typedef std::shared_ptr<Map> MapPtr;
     /**
      * May be shared with other scope, using elems to track
@@ -24,15 +26,15 @@ public:
 
     std::shared_ptr<Scope> next;
 
-    Symbol::WeakPtr owner;
+    SymbolWeakPtr owner;
 
-    void enter(Symbol::Ptr symbol);
+    void enter(SymbolPtr symbol);
 
     void remove(const Name& name);
 
-    Scope(Symbol::Ptr owner);
+    Scope(SymbolPtr owner);
 
-    Symbol::Ptr& lookUp(const Name& name);
+    SymbolPtr& lookUp(const Name& name);
 
     Scope(const Scope& s, const MapPtr& nameToSym);
 

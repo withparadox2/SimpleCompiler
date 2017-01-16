@@ -5,14 +5,16 @@
 #ifndef SIMPLECOMPILER_SYMTAB_H
 #define SIMPLECOMPILER_SYMTAB_H
 
-#include "type.h"
-#include "../jvm/ClassReader.h"
+#include "types.h"
+#include "symbols.h"
 #include <string>
-#include "../util/names.h"
 #include "Flags.h"
 #include "TypeTags.h"
 
 using std::string;
+
+class ClassReader;
+class Names;
 
 /**
  * predefined symbol, type
@@ -23,30 +25,30 @@ private:
     Names& names;
     // Symbol of primitive type (int, boolean, void, null) is dangling, so we provided
     // a root for it.
-    Symbol::List noRootSymbols;
+    SymbolList noRootSymbols;
     Symtab();
 
-    Type::Ptr enterClass(const string& fullName);
+    TypePtr enterClass(const string& fullName);
 
-    void initType(Type::Ptr& type, std::string name);
+    void initType(TypePtr& type, std::string name);
 
 public:
     static Symtab& instance();
-    Type::Ptr typeOfTag[TypeTags::TypeTagCount];
+    TypePtr typeOfTag[TypeTags::TypeTagCount];
 
-    ClassSymbol::Ptr arrayClass;
-    ClassSymbol::Ptr methodClass;
-    Symbol::Ptr noSymbol;
+    ClassSymbolPtr arrayClass;
+    ClassSymbolPtr methodClass;
+    SymbolPtr noSymbol;
 
-    Type::Ptr intType;
-    Type::Ptr booleanType;
-    Type::Ptr bolType;
-    Type::Ptr voidType;
-    Type::Ptr objectType;
-    Type::Ptr classType;
-    Type::Ptr stringType;
-    Type::Ptr systemType;
-    Type::Ptr printStreamType;
+    TypePtr intType;
+    TypePtr booleanType;
+    TypePtr bolType;
+    TypePtr voidType;
+    TypePtr objectType;
+    TypePtr classType;
+    TypePtr stringType;
+    TypePtr systemType;
+    TypePtr printStreamType;
 };
 
 

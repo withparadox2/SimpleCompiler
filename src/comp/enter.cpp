@@ -5,6 +5,9 @@
 #include "enter.h"
 #include "../util/error.h"
 #include "attr.h"
+#include "../code/type.h"
+#include "../jvm/ClassReader.h"
+#include "../code/Symtab.h"
 
 Enter& Enter::instance() {
     static Enter inst;

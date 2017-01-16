@@ -5,12 +5,12 @@
 #ifndef SIMPLECOMPILER_SYMBOL_H
 #define SIMPLECOMPILER_SYMBOL_H
 
-#include "../util/names.h"
 #include <memory>
 #include <vector>
 #include "../comp/completer.h"
 
 class Type;
+class Name;
 
 typedef std::shared_ptr<Type> TypePtr;
 

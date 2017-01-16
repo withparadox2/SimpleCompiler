@@ -5,20 +5,20 @@
 #ifndef SIMPLECOMPILER_ATTR_H
 #define SIMPLECOMPILER_ATTR_H
 
-#include "../code/type.h"
+#include "../code/types.h"
 #include "../tree/tree.h"
 #include "env.h"
 #include "../code/Flags.h"
 
-#include "../code/Symtab.h"
-#include "enter.h"
+class Symtab;
+class Enter;
 
 class Attr : public Visitor {
 private:
     int pKind;
     Env* env;
     Symtab& syms;
-    Type::Ptr result;
+    TypePtr result;
 
     Attr();
 
@@ -29,9 +29,9 @@ public:
 
     void attribClass(ClassSymbol::Ptr c);
 
-    Type::Ptr attribType(Tree* tree, Env* env);
+    TypePtr attribType(Tree* tree, Env* env);
 
-    Type::Ptr attribTree(Tree* tree, Env* env, int pkind);
+    TypePtr attribTree(Tree* tree, Env* env, int pkind);
 
     void visitVarDef(JCVariableDecl* that);
 
@@ -47,9 +47,7 @@ public:
 
     Symbol::Ptr findType(Env* env, const Name& name);
 
-    Enter& enter() {
-        return Enter::instance();
-    }
+    inline Enter& enter();
 };
 
 

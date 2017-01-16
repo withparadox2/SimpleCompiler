@@ -9,6 +9,7 @@
 #include "../code/type.h"
 #include "../code/Symtab.h"
 #include "../util/tools.h"
+#include "../code/symbol.h"
 
 using std::vector;
 

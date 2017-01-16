@@ -3,6 +3,10 @@
 //
 
 #include "Symtab.h"
+#include "type.h"
+#include "../jvm/ClassReader.h"
+#include "../util/names.h"
+#include "symbol.h"
 
 Symtab& Symtab::instance() {
     static Symtab inst;

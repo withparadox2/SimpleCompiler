@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <memory>
-#include "./symbol.h"
+#include "symbols.h"
 
 using std::vector;
 
@@ -16,9 +16,9 @@ public:
     typedef std::shared_ptr<Type> Ptr;
     typedef vector<Ptr> List;
     int tag;
-    TypeSymbol::WeakPtr tsym;
+    TypeSymbolWeakPtr tsym;
 
-    Type(int tag, TypeSymbol::Ptr tsym);
+    Type(int tag, TypeSymbolPtr tsym);
 };
 
 class ClassType : public Type {
@@ -27,7 +27,7 @@ public:
 
     Type::Ptr supertype_field;
 
-    ClassType(TypeSymbol::Ptr tsym);
+    ClassType(TypeSymbolPtr tsym);
 };
 
 class MethodType : public Type {
@@ -39,13 +39,13 @@ public:
 
     MethodType(vector<Type::Ptr> argtypes,
                Type::Ptr restype,
-               TypeSymbol::Ptr methodClass);
+               TypeSymbolPtr methodClass);
 };
 
 class ArrayType : public Type {
 public:
     Type::Ptr elemtype;
-    ArrayType(Type::Ptr elemtype, TypeSymbol::Ptr arrayClass);
+    ArrayType(Type::Ptr elemtype, TypeSymbolPtr arrayClass);
 };
 
 #endif //SIMPLECOMPILER_TYPE_H

@@ -6,24 +6,25 @@
 #define SIMPLECOMPILER_CLASSREADER_H
 
 #include <map>
-#include "../code/symbol.h"
+#include "../code/symbols.h"
 #include "../comp/completer.h"
 
 using std::map;
+class Name;
 
 class ClassReader : public Completer {
 private:
-    map<const Name*, ClassSymbol::Ptr> classes;
+    map<const Name*, ClassSymbolPtr> classes;
 
 public:
     static ClassReader& instance();
 
     //there exists no concept about package.
-    ClassSymbol::Ptr& enterClass(const Name& flatName);
+    ClassSymbolPtr& enterClass(const Name& flatName);
 
     ClassSymbol* defineClass(const Name& name);
 
-    void complete(Symbol::Ptr sym);
+    void complete(SymbolPtr sym);
 };
 
 

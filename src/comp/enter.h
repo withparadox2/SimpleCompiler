@@ -8,14 +8,13 @@
 #include <map>
 
 #include "../tree/tree.h"
-#include "../code/symbol.h"
-#include "../util/names.h"
-#include "../jvm/ClassReader.h"
+#include "../code/symbols.h"
 #include "./env.h"
-#include "../code/Symtab.h"
-
 
 class Attr;
+class Symtab;
+class Names;
+class ClassReader;
 
 using std::map;
 
@@ -56,7 +55,7 @@ public:
 
     Scope::Ptr& enterScope(Env* env);
 
-    Type::Ptr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env);
+    TypePtr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env);
 
     Env* methodEnv(JCMethodDecl::Ptr& tree, Env* env);
 
