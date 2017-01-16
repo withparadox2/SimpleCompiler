@@ -12,7 +12,7 @@ bool Name::operator==(const Name& name) const {
 }
 
 bool Name::operator!=(const Name& name) const {
-    return desc.compare(name.desc) != 0;;
+    return desc.compare(name.desc) != 0;
 }
 
 bool Name::operator!=(const Name& name) {
