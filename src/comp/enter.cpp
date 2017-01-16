@@ -4,7 +4,7 @@
 
 #include "enter.h"
 #include "../util/error.h"
-#include "../code/Flags.h"
+#include "attr.h"
 
 Enter& Enter::instance() {
     static Enter inst;

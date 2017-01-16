@@ -13,8 +13,9 @@
 #include "../jvm/ClassReader.h"
 #include "./env.h"
 #include "../code/Symtab.h"
-#include "attr.h"
 
+
+class Attr;
 
 using std::map;
 

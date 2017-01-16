@@ -28,7 +28,7 @@ Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind) {
     return result;
 }
 
-Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()){
+Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()) {
 
 }
 
@@ -85,5 +85,13 @@ void Attr::attrib(Env* env) {
 }
 
 void Attr::attribClass(ClassSymbol::Ptr c) {
+    Env* env = enter().typeEnvs.at(c);
+    JCClassDecl::Ptr tree = env->enclClass;
+    for (auto iter = tree->defs.begin(); iter != tree->defs.end(); iter++) {
+        (*iter)->accept(this);
+    }
+}
 
+void Attr::visitMethodDef(JCMethodDecl* that) {
+    log("attr method : " + that->name.desc);
 }

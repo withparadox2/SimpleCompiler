@@ -8,8 +8,10 @@
 #include "../code/type.h"
 #include "../tree/tree.h"
 #include "env.h"
-#include "../code/Symtab.h"
 #include "../code/Flags.h"
+
+#include "../code/Symtab.h"
+#include "enter.h"
 
 class Attr : public Visitor {
 private:
@@ -39,9 +41,15 @@ public:
 
     void visitTypeIdent(JCPrimitiveTypeTree* that);
 
+    void visitMethodDef(JCMethodDecl* that);
+
     Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
 
     Symbol::Ptr findType(Env* env, const Name& name);
+
+    Enter& enter() {
+        return Enter::instance();
+    }
 };
 
 

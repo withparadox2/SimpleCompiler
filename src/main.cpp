@@ -7,6 +7,7 @@
 #include "tree/pretty.h"
 #include "comp/enter.h"
 #include "main.h"
+#include "comp/attr.h"
 
 using namespace std;
 
@@ -34,6 +35,8 @@ int main() {
     std::unique_ptr<string> strPtr(readByPath(filePath));
     Lexer lexer(*strPtr);
     Parser parser(lexer);
+
+
 
     JCClassDecl::Ptr clazz(parser.buildClass());
     Pretty p;
