@@ -10,11 +10,12 @@
 #include "env.h"
 #include "../code/Flags.h"
 #include "../tree/visitor.h"
+#include "../code/type.h"
 
 class Symtab;
 class Enter;
 
-class Attr : public TreeScanner {
+class Attr : public Visitor {
 private:
     int pKind;
     Env* env;
@@ -22,8 +23,6 @@ private:
     TypePtr result;
 
     Attr();
-
-    void visitClassDef(JCClassDecl* that);
 
     void visitMethodDef(JCMethodDecl* that);
 
@@ -79,6 +78,8 @@ public:
     void attrib(Env* env);
 
     void attribClass(ClassSymbol::Ptr c);
+
+    TypePtr attribStat(Tree* tree, Env* env);
 
     TypePtr attribType(Tree* tree, Env* env);
 

@@ -144,6 +144,10 @@ Type::Ptr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res,
     return MethodType::Ptr(new MethodType(args, restype, syms.methodClass));
 }
 
-Env *Enter::methodEnv(JCMethodDecl::Ptr &tree, Env *env) {
-    return nullptr;
+Env* Enter::methodEnv(JCMethodDecl::Ptr tree, Env* env) {
+    Env* localEnv = env->dup(tree, env->info->dup(env->info->scope->dupUnshared()));
+    localEnv->enclMethod = tree;
+    localEnv->info->scope->owner = tree->sym;
+    //ignore static level
+    return localEnv;
 }

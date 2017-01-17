@@ -7,16 +7,17 @@
 #include "../util/names.h"
 
 namespace Kind {
+    int NIL = 0;
     int PKG = 1 << 0;
-/**type symbols (classes, interfaces and type variables).*/
+    /**type symbols (classes, interfaces and type variables).*/
     int TYP = 1 << 1;
-/**variable symbols.*/
+    /**variable symbols.*/
     int VAR = 1 << 2;
-/**values (variables or non-variable expressions), includes VAR.*/
+    /**values (variables or non-variable expressions), includes VAR.*/
     int VAL = (1 << 3) | VAR;
-/**methods*/
+    /**methods*/
     int MTH = (1 << 4);
-/**The error kind, which includes all other kinds.*/
+    /**The error kind, which includes all other kinds.*/
     int ERR = (1 << 5);
 };
 

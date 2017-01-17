@@ -58,7 +58,7 @@ public:
 
     TypePtr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env);
 
-    Env* methodEnv(JCMethodDecl::Ptr& tree, Env* env);
+    Env* methodEnv(JCMethodDecl::Ptr tree, Env* env);
 
 };
 
