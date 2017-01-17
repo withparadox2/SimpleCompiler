@@ -45,6 +45,7 @@ public:
     TypePtr bolType;
     TypePtr voidType;
     TypePtr objectType;
+    TypePtr unkownType;
     TypePtr classType;
     TypePtr stringType;
     TypePtr systemType;

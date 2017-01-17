@@ -70,7 +70,9 @@ class TreeScanner : public Visitor {
 private:
     template <typename T>
     void scan(T& treePtr) {
-        treePtr->accept(this);
+        if (treePtr) {
+            treePtr->accept(this);
+        }
     }
 
     template <typename T>
@@ -79,7 +81,11 @@ private:
             scan(*iter);
         }
     }
+
 public:
+
+    void initTypeIfNeeded(Tree* that);
+
     void visitClassDef(JCClassDecl* that);
 
     void visitMethodDef(JCMethodDecl* that);

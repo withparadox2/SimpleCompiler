@@ -36,7 +36,11 @@ Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()) {
 }
 
 void Attr::visitVarDef(JCVariableDecl* that) {
-
+    initTypeIfNeeded(that);
+    if (!that->sym) {
+        that->sym = VarSymbol::Ptr(new VarSymbol(0, that->name, that->type, syms.noSymbol));
+    }
+    TreeScanner::visitVarDef(that);
 }
 
 void Attr::visitIdent(JCIdent* that) {
@@ -81,6 +85,7 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
 
 void Attr::visitTypeIdent(JCPrimitiveTypeTree* that) {
     result = syms.typeOfTag[that->typetag];
+    that->type = result;
 }
 
 void Attr::attrib(Env* env) {
@@ -97,9 +102,89 @@ void Attr::attribClass(ClassSymbol::Ptr c) {
 
 void Attr::visitMethodDef(JCMethodDecl* that) {
     log("attr method : " + that->name.desc);
-
+    TreeScanner::visitMethodDef(that);
 }
 
 Enter& Attr::enter() {
     return Enter::instance();
+}
+
+void Attr::visitClassDef(JCClassDecl* that) {
+    TreeScanner::visitClassDef(that);
+}
+
+void Attr::visitBlock(JCBlock* that) {
+    TreeScanner::visitBlock(that);
+}
+
+void Attr::visitForLoop(JCForLoop* that) {
+    TreeScanner::visitForLoop(that);
+}
+
+void Attr::visitIf(JCIf* that) {
+    TreeScanner::visitIf(that);
+}
+
+void Attr::visitExec(JCExpressionStatement* that) {
+    TreeScanner::visitExec(that);
+}
+
+void Attr::visitBreak(JCBreak* that) {
+    TreeScanner::visitBreak(that);
+}
+
+void Attr::visitContinue(JCContinue* that) {
+    TreeScanner::visitContinue(that);
+}
+
+void Attr::visitReturn(JCReturn* that) {
+    TreeScanner::visitReturn(that);
+}
+
+void Attr::visitApply(JCMethodInvocation* that) {
+    TreeScanner::visitApply(that);
+}
+
+void Attr::visitNewClass(JCNewClass* that) {
+    TreeScanner::visitNewClass(that);
+}
+
+void Attr::visitParens(JCParens* that) {
+    TreeScanner::visitParens(that);
+}
+
+void Attr::visitAssign(JCAssign* that) {
+    TreeScanner::visitAssign(that);
+}
+
+void Attr::visitConditional(JCConditional* that) {
+    TreeScanner::visitConditional(that);
+}
+
+void Attr::visitBinary(JCBinary* that) {
+    TreeScanner::visitBinary(that);
+}
+
+void Attr::visitIndexed(JCArrayAccess* that) {
+    TreeScanner::visitIndexed(that);
+}
+
+void Attr::visitSelect(JCFieldAccess* that) {
+    TreeScanner::visitSelect(that);
+}
+
+void Attr::visitLiteral(JCLiteral* that) {
+    TreeScanner::visitLiteral(that);
+}
+
+void Attr::visitUnary(JCUnary* that) {
+    TreeScanner::visitUnary(that);
+}
+
+void Attr::visitNewArray(JCNewArray* that) {
+    TreeScanner::visitNewArray(that);
+}
+
+void Attr::visitMethodInvocation(JCMethodInvocation* that) {
+    TreeScanner::visitMethodInvocation(that);
 }

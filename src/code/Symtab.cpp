@@ -18,6 +18,7 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     booleanType = Type::Ptr(new Type(TypeTags::BOOLEAN, nullptr));
     bolType = Type::Ptr(new Type(TypeTags::BOT, nullptr));
     voidType = Type::Ptr(new Type(TypeTags::VOID, nullptr));
+    unkownType = Type::Ptr(new Type(TypeTags::UNKNOWN, nullptr));
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");
