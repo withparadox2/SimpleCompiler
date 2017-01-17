@@ -9,6 +9,7 @@
 #include "../tree/tree.h"
 #include "env.h"
 #include "../code/Flags.h"
+#include "../tree/visitor.h"
 
 class Symtab;
 class Enter;

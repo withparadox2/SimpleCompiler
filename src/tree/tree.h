@@ -518,67 +518,6 @@ public:
 
 };
 
-
-class Visitor {
-public:
-    virtual void visitClassDef(JCClassDecl* that) { visitTree(that); }
-
-    virtual void visitMethodDef(JCMethodDecl* that) { visitTree(that); }
-
-    virtual void visitVarDef(JCVariableDecl* that) { visitTree(that); }
-
-    virtual void visitBlock(JCBlock* that) { visitTree(that); }
-
-    virtual void visitForLoop(JCForLoop* that) { visitTree(that); }
-
-    virtual void visitIf(JCIf* that) { visitTree(that); }
-
-    virtual void visitExec(JCExpressionStatement* that) { visitTree(that); }
-
-    virtual void visitBreak(JCBreak* that) { visitTree(that); }
-
-    virtual void visitContinue(JCContinue* that) { visitTree(that); }
-
-    virtual void visitReturn(JCReturn* that) { visitTree(that); }
-
-    virtual void visitApply(JCMethodInvocation* that) { visitTree(that); }
-
-    virtual void visitNewClass(JCNewClass* that) { visitTree(that); }
-
-    virtual void visitParens(JCParens* that) { visitTree(that); }
-
-    virtual void visitAssign(JCAssign* that) { visitTree(that); }
-
-    virtual void visitConditional(JCConditional* that) { visitTree(that); }
-
-    virtual void visitBinary(JCBinary* that) { visitTree(that); }
-
-    virtual void visitIndexed(JCArrayAccess* that) { visitTree(that); }
-
-    virtual void visitSelect(JCFieldAccess* that) { visitTree(that); }
-
-    virtual void visitIdent(JCIdent* that) { visitTree(that); }
-
-    virtual void visitLiteral(JCLiteral* that) { visitTree(that); }
-
-    virtual void visitTypeIdent(JCPrimitiveTypeTree* that) { visitTree(that); }
-
-    virtual void visitTypeArray(JCArrayTypeTree* that) { visitTree(that); }
-
-    virtual void visitModifiers(JCModifiers* that) { visitTree(that); }
-
-    virtual void visitUnary(JCUnary* that) { visitTree(that); }
-
-    virtual void visitNewArray(JCNewArray* that) { visitTree(that); }
-
-    virtual void visitMethodInvocation(JCMethodInvocation* that) { visitTree(that); }
-
-    virtual void visitTree(Tree* that) {
-        //TODO error
-    }
-};
-
-
 namespace treeinfo {
     const int notExpression = -1;   // not an expression
     const int noPrec = 0;           // no enclosing expression

@@ -4,6 +4,7 @@
 
 #include "tree.h"
 #include "../util/error.h"
+#include "visitor.h"
 
 JCModifiers::JCModifiers(long long flags)
         : Tree(MODIFIERS), flags(flags) {

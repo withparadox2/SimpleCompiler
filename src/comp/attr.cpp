@@ -97,6 +97,7 @@ void Attr::attribClass(ClassSymbol::Ptr c) {
 
 void Attr::visitMethodDef(JCMethodDecl* that) {
     log("attr method : " + that->name.desc);
+
 }
 
 Enter& Attr::enter() {

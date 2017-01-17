@@ -4,6 +4,7 @@
 
 #ifndef SIMPLECOMPILER_ALLTREE_H
 #define SIMPLECOMPILER_ALLTREE_H
+class Tree;
 
 class JCClassDecl;
 

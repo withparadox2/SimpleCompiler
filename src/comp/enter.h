@@ -10,6 +10,7 @@
 #include "../tree/tree.h"
 #include "../code/symbols.h"
 #include "./env.h"
+#include "../tree/visitor.h"
 
 class Attr;
 class Symtab;

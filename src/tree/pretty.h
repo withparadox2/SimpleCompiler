@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "../tree/visitor.h"
 
 using namespace std;
 
