@@ -212,6 +212,7 @@ void Attr::visitApply(JCMethodInvocation* that) {
         //We are seeing ...this(...) or ...super(...)
         //TODO checkFirstConstructorStat
         localEnv->info->isSelfCall = true;
+        TypeList argtypes = attribArgs(that->args, localEnv.get());
     } else {
 
     }
@@ -246,5 +247,14 @@ void Attr::visitUnary(JCUnary* that) {
 }
 
 void Attr::visitNewArray(JCNewArray* that) {
+}
+
+TypeList Attr::attribArgs(JCExpression::List& trees, Env* env) {
+    TypeList argtypes;
+    for (auto iter = trees.begin(); iter != trees.end(); iter++) {
+        TypePtr type = attribTree(iter->get(), env, Kind::VAL, syms.anyType);
+        argtypes.push_back(type);
+    }
+    return argtypes;
 }
 

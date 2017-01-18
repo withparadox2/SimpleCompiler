@@ -10,6 +10,7 @@
 #include "env.h"
 #include "../code/Flags.h"
 #include "../tree/visitor.h"
+#include "../code/type.h"
 
 class Symtab;
 class Enter;
@@ -92,6 +93,8 @@ public:
     TypePtr attribType(Tree* tree, Env* env);
 
     TypePtr attribTree(Tree* tree, Env* env, int pkind, TypePtr pt);
+
+    TypeList attribArgs(JCExpression::List &trees, Env* env);
 
     Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
 

@@ -47,6 +47,7 @@ public:
     TypePtr objectType;
     TypePtr unknownType;
     TypePtr noType;
+    TypePtr anyType;
     TypePtr classType;
     TypePtr stringType;
     TypePtr systemType;

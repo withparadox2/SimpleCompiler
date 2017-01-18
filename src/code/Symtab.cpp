@@ -20,6 +20,7 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     voidType = Type::Ptr(new Type(TypeTags::VOID, nullptr));
     unknownType = Type::Ptr(new Type(TypeTags::UNKNOWN, nullptr));
     noType = Type::Ptr(new Type(TypeTags::NONE, nullptr));
+    anyType = Type::Ptr(new Type(TypeTags::NONE, nullptr));
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");

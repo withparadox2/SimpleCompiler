@@ -8,21 +8,12 @@
 #include <memory>
 #include <vector>
 #include "../comp/completer.h"
-
-class Type;
+#include "types.h"
 
 class Name;
-
-typedef std::shared_ptr<Type> TypePtr;
-
-class ClassType;
-
-class MethodType;
-
 class Scope;
 
 typedef std::shared_ptr<Scope> ScopePtr;
-
 
 namespace Kind {
     /** The empty set of kinds.*/
