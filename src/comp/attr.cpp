@@ -269,6 +269,9 @@ void Attr::visitLiteral(JCLiteral* that) {
 }
 
 void Attr::visitUnary(JCUnary* that) {
+    //only support +expr, -expr, then attribution can be simple.
+    attribExpr(that->arg.get(), env);
+
 }
 
 //int[2][3][][], dimens={2, 3}, elementType=int[][]
