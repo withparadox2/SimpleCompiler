@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include "Token.h"
+#include "../util/names.h"
 
 using namespace std;
 

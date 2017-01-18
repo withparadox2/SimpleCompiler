@@ -4,6 +4,8 @@
 
 #include "pretty.h"
 #include "../code/Flags.h"
+#include "../util/names.h"
+
 
 void Pretty::visitClassDef(JCClassDecl* that) {
     if (that->mods != nullptr) {
@@ -264,13 +266,6 @@ void Pretty::visitNewArray(JCNewArray* that) {
     print("[]");
     printTreeList(that->elems, ",", " {", "}");
 }
-
-
-void Pretty::visitMethodInvocation(JCMethodInvocation* that) {
-    that->meth->accept(this);
-    printTreeList(that->args, ",", " {", "}");
-}
-
 
 void Pretty::print(const string& str) {
     cout << str;

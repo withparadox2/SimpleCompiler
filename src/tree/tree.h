@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include "treevisitor.h"
 #include "../parser/Token.h"
 #include "alltree.h"
@@ -16,7 +17,9 @@
 
 using std::vector;
 using std::shared_ptr;
+using std::weak_ptr;
 using std::move;
+using std::string;
 
 class Visitor;
 class Name;
@@ -24,6 +27,7 @@ class Name;
 class Tree : public std::enable_shared_from_this<Tree> {
 public:
     typedef shared_ptr<Tree> Ptr;
+    typedef weak_ptr<Tree> WeakPtr;
     typedef vector<Ptr> List;
 
     int treeTag;
@@ -205,7 +209,7 @@ public:
     typedef shared_ptr<JCExpressionStatement> Ptr;
     typedef vector<Ptr> List;
 
-    JCExpression* exp;
+    JCExpression::Ptr exp;
 
     JCExpressionStatement(JCExpression* exp);
 
@@ -259,7 +263,11 @@ public:
 class JCBreak : public JCStatement {
 public:
     typedef shared_ptr<JCBreak> Ptr;
+    //not support label
 
+    //target point out to the enclosing tree,
+    //use weak_ptr to avoid circular reference.
+    Tree::WeakPtr target;
     JCBreak();
 
     void accept(Visitor* visitor) override;
@@ -268,6 +276,9 @@ public:
 class JCContinue : public JCStatement {
 public:
     typedef shared_ptr<JCContinue> Ptr;
+
+    //same as JCBreak
+    Tree::WeakPtr target;
 
     JCContinue();
 
@@ -547,6 +558,8 @@ namespace treeinfo {
     bool hasConstructors(const Tree::List& defs);
 
     bool isConstructor(const Tree& tree);
+
+    Name* name(Tree* tree);
 }
 
 #endif //SIMPLECOMPILER_TREE_H

@@ -34,13 +34,13 @@ Symbol::Ptr& Scope::lookUp(const Name& name) {
     return Symtab::instance().noSymbol;
 }
 
-Scope* Scope::dupUnshared() {
+Scope::Ptr Scope::dupUnshared() {
     MapPtr nameToSym(new Map(*this->nameToSym));
-    return new Scope(*this, nameToSym);
+    return Scope::Ptr(new Scope(*this, nameToSym));
 }
 
-Scope* Scope::dup() {
-    return new Scope(*this, this->nameToSym);
+Scope::Ptr Scope::dup() {
+    return Scope::Ptr(new Scope(*this, this->nameToSym));
 }
 
 Scope::Scope(const Scope& c, const MapPtr& nameToSym) :

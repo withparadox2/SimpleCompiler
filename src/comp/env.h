@@ -12,7 +12,7 @@
 
 class AttrContext;
 
-typedef std::unique_ptr<AttrContext> AttrPtr;
+typedef std::shared_ptr<AttrContext> AttrPtr;
 
 class Env {
 
@@ -51,6 +51,8 @@ public :
     /** A generic field for further information.
      *
      *  Must attatch to a Env obj.
+     *
+     *  May be shared by calling dup(tree), use shared_ptr
      */
     AttrPtr info;
 
@@ -58,9 +60,16 @@ public :
      */
     bool baseClause;
 
-    Env(Tree::Ptr tree, AttrContext* info);
+    Env(Tree::Ptr tree, AttrPtr info);
 
-    Env* dup(Tree::Ptr tree, AttrContext* info);
+    Env* dup(Tree::Ptr tree, AttrPtr info);
+
+    Env* dup(Tree::Ptr tree);
+
+    Env* dup(Tree* tree);
+
+    Env* dup(Tree* tree, AttrPtr info);
+
 
     Env(const Env& env);
 };
@@ -84,7 +93,8 @@ public:
 
     AttrContext();
 
-    AttrContext* dup(Scope::Ptr scope);
+    AttrPtr dup(Scope::Ptr scope);
+    AttrPtr dup();
 };
 
 

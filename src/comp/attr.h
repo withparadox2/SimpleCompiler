@@ -10,16 +10,19 @@
 #include "env.h"
 #include "../code/Flags.h"
 #include "../tree/visitor.h"
-#include "../code/type.h"
 
 class Symtab;
 class Enter;
+class Names;
 
 class Attr : public Visitor {
 private:
     int pKind;
     Env* env;
     Symtab& syms;
+    Names& names;
+    //type expected in current visit pass
+    TypePtr pt;
     TypePtr result;
 
     Attr();
@@ -70,8 +73,6 @@ private:
 
     void visitNewArray(JCNewArray* that);
 
-    void visitMethodInvocation(JCMethodInvocation* that);
-
 public:
     static Attr& instance();
 
@@ -81,9 +82,16 @@ public:
 
     TypePtr attribStat(Tree* tree, Env* env);
 
+    template <typename T>
+    TypePtr attribStats(std::vector<T>& list, Env* env);
+
+    TypePtr attribExpr(Tree* tree, Env* env, TypePtr pt);
+
+    TypePtr attribExpr(Tree* tree, Env* env);
+
     TypePtr attribType(Tree* tree, Env* env);
 
-    TypePtr attribTree(Tree* tree, Env* env, int pkind);
+    TypePtr attribTree(Tree* tree, Env* env, int pkind, TypePtr pt);
 
     Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
 
@@ -92,5 +100,11 @@ public:
     inline Enter& enter();
 };
 
+template <typename T>
+TypePtr Attr::attribStats(std::vector<T>& list, Env* env) {
+    for (auto iter = list.begin(); iter != list.end(); iter++) {
+        attribStat(iter->get(), env);
+    }
+}
 
 #endif //SIMPLECOMPILER_ATTR_H

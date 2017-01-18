@@ -8,6 +8,7 @@
 #include <vector>
 #include <memory>
 #include "symbols.h"
+#include "symbol.h"
 
 using std::vector;
 
@@ -19,6 +20,7 @@ public:
     TypeSymbolWeakPtr tsym;
 
     Type(int tag, TypeSymbolPtr tsym);
+    virtual TypePtr getReturnType();
 };
 
 class ClassType : public Type {
@@ -40,6 +42,7 @@ public:
     MethodType(vector<Type::Ptr> argtypes,
                Type::Ptr restype,
                TypeSymbolPtr methodClass);
+    TypePtr getReturnType();
 };
 
 class ArrayType : public Type {

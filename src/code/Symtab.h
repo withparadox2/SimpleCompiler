@@ -42,10 +42,11 @@ public:
 
     TypePtr intType;
     TypePtr booleanType;
-    TypePtr bolType;
+    TypePtr botType;
     TypePtr voidType;
     TypePtr objectType;
-    TypePtr unkownType;
+    TypePtr unknownType;
+    TypePtr noType;
     TypePtr classType;
     TypePtr stringType;
     TypePtr systemType;

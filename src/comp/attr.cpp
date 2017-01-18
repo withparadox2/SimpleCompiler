@@ -7,7 +7,9 @@
 #include "../util/log.h"
 #include "../code/Symtab.h"
 #include "enter.h"
+#include "../util/error.h"
 #include "../code/type.h"
+#include "../util/names.h"
 
 Attr& Attr::instance() {
     static Attr attr;
@@ -15,18 +17,30 @@ Attr& Attr::instance() {
 }
 
 Type::Ptr Attr::attribType(Tree* tree, Env* env) {
-    return attribTree(tree, env, Kind::TYP);
+    return attribTree(tree, env, Kind::TYP, syms.noType);
+}
+
+TypePtr Attr::attribExpr(Tree* tree, Env* env, TypePtr pt) {
+    return attribTree(tree, env, Kind::VAL,
+                      pt->tag != TypeTags::ERROR ? pt : syms.noType);
+}
+
+
+TypePtr Attr::attribExpr(Tree* tree, Env* env) {
+    return attribExpr(tree, env, syms.noType);
 }
 
 
 TypePtr Attr::attribStat(Tree* tree, Env* env) {
-    return attribTree(tree, env, Kind::NIL);
+    return attribTree(tree, env, Kind::NIL, syms.noType);
 }
 
 
-Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind) {
+Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind, TypePtr pt) {
+    TypePtr prePt = this->pt;
     int preKind = this->pKind;
     Env* preEnv = this->env;
+    this->pt = pt;
     this->pKind = pkind;
     this->env = env;
 
@@ -34,10 +48,11 @@ Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind) {
 
     this->pKind = preKind;
     this->env = preEnv;
+    this->pt = prePt;
     return result;
 }
 
-Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()) {
+Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()), names(Names::instance()) {
 
 }
 
@@ -117,8 +132,7 @@ void Attr::visitMethodDef(JCMethodDecl* that) {
         attribStat(iter->get(), localEnv.get());
     }
 
-
-
+    attribStat(that->body.get(), localEnv.get());
 }
 
 Enter& Attr::enter() {
@@ -126,27 +140,82 @@ Enter& Attr::enter() {
 }
 
 void Attr::visitBlock(JCBlock* that) {
+    //Not support static block or instance initialize
+    Env::Ptr localEnv(env->dup(that, env->info->dup(env->info->scope->dup())));
+    attribStats(that->stats, localEnv.get());
+    localEnv->info->scope->leave();
 }
 
 void Attr::visitForLoop(JCForLoop* that) {
+    Env::Ptr loopEnv(env->dup(env->tree, env->info->dup(env->info->scope->dup())));
+    attribStats(that->init, loopEnv.get());
+    if (that->cond) {
+        attribExpr(that->cond.get(), loopEnv.get(), syms.booleanType);
+    }
+    // before, we were not in loop!
+    attribStats(that->step, loopEnv.get());
+    attribStat(that->body.get(), loopEnv.get());
+    loopEnv->info->scope->leave();
+    result = nullptr;
 }
 
 void Attr::visitIf(JCIf* that) {
+    attribExpr(that->cond.get(), env, syms.booleanType);
+    attribStat(that->thenPart.get(), env);
+    if (that->elsePart) {
+        attribStat(that->elsePart.get(), env);
+    }
+    //TODO checkEmpty
+    result = nullptr;
 }
 
 void Attr::visitExec(JCExpressionStatement* that) {
+    Env::Ptr localEnv(env->dup(that));
+    attribExpr(that->exp.get(), localEnv.get());
+    result = nullptr;
 }
 
 void Attr::visitBreak(JCBreak* that) {
+    that->target = env->tree;
+    result = nullptr;
 }
 
 void Attr::visitContinue(JCContinue* that) {
+    that->target = env->tree;
+    result = nullptr;
 }
 
 void Attr::visitReturn(JCReturn* that) {
+    if (!env->enclMethod ||
+            env->enclMethod->sym->owner != env->enclClass->sym) {
+        error("return outside method");
+    } else {
+        SymbolPtr m = env->enclMethod->sym;
+        if (m->type->getReturnType()->tag == TypeTags::VOID) {
+            if (that->expr) {
+                error("can not return val from method with return type of void");
+            }
+        } else if (!that->expr) {
+            error("missing expr of return statement");
+        } else {
+            attribExpr(that->expr.get(), env, m->type->getReturnType());
+        }
+    }
 }
 
 void Attr::visitApply(JCMethodInvocation* that) {
+    Env::Ptr localEnv(env->dup(that, env->info->dup()));
+    Name* methName = treeinfo::name(that->meth.get());
+    bool isConstructor =
+            methName == names._this || methName == names._super;
+    if (isConstructor) {
+        //We are seeing ...this(...) or ...super(...)
+        //TODO checkFirstConstructorStat
+        localEnv->info->isSelfCall = true;
+    } else {
+
+    }
+
 }
 
 void Attr::visitNewClass(JCNewClass* that) {
@@ -179,5 +248,3 @@ void Attr::visitUnary(JCUnary* that) {
 void Attr::visitNewArray(JCNewArray* that) {
 }
 
-void Attr::visitMethodInvocation(JCMethodInvocation* that) {
-}

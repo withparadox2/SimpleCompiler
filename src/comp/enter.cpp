@@ -8,6 +8,7 @@
 #include "../code/type.h"
 #include "../jvm/ClassReader.h"
 #include "../code/Symtab.h"
+#include "../util/names.h"
 
 Enter& Enter::instance() {
     static Enter inst;
@@ -65,7 +66,7 @@ Enter::Enter() : reader(ClassReader::instance()),
 }
 
 Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
-    Env* local = new Env(clazz, new AttrContext);
+    Env* local = new Env(clazz, AttrPtr(new AttrContext));
     local->info->scope = Scope::Ptr(new Scope(clazz->sym));
     local->enclClass = clazz;
     return local;

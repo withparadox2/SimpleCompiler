@@ -41,12 +41,13 @@ public:
     /**
      * Share everything except nameToSym which need to be deep copied.
      */
-    Scope* dupUnshared();
+    Scope::Ptr dupUnshared();
 
     /**
      * Share everything, including nameToSym.
+     * Remember to call leave().
      */
-    Scope* dup();
+    Scope::Ptr dup();
 
     Scope::Ptr leave();
 };

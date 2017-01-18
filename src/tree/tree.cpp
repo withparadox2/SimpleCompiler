@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "../util/error.h"
 #include "visitor.h"
+#include "../util/names.h"
 
 JCModifiers::JCModifiers(long long flags)
         : Tree(MODIFIERS), flags(flags) {
@@ -281,6 +282,17 @@ bool treeinfo::isConstructor(const Tree& tree) {
     }
 }
 
+Name* treeinfo::name(Tree* tree) {
+    switch (tree->treeTag) {
+        case Tree::IDENT:
+            return &dynamic_cast<JCIdent*>(tree)->name;
+        case Tree::SELECT:
+            return &dynamic_cast<JCFieldAccess*>(tree)->selector;
+        default:
+            return nullptr;
+    }
+}
+
 
 JCBinary::JCBinary(int opcode, JCExpression* lhs, JCExpression* rhs)
         : JCExpression(opcode), opcode(opcode), lhs(lhs), rhs(rhs) {
@@ -333,7 +345,7 @@ JCMethodInvocation::JCMethodInvocation(JCExpression::List& args, JCExpression* m
 }
 
 void JCMethodInvocation::accept(Visitor* visitor) {
-    visitor->visitMethodInvocation(this);
+    visitor->visitApply(this);
 }
 
 JCVariableDecl::JCVariableDecl(Name& name, JCExpression* vartype)

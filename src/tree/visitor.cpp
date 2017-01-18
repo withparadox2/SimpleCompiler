@@ -6,7 +6,7 @@
 
 void TreeScanner::initTypeIfNeeded(Tree* that) {
     if (!that->type) {
-        that->type = Symtab::instance().unkownType;
+        that->type = Symtab::instance().unknownType;
     }
 }
 
@@ -115,9 +115,4 @@ void TreeScanner::visitNewArray(JCNewArray* that) {
     scan(that->elementType);
     scan(that->dimens);
     scan(that->elems);
-}
-
-void TreeScanner::visitMethodInvocation(JCMethodInvocation* that) {
-    scan(that->meth);
-    scan(that->args);
 }

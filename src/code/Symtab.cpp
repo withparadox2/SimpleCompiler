@@ -16,9 +16,10 @@ Symtab& Symtab::instance() {
 Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), typeOfTag{Type::Ptr()} {
     intType = Type::Ptr(new Type(TypeTags::INT, nullptr));
     booleanType = Type::Ptr(new Type(TypeTags::BOOLEAN, nullptr));
-    bolType = Type::Ptr(new Type(TypeTags::BOT, nullptr));
+    botType = Type::Ptr(new Type(TypeTags::BOT, nullptr));
     voidType = Type::Ptr(new Type(TypeTags::VOID, nullptr));
-    unkownType = Type::Ptr(new Type(TypeTags::UNKNOWN, nullptr));
+    unknownType = Type::Ptr(new Type(TypeTags::UNKNOWN, nullptr));
+    noType = Type::Ptr(new Type(TypeTags::NONE, nullptr));
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");
@@ -32,7 +33,7 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
 
     initType(intType, "int");
     initType(booleanType, "boolean");
-    initType(bolType, "null");
+    initType(botType, "null");
     initType(voidType, "void");
 }
 

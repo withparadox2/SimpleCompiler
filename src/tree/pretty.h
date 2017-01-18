@@ -71,8 +71,6 @@ public:
 
     void visitNewArray(JCNewArray* that) override;
 
-    void visitMethodInvocation(JCMethodInvocation* that) override;
-
     void visitTree(Tree* that) override;
 
     void printModifiers(JCModifiers* modifier);

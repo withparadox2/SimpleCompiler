@@ -7,7 +7,8 @@
 
 #include <string>
 #include <map>
-#include "../util/names.h"
+
+class Name;
 
 class Token {
 private:

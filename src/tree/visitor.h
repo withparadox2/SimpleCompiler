@@ -59,8 +59,6 @@ public:
 
     virtual void visitNewArray(JCNewArray* that) { visitTree(that); }
 
-    virtual void visitMethodInvocation(JCMethodInvocation* that) { visitTree(that); }
-
     virtual void visitTree(Tree* that) {
         //TODO error
     }
@@ -135,8 +133,6 @@ public:
     void visitUnary(JCUnary* that);
 
     void visitNewArray(JCNewArray* that);
-
-    void visitMethodInvocation(JCMethodInvocation* that);
 };
 
 #endif //SIMPLECOMPILER_VISITOR_H
