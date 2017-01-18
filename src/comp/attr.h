@@ -13,7 +13,9 @@
 #include "../code/type.h"
 
 class Symtab;
+
 class Enter;
+
 class Names;
 
 class Attr : public Visitor {
@@ -83,7 +85,7 @@ public:
 
     TypePtr attribStat(Tree* tree, Env* env);
 
-    template <typename T>
+    template<typename T>
     TypePtr attribStats(std::vector<T>& list, Env* env);
 
     TypePtr attribExpr(Tree* tree, Env* env, TypePtr pt);
@@ -94,7 +96,7 @@ public:
 
     TypePtr attribTree(Tree* tree, Env* env, int pkind, TypePtr pt);
 
-    TypeList attribArgs(JCExpression::List &trees, Env* env);
+    TypeList attribArgs(JCExpression::List& trees, Env* env);
 
     Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
 
@@ -103,7 +105,7 @@ public:
     inline Enter& enter();
 };
 
-template <typename T>
+template<typename T>
 TypePtr Attr::attribStats(std::vector<T>& list, Env* env) {
     for (auto iter = list.begin(); iter != list.end(); iter++) {
         attribStat(iter->get(), env);

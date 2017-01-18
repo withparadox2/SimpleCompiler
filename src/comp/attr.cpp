@@ -8,7 +8,6 @@
 #include "../code/Symtab.h"
 #include "enter.h"
 #include "../util/error.h"
-#include "../code/type.h"
 #include "../util/names.h"
 
 Attr& Attr::instance() {
@@ -203,6 +202,7 @@ void Attr::visitReturn(JCReturn* that) {
     }
 }
 
+//TODO
 void Attr::visitApply(JCMethodInvocation* that) {
     Env::Ptr localEnv(env->dup(that, env->info->dup()));
     Name* methName = treeinfo::name(that->meth.get());
@@ -223,30 +223,72 @@ void Attr::visitNewClass(JCNewClass* that) {
 }
 
 void Attr::visitParens(JCParens* that) {
+    //TODO why env, pKind, pt
+    that->type = attribTree(that->expr.get(), env, pKind, pt);
+    result = that->type;
 }
 
 void Attr::visitAssign(JCAssign* that) {
+
 }
 
 void Attr::visitConditional(JCConditional* that) {
+    attribExpr(that->cond.get(), env, syms.booleanType);
+    attribExpr(that->truepart.get(), env);
+    attribExpr(that->falsepart.get(), env);
+    //assume types is correct
+    result = that->truepart->type;
 }
 
 void Attr::visitBinary(JCBinary* that) {
+
 }
 
 void Attr::visitIndexed(JCArrayAccess* that) {
+    TypePtr atype = attribExpr(that->indexed.get(), env);
+    attribExpr(that->index.get(), env, syms.intType);
+
+    if (atype->tag == TypeTags::ARRAY) {
+        TypePtr owntype = dynamic_cast<ArrayType*>(atype.get())->elemtype;
+        result = owntype;
+    } else {
+        error("need array type but foung " + atype->tag);
+    }
 }
 
 void Attr::visitSelect(JCFieldAccess* that) {
 }
 
 void Attr::visitLiteral(JCLiteral* that) {
+    //must be String
+    if (that->typetag == TypeTags::CLASS) {
+        result = syms.stringType;
+    } else {
+        result = syms.typeOfTag[that->typetag];
+    }
 }
 
 void Attr::visitUnary(JCUnary* that) {
 }
 
+//int[2][3][][], dimens={2, 3}, elementType=int[][]
 void Attr::visitNewArray(JCNewArray* that) {
+    TypePtr elementType;
+    if (that->elementType) {
+        elementType = attribType(that->elementType.get(), env);
+        TypePtr owntype = elementType;
+        for (auto iter = that->dimens.begin(); iter != that->dimens.end(); iter++) {
+            attribExpr(iter->get(), env, syms.intType);
+            owntype = TypePtr(new ArrayType(owntype, syms.arrayClass));
+        }
+        result = owntype;
+    } else {
+        //TODO check why
+    }
+    //doesn't support elems now, i.e. int[] a = new int[]{1, 2, 3}
+    //If dimens is not support, then elems is ok, so
+    //int[][] arr = new int[2][]{1, 2, 3}, is illegal.
+    if (that->elems.size() > 0) {}
 }
 
 TypeList Attr::attribArgs(JCExpression::List& trees, Env* env) {
