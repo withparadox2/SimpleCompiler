@@ -31,6 +31,10 @@ private:
 
     void initType(TypePtr& type, std::string name);
 
+    void enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode);
+
+    void enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr res, int opcode);
+
 public:
     ClassSymbolPtr predefClass;
     static Symtab& instance();

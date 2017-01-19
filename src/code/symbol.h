@@ -9,6 +9,7 @@
 #include <vector>
 #include "../comp/completer.h"
 #include "types.h"
+#include "../util/names.h"
 
 class Name;
 class Scope;
@@ -91,8 +92,12 @@ public:
 
     MethodSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
 };
-//class OperatorSymbol : public MethodSymbol {
-//
-//};
+class OperatorSymbol : public MethodSymbol {
+public:
+    typedef std::shared_ptr<OperatorSymbol> Ptr;
+
+    int opcode;
+    OperatorSymbol(const Name& name, TypePtr type, int opcode, Symbol::Ptr owner);
+};
 
 #endif //SIMPLECOMPILER_SYMBOL_H

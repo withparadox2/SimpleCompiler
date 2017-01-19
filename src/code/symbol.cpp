@@ -5,6 +5,7 @@
 #include "symbol.h"
 #include "type.h"
 #include "../util/names.h"
+#include "Flags.h"
 
 namespace Kind {
     int NIL = 0;
@@ -62,4 +63,8 @@ VarSymbol::VarSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr o
 
 MethodSymbol::MethodSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
         : Symbol(Kind::MTH, flags, name, type, owner) {
+}
+
+OperatorSymbol::OperatorSymbol(const Name& name, TypePtr type, int opcode, Symbol::Ptr owner)
+        : MethodSymbol(Flags::PUBLIC | Flags::STATIC, name, type, owner), opcode(opcode) {
 }

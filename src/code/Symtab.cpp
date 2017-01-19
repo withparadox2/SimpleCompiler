@@ -5,8 +5,9 @@
 #include "Symtab.h"
 #include "type.h"
 #include "../jvm/ClassReader.h"
-#include "../util/names.h"
 #include "../comp/env.h"
+#include "../util/tools.h"
+#include "../jvm/bytecode.h"
 
 Symtab& Symtab::instance() {
     static Symtab inst;
@@ -40,6 +41,17 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     initType(booleanType, "boolean");
     initType(botType, "null");
     initType(voidType, "void");
+
+    enterUnop("+", intType, intType, bytecode::nop);
+    enterUnop("-", intType, intType, bytecode::nop);
+    enterUnop("!", booleanType, booleanType, bytecode::bool_not);
+
+    enterBinop("+", stringType, intType, stringType, bytecode::string_add);
+    enterBinop("+", intType, stringType, stringType, bytecode::string_add);
+    enterBinop("+", stringType, booleanType, stringType, bytecode::string_add);
+    enterBinop("+", booleanType, stringType, stringType, bytecode::string_add);
+
+    enterBinop("+", intType, intType, intType, bytecode::iadd);
 }
 
 Type::Ptr Symtab::enterClass(const string& fullName) {
@@ -54,4 +66,21 @@ void Symtab::initType(Type::Ptr& type, std::string name) {
     type->tsym = sym;
 
     predefClass->memberField->enter(sym);
+}
+
+void Symtab::enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode) {
+
+    predefClass->memberField->enter(
+            OperatorSymbol::Ptr(
+                    new OperatorSymbol(names.fromString(name),
+                                       MethodType::Ptr(new MethodType(ofList(arg), res, methodClass)),
+                                       opcode, predefClass)));
+}
+
+void Symtab::enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr res, int opcode) {
+    predefClass->memberField->enter(
+            OperatorSymbol::Ptr(
+                    new OperatorSymbol(names.fromString(name),
+                                       MethodType::Ptr(new MethodType(ofList(left, right), res, methodClass)),
+                                       opcode, predefClass)));
 }
