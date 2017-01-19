@@ -31,6 +31,7 @@ Names::Names() {
     hyphen = &fromString("-");
     Array = &fromString("Array");
     METHOD = &fromString("METHOD");
+    empty = &fromString("");
 }
 
 Name& Names::fromString(const string& str) {

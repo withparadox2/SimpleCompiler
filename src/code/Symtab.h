@@ -25,7 +25,6 @@ private:
     Names& names;
     // Symbol of primitive type (int, boolean, void, null) is dangling, so we provide
     // a root for it.
-    SymbolList noRootSymbols;
     Symtab();
 
     TypePtr enterClass(const string& fullName);
@@ -33,6 +32,7 @@ private:
     void initType(TypePtr& type, std::string name);
 
 public:
+    ClassSymbolPtr predefClass;
     static Symtab& instance();
     TypePtr typeOfTag[TypeTags::TypeTagCount];
 

@@ -6,7 +6,7 @@
 #include "type.h"
 #include "../jvm/ClassReader.h"
 #include "../util/names.h"
-#include "symbol.h"
+#include "../comp/env.h"
 
 Symtab& Symtab::instance() {
     static Symtab inst;
@@ -14,6 +14,10 @@ Symtab& Symtab::instance() {
 }
 
 Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), typeOfTag{Type::Ptr()} {
+    predefClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.empty, nullptr));
+    ScopePtr scope(new Scope(predefClass));
+    predefClass->memberField = scope;
+
     intType = Type::Ptr(new Type(TypeTags::INT, nullptr));
     booleanType = Type::Ptr(new Type(TypeTags::BOOLEAN, nullptr));
     botType = Type::Ptr(new Type(TypeTags::BOT, nullptr));
@@ -46,7 +50,8 @@ Type::Ptr Symtab::enterClass(const string& fullName) {
 void Symtab::initType(Type::Ptr& type, std::string name) {
     TypeSymbol::Ptr sym(new ClassSymbol(
             Flags::PUBLIC, names.fromString(name), type, nullptr));
-    noRootSymbols.push_back(sym);
     typeOfTag[type->tag] = type;
     type->tsym = sym;
+
+    predefClass->memberField->enter(sym);
 }
