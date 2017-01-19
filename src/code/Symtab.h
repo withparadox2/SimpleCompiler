@@ -23,7 +23,7 @@ class Symtab {
 private:
     ClassReader& reader;
     Names& names;
-    // Symbol of primitive type (int, boolean, void, null) is dangling, so we provided
+    // Symbol of primitive type (int, boolean, void, null) is dangling, so we provide
     // a root for it.
     SymbolList noRootSymbols;
     Symtab();
