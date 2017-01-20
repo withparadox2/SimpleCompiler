@@ -9,6 +9,7 @@
 #include "enter.h"
 #include "../util/error.h"
 #include "../util/names.h"
+#include "../util/tools.h"
 
 Attr& Attr::instance() {
     static Attr attr;
@@ -269,8 +270,10 @@ void Attr::visitLiteral(JCLiteral* that) {
 }
 
 void Attr::visitUnary(JCUnary* that) {
-    //only support +expr, -expr, then attribution can be simple.
-    attribExpr(that->arg.get(), env);
+    //Only support +expr, -expr, then attribution can be simple.
+    //If ++_ or --_ or _++ or _-- then we should attrib VAR
+    TypePtr argType = attribExpr(that->arg.get(), env);
+
 
 }
 
@@ -302,4 +305,18 @@ TypeList Attr::attribArgs(JCExpression::List& trees, Env* env) {
     }
     return argtypes;
 }
+
+SymbolPtr Attr::resolveUnaryOperator(int optag, Env* env, TypePtr arg) {
+    resolveOperator(optag, env, ofList(arg));
+}
+
+SymbolPtr Attr::resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr right) {
+    return resolveOperator(optag, env, ofList(left, right));
+}
+
+SymbolPtr Attr::resolveOperator(int optag, Env* env, Type::List argtypes) {
+    Name& name = treeinfo::operatorName(optag);
+//    SymbolPtr sym =
+}
+
 

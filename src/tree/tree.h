@@ -560,6 +560,8 @@ namespace treeinfo {
     bool isConstructor(const Tree& tree);
 
     Name* name(Tree* tree);
+
+    Name& operatorName(int optag);
 }
 
 #endif //SIMPLECOMPILER_TREE_H

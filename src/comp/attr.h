@@ -76,6 +76,11 @@ private:
 
     void visitNewArray(JCNewArray* that);
 
+    SymbolPtr resolveUnaryOperator(int optag, Env* env, TypePtr arg);
+
+    SymbolPtr resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr right);
+
+    SymbolPtr resolveOperator(int optag, Env* env, Type::List argtypes);
 public:
     static Attr& instance();
 

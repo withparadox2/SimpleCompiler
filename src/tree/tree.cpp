@@ -260,7 +260,7 @@ string treeinfo::descByTag(int treeTag) {
         case Tree::MOD:
             return "%";
         default:
-            return "unknown optag: " + treeTag;
+            error("unknown optag: " + treeTag);
     }
 }
 
@@ -291,6 +291,11 @@ Name* treeinfo::name(Tree* tree) {
         default:
             return nullptr;
     }
+}
+
+Name& treeinfo::operatorName(int optag) {
+    Names& names = Names::instance();
+    return names.fromString(descByTag(optag));
 }
 
 
