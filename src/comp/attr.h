@@ -81,6 +81,13 @@ private:
     SymbolPtr resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr right);
 
     SymbolPtr resolveOperator(int optag, Env* env, Type::List argtypes);
+
+    SymbolPtr findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
+
+//    SymbolPtr findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
+
+    TypePtr newMethTemplate(TypeList argtypes);
+
 public:
     static Attr& instance();
 

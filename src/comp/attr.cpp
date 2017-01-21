@@ -8,7 +8,6 @@
 #include "../code/Symtab.h"
 #include "enter.h"
 #include "../util/error.h"
-#include "../util/names.h"
 #include "../util/tools.h"
 
 Attr& Attr::instance() {
@@ -214,10 +213,44 @@ void Attr::visitApply(JCMethodInvocation* that) {
         //TODO checkFirstConstructorStat
         localEnv->info->isSelfCall = true;
         TypeList argtypes = attribArgs(that->args, localEnv.get());
+
+        //Point to the class in which the called constructor is defined.
+        //If the expr is this(...), then site is the type of enclClass,
+        //If the expr is super(...), then site is the type of superClass.
+        TypePtr site = env->enclClass->sym->type;
+
+        if (methName == names._super) {
+            if (site == syms.objectType) {
+                error("Object doesn't have a super class.");
+            } else {
+                site = dynamic_pointer_cast<ClassType>(site)->supertype_field;
+            }
+        }
+
+        //Actually, it can be nothing else.
+        if (site->tag == TypeTags::CLASS) {
+            //Don't support inner class, ignore enclosing type.
+            if (that->meth->treeTag == Tree::SELECT) {
+                error("class " + env->enclClass->sym->name.desc + " is not a inner class.");
+            }
+
+            //TODO finish this
+        }
+
+        that->type = syms.voidType;
+        result = syms.voidType;
     } else {
+        TypeList argtypes = attribArgs(that->args, localEnv.get());
 
+        TypePtr tempType = newMethTemplate(argtypes);
+
+        //We expect mType to be tempType while resolving expr 'meth', which may
+        //be an ident or a FieldAccess expr.
+        TypePtr mType = attribExpr(that->meth.get(), localEnv.get(), tempType);
+
+        //The type of a method invocation must be the return type, so assign it.
+        result = mType->getReturnType();
     }
-
 }
 
 void Attr::visitNewClass(JCNewClass* that) {
@@ -242,7 +275,11 @@ void Attr::visitConditional(JCConditional* that) {
 }
 
 void Attr::visitBinary(JCBinary* that) {
+    TypePtr left = attribExpr(that->lhs.get(), env);
+    TypePtr right = attribExpr(that->rhs.get(), env);
 
+    that->sym = resolveBinaryOperator(that->opcode, env, left, right);
+    result = that->sym->type->getReturnType();
 }
 
 void Attr::visitIndexed(JCArrayAccess* that) {
@@ -274,7 +311,8 @@ void Attr::visitUnary(JCUnary* that) {
     //If ++_ or --_ or _++ or _-- then we should attrib VAR
     TypePtr argType = attribExpr(that->arg.get(), env);
 
-
+    that->sym = resolveUnaryOperator(that->opcode, env, argType);
+    result = that->sym->type->getReturnType();
 }
 
 //int[2][3][][], dimens={2, 3}, elementType=int[][]
@@ -317,6 +355,15 @@ SymbolPtr Attr::resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr
 SymbolPtr Attr::resolveOperator(int optag, Env* env, Type::List argtypes) {
     Name& name = treeinfo::operatorName(optag);
 //    SymbolPtr sym =
+}
+
+SymbolPtr Attr::findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator) {
+    return SymbolPtr();
+}
+
+TypePtr Attr::newMethTemplate(TypeList argtypes) {
+    MethodType::Ptr mt(new MethodType(argtypes, TypePtr(nullptr), syms.methodClass));
+    return mt;
 }
 
 

@@ -361,6 +361,7 @@ class JCBinary : public JCExpression {
 public:
     typedef shared_ptr<JCBinary> Ptr;
 
+    SymbolPtr sym;
     int opcode;
     JCExpression::Ptr lhs;
     JCExpression::Ptr rhs;
@@ -484,6 +485,7 @@ class JCUnary : public JCExpression {
 public:
     int opcode;
     JCExpression::Ptr arg;
+    SymbolPtr sym;
 
     JCUnary(int opcode, JCExpression* arg);
 
