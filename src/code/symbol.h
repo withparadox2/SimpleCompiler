@@ -16,6 +16,7 @@ class Scope;
 
 typedef std::shared_ptr<Scope> ScopePtr;
 
+//TODO internal linkage, find out a way.
 namespace Kind {
     const int NIL = 0;
     const int PKG = 1 << 0;

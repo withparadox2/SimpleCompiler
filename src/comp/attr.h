@@ -116,9 +116,9 @@ public:
 
     TypeList attribArgs(JCExpression::List& trees, Env* env);
 
-    Symbol::Ptr resolveIdent(Env* env, const Name& name, int kind);
+    SymbolPtr resolveIdent(Env* env, const Name& name, int kind);
 
-    Symbol::Ptr findType(Env* env, const Name& name);
+    SymbolPtr findType(Env* env, const Name& name);
 
     inline Enter& enter();
 };

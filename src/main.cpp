@@ -36,8 +36,6 @@ int main() {
     Lexer lexer(*strPtr);
     Parser parser(lexer);
 
-
-
     JCClassDecl::Ptr clazz(parser.buildClass());
     Pretty p;
     clazz->accept(&p);
@@ -48,9 +46,3 @@ int main() {
     Attr::instance().attrib(env);
     return 0;
 }
-
-
-
-
-
-

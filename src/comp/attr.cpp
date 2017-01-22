@@ -334,7 +334,7 @@ void Attr::visitSelect(JCFieldAccess* that) {
         // If C is a variable or method, then A.B
         // must be a class type (and C is static),
         // or an instance of a class (e.g. System.out).
-        if (pKind & (VAL | MTH) != 0) {
+        if ((pKind & (VAL | MTH)) != 0) {
             skind = skind | VAL | TYP;
         }
     }
