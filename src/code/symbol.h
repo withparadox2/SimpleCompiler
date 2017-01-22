@@ -17,19 +17,18 @@ class Scope;
 typedef std::shared_ptr<Scope> ScopePtr;
 
 namespace Kind {
-    /** The empty set of kinds.*/
-    extern int NIL;
-    extern int PKG;
+    const int NIL = 0;
+    const int PKG = 1 << 0;
     /**type symbols (classes, interfaces and type variables).*/
-    extern int TYP;
+    const int TYP = 1 << 1;
     /**variable symbols.*/
-    extern int VAR;
+    const int VAR = 1 << 2;
     /**values (variables or non-variable expressions), includes VAR.*/
-    extern int VAL;
+    const int VAL = (1 << 3) | VAR;
     /**methods*/
-    extern int MTH;
+    const int MTH = (1 << 4);
     /**The error kind, which includes all other kinds.*/
-    extern int ERR;
+    const int ERR = (1 << 5);
 };
 
 class Symbol : public std::enable_shared_from_this<Symbol> {

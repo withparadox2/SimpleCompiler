@@ -298,6 +298,45 @@ Name& treeinfo::operatorName(int optag) {
     return names.fromString(descByTag(optag));
 }
 
+Tree* ::treeinfo::skipParens(Tree* tree) {
+    if (tree->treeTag == Tree::PARENS) {
+        //TODO check infinite loop
+        return skipParens(dynamic_cast<JCExpression*>(tree));
+    } else {
+        return tree;
+    }
+}
+
+void ::treeinfo::setSymbol(Tree* tree, SymbolPtr sym) {
+    tree = skipParens(tree);
+    switch (tree->treeTag) {
+        case Tree::IDENT:
+            dynamic_cast<JCIdent*>(tree)->sym = sym;
+            break;
+        case Tree::SELECT:
+            dynamic_cast<JCFieldAccess*>(tree)->sym = sym;
+            break;
+    }
+}
+
+SymbolPtr treeinfo::symbol(Tree* tree) {
+    tree = skipParens(tree);
+    switch (tree->treeTag) {
+        case Tree::IDENT:
+            return dynamic_cast<JCIdent*>(tree)->sym;
+        case Tree::SELECT:
+            return dynamic_cast<JCFieldAccess*>(tree)->sym;
+        default:
+            return nullptr;
+    }
+}
+
+JCExpression* ::treeinfo::skipParens(JCExpression* tree) {
+    while (tree->treeTag == Tree::PARENS) {
+        tree = dynamic_cast<JCParens*>(tree)->expr.get();
+    }
+    return tree;
+}
 
 JCBinary::JCBinary(int opcode, JCExpression* lhs, JCExpression* rhs)
         : JCExpression(opcode), opcode(opcode), lhs(lhs), rhs(rhs) {

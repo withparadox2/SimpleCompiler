@@ -186,7 +186,7 @@ void Attr::visitContinue(JCContinue* that) {
 
 void Attr::visitReturn(JCReturn* that) {
     if (!env->enclMethod ||
-            env->enclMethod->sym->owner != env->enclClass->sym) {
+        env->enclMethod->sym->owner != env->enclClass->sym) {
         error("return outside method");
     } else {
         SymbolPtr m = env->enclMethod->sym;
@@ -202,7 +202,6 @@ void Attr::visitReturn(JCReturn* that) {
     }
 }
 
-//TODO
 void Attr::visitApply(JCMethodInvocation* that) {
     Env::Ptr localEnv(env->dup(that, env->info->dup()));
     Name* methName = treeinfo::name(that->meth.get());
@@ -234,7 +233,13 @@ void Attr::visitApply(JCMethodInvocation* that) {
                 error("class " + env->enclClass->sym->name.desc + " is not a inner class.");
             }
 
-            //TODO finish this
+            // Ignore selectSuper, which is used to check accessibility of selector,
+            // such as super.methodName()
+            SymbolPtr sym = resolveConstructor(localEnv.get(), site, argtypes);
+
+            treeinfo::setSymbol(that, sym);
+
+            //Ignore checkId()
         }
 
         that->type = syms.voidType;
@@ -248,29 +253,47 @@ void Attr::visitApply(JCMethodInvocation* that) {
         //be an ident or a FieldAccess expr.
         TypePtr mType = attribExpr(that->meth.get(), localEnv.get(), tempType);
 
+        that->type = mType->getReturnType();
         //The type of a method invocation must be the return type, so assign it.
-        result = mType->getReturnType();
+        result = that->type;
     }
 }
 
 void Attr::visitNewClass(JCNewClass* that) {
+    Env* localEnv = env->dup(that, env->info->dup());
+    JCExpression::Ptr clazz = that->clazz;
+
+    TypePtr clazztype = attribType(clazz.get(), env);
+
+    TypeList argtypes = attribArgs(that->arguments, localEnv);
+    that->type = clazztype;
+    result = that->type;
 }
 
 void Attr::visitParens(JCParens* that) {
-    //TODO why env, pKind, pt
+    // Why env, pKind, pt?
+    // If int type is expected, the expr must be an int type,
+    // since paren itself doesn't own a type, all information
+    // is stored in JCParens.expr.
     that->type = attribTree(that->expr.get(), env, pKind, pt);
     result = that->type;
 }
 
 void Attr::visitAssign(JCAssign* that) {
+    TypePtr owntype = attribTree(that->lhs.get(), env->dup(that), Kind::VAR, syms.noType);
+    //Ignore capture type
 
+    // We expect that right type is a sub type of left type.
+    attribExpr(that->rhs.get(), env, owntype);
+    result = owntype;
 }
 
 void Attr::visitConditional(JCConditional* that) {
     attribExpr(that->cond.get(), env, syms.booleanType);
     attribExpr(that->truepart.get(), env);
     attribExpr(that->falsepart.get(), env);
-    //assume types is correct
+    // Assume types is correct, which means true part's
+    // type is same as right part's type
     result = that->truepart->type;
 }
 
@@ -295,6 +318,42 @@ void Attr::visitIndexed(JCArrayAccess* that) {
 }
 
 void Attr::visitSelect(JCFieldAccess* that) {
+    //Example A.B.C
+    using namespace Kind;
+    int skind = 0;
+    if (that->selector == *names._this
+        || that->selector == *names._super
+        || that->selector == *names._class) {
+        skind = TYP;
+    } else {
+        // If C is a type, A.B must also be a type
+        if ((pKind & TYP) != 0) {
+            skind = skind | TYP;
+        }
+
+        // If C is a variable or method, then A.B
+        // must be a class type (and C is static),
+        // or an instance of a class (e.g. System.out).
+        if (pKind & (VAL | MTH) != 0) {
+            skind = skind | VAL | TYP;
+        }
+    }
+
+    TypePtr site = attribTree(that->selected.get(), env, skind, syms.anyType);
+
+    //Ignore capture type.
+    //Ignore check T.class and T[].class, etc
+
+    //Symbol of A.B, we will search symbol of C in sitesym.
+    SymbolPtr sitesym = treeinfo::symbol(that->selected.get());
+
+    //Ignore selectSuper
+
+    SymbolPtr sym = selectSym(that, sitesym, site, env, pt, pKind);
+
+    that->sym = sym;
+    that->type = selectType(sym);
+    result = that->type;
 }
 
 void Attr::visitLiteral(JCLiteral* that) {
@@ -308,7 +367,8 @@ void Attr::visitLiteral(JCLiteral* that) {
 
 void Attr::visitUnary(JCUnary* that) {
     //Only support +expr, -expr, then attribution can be simple.
-    //If ++_ or --_ or _++ or _-- then we should attrib VAR
+    //If ++_ or --_ or _++ or _-- then we should attrib VAR, you
+    //are only allowed to apply these on a variable.
     TypePtr argType = attribExpr(that->arg.get(), env);
 
     that->sym = resolveUnaryOperator(that->opcode, env, argType);
@@ -364,6 +424,29 @@ SymbolPtr Attr::findMethod(Env* env, TypePtr site, const Name& name, TypeList ar
 TypePtr Attr::newMethTemplate(TypeList argtypes) {
     MethodType::Ptr mt(new MethodType(argtypes, TypePtr(nullptr), syms.methodClass));
     return mt;
+}
+
+SymbolPtr Attr::resolveConstructor(Env* env, TypePtr site, TypeList argtypes) {
+    return SymbolPtr();
+}
+
+SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env* env, TypePtr pt, int pkind) {
+    return SymbolPtr();
+}
+
+//See javac checkId(), we have simpified this too much...
+TypePtr Attr::selectType(SymbolPtr sym) {
+    switch (sym->kind) {
+        case Kind::TYP:
+            return sym->type;
+        case Kind::MTH:
+            return sym->type->getReturnType();
+        case Kind::VAR:
+            return sym->type;
+        default:
+            error("unexpeted type");
+
+    }
 }
 
 

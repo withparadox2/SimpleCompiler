@@ -386,7 +386,7 @@ public:
 class JCFieldAccess : public JCExpression {
 public:
     typedef shared_ptr<JCFieldAccess> Ptr;
-
+    SymbolPtr sym;
     Name& selector;
     JCExpression::Ptr selected;
 
@@ -564,6 +564,14 @@ namespace treeinfo {
     Name* name(Tree* tree);
 
     Name& operatorName(int optag);
+
+    void setSymbol(Tree* tree, SymbolPtr sym);
+
+    Tree* skipParens(Tree* tree);
+
+    JCExpression* skipParens(JCExpression* tree);
+
+    SymbolPtr symbol(Tree* tree);
 }
 
 #endif //SIMPLECOMPILER_TREE_H

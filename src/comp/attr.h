@@ -88,6 +88,12 @@ private:
 
     TypePtr newMethTemplate(TypeList argtypes);
 
+    SymbolPtr resolveConstructor(Env* env, TypePtr site, TypeList argtypes);
+
+    SymbolPtr selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env* env, TypePtr pt, int pkind);
+
+    TypePtr selectType(SymbolPtr sym);
+
 public:
     static Attr& instance();
 
