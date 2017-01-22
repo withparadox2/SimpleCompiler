@@ -4,7 +4,6 @@
 
 #include "symbol.h"
 #include "type.h"
-#include "../util/names.h"
 #include "Flags.h"
 
 namespace Kind {

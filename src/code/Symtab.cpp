@@ -52,6 +52,10 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     enterBinop("+", booleanType, stringType, stringType, bytecode::string_add);
 
     enterBinop("+", intType, intType, intType, bytecode::iadd);
+    enterBinop("-", intType, intType, intType, bytecode::isub);
+    enterBinop("*", intType, intType, intType, bytecode::imul);
+    enterBinop("/", intType, intType, intType, bytecode::idiv);
+    enterBinop("%", intType, intType, intType, bytecode::imod);
 }
 
 Type::Ptr Symtab::enterClass(const string& fullName) {
