@@ -37,7 +37,7 @@ Tree::Tree(int tag) : treeTag(tag) {
 }
 
 
-JCIdent::JCIdent(Name& name) : JCExpression(TYPEIDENT), name(name) {
+JCIdent::JCIdent(Name& name) : JCExpression(IDENT), name(name) {
 
 }
 
