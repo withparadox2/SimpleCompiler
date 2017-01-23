@@ -18,18 +18,20 @@ typedef std::shared_ptr<Scope> ScopePtr;
 
 //TODO internal linkage, find out a way.
 namespace Kind {
-    const int NIL = 0;
-    const int PKG = 1 << 0;
-    /**type symbols (classes, interfaces and type variables).*/
-    const int TYP = 1 << 1;
-    /**variable symbols.*/
-    const int VAR = 1 << 2;
-    /**values (variables or non-variable expressions), includes VAR.*/
-    const int VAL = (1 << 3) | VAR;
-    /**methods*/
-    const int MTH = (1 << 4);
-    /**The error kind, which includes all other kinds.*/
-    const int ERR = (1 << 5);
+    enum {
+        NIL = 0,
+        PKG = 1 << 0,
+        /**type symbols (classes, interfaces and type variables).*/
+        TYP = 1 << 1,
+        /**variable symbols.*/
+        VAR = 1 << 2,
+        /**values (variables or non-variable expressions), includes VAR.*/
+        VAL = (1 << 3) | VAR,
+        /**methods*/
+        MTH = (1 << 4),
+        /**The error kind, which includes all other kinds.*/
+        ERR = (1 << 5)
+    };
 };
 
 class Symbol : public std::enable_shared_from_this<Symbol> {
