@@ -56,20 +56,33 @@ Attr::Attr() : pKind(Kind::ERR), env(nullptr), syms(Symtab::instance()), names(N
 }
 
 void Attr::visitVarDef(JCVariableDecl* that) {
-    if (!that->sym) {
-        that->sym = VarSymbol::Ptr(new VarSymbol(0, that->name, that->type, syms.noSymbol));
+    if (env->info->scope->owner.lock()->kind == Kind::MTH) {
+        if (that->sym) {
+            env->info->scope->enter(that->sym);
+        } else {
+            enter().complete(that, env);
+        }
     }
+    VarSymbolPtr v = that->sym;
+    that->type = v->type;
+    result = that->type;
 }
 
 void Attr::visitIdent(JCIdent* that) {
     Symbol::Ptr sym;
-    //TODO why it is necessary to check kind()
-    if (that->sym && that->sym->kind != Kind::VAR) {
+
+    //see visitApply
+    if (pt->tag == TypeTags::METHOD) {
+        sym = findMethod(env, env->enclClass->sym->type,
+                         that->name, pt->getParameterTypes(), false);
+    } else if (that->sym && that->sym->kind != Kind::VAR) {
         sym = that->sym;
     } else {
         sym = Symbol::Ptr(resolveIdent(env, that->name, pKind));
     }
-    //TODO finish this
+    that->sym = sym;
+
+    result = selectType(sym);
 }
 
 void Attr::visitTypeArray(JCArrayTypeTree* that) {
@@ -79,7 +92,6 @@ void Attr::visitTypeArray(JCArrayTypeTree* that) {
 }
 
 Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
-    //TODO finish this
     using namespace Kind;
     if ((kind & TYP) != 0) {
         return findType(env, name);
@@ -121,7 +133,7 @@ void Attr::attribClass(ClassSymbol::Ptr c) {
     Env* env = enter().typeEnvs.at(c);
     JCClassDecl::Ptr tree = env->enclClass;
     for (auto iter = tree->defs.begin(); iter != tree->defs.end(); iter++) {
-        (*iter)->accept(this);
+        attribStat(iter->get(), env);
     }
 }
 
@@ -171,7 +183,6 @@ void Attr::visitIf(JCIf* that) {
     if (that->elsePart) {
         attribStat(that->elsePart.get(), env);
     }
-    //TODO checkEmpty
     result = nullptr;
 }
 
@@ -216,7 +227,6 @@ void Attr::visitApply(JCMethodInvocation* that) {
             methName == names._this || methName == names._super;
     if (isConstructor) {
         //We are seeing ...this(...) or ...super(...)
-        //TODO checkFirstConstructorStat
         localEnv->info->isSelfCall = true;
         TypeList argtypes = attribArgs(that->args, localEnv.get());
 

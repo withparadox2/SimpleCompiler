@@ -5,10 +5,8 @@
 #include "enter.h"
 #include "../util/error.h"
 #include "attr.h"
-#include "../code/type.h"
 #include "../jvm/ClassReader.h"
 #include "../code/Symtab.h"
-#include "../util/names.h"
 
 Enter& Enter::instance() {
     static Enter inst;
@@ -146,7 +144,8 @@ Type::Ptr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res,
 }
 
 Env* Enter::methodEnv(JCMethodDecl::Ptr tree, Env* env) {
-    Env* localEnv = env->dup(tree, env->info->dup(env->info->scope->dupUnshared()));
+    Scope::Ptr ptr = env->info->scope->dupUnshared();
+    Env* localEnv = env->dup(tree, env->info->dup(ptr));
     localEnv->enclMethod = tree;
     localEnv->info->scope->owner = tree->sym;
     //ignore static level
