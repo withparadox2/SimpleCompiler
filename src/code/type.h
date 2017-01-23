@@ -21,6 +21,7 @@ public:
 
     Type(int tag, TypeSymbolPtr tsym);
     virtual TypePtr getReturnType();
+    virtual List getParameterTypes();
 };
 
 class ClassType : public Type {
@@ -43,6 +44,7 @@ public:
                Type::Ptr restype,
                TypeSymbolPtr methodClass);
     TypePtr getReturnType();
+    List getParameterTypes();
 };
 
 class ArrayType : public Type {

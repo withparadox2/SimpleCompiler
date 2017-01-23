@@ -17,6 +17,10 @@ TypePtr Type::getReturnType() {
     return nullptr;
 }
 
+Type::List Type::getParameterTypes() {
+    return Type::List();
+}
+
 MethodType::MethodType(vector<Type::Ptr> argtypes, Type::Ptr restype, TypeSymbol::Ptr methodClass)
         : Type(TypeTags::METHOD, methodClass), argtypes(argtypes), restype(restype) {
 
@@ -24,6 +28,10 @@ MethodType::MethodType(vector<Type::Ptr> argtypes, Type::Ptr restype, TypeSymbol
 
 TypePtr MethodType::getReturnType() {
     return restype;
+}
+
+Type::List MethodType::getParameterTypes() {
+    return argtypes;
 }
 
 ArrayType::ArrayType(Type::Ptr elemtype, TypeSymbol::Ptr arrayClass)

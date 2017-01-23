@@ -84,8 +84,6 @@ private:
 
     SymbolPtr findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
 
-//    SymbolPtr findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
-
     TypePtr newMethTemplate(TypeList argtypes);
 
     SymbolPtr resolveConstructor(Env* env, TypePtr site, TypeList argtypes);
@@ -119,6 +117,10 @@ public:
     SymbolPtr resolveIdent(Env* env, const Name& name, int kind);
 
     SymbolPtr findType(Env* env, const Name& name);
+
+    SymbolPtr findVar(Env* env, const Name& name);
+
+    SymbolPtr findField(Env* env, const Name& name, TypePtr site, SymbolPtr c);
 
     inline Enter& enter();
 };

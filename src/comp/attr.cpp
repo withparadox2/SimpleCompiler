@@ -69,6 +69,7 @@ void Attr::visitIdent(JCIdent* that) {
     } else {
         sym = Symbol::Ptr(resolveIdent(env, that->name, pKind));
     }
+    //TODO finish this
 }
 
 void Attr::visitTypeArray(JCArrayTypeTree* that) {
@@ -78,8 +79,14 @@ void Attr::visitTypeArray(JCArrayTypeTree* that) {
 }
 
 Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
-    if ((kind & Kind::TYP) != 0) {
+    //TODO finish this
+    using namespace Kind;
+    if ((kind & TYP) != 0) {
         return findType(env, name);
+    }
+
+    if ((kind & VAR) != 0) {
+        return findVar(env, name);
     }
     return syms.noSymbol;
 }
@@ -367,7 +374,7 @@ void Attr::visitLiteral(JCLiteral* that) {
 
 void Attr::visitUnary(JCUnary* that) {
     //Only support +expr, -expr, then attribution can be simple.
-    //If ++_ or --_ or _++ or _-- then we should attrib VAR, you
+    //If ++_ or --_ or _++ or _-- then we should attrib VAR, we
     //are only allowed to apply these on a variable.
     TypePtr argType = attribExpr(that->arg.get(), env);
 
@@ -414,11 +421,16 @@ SymbolPtr Attr::resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr
 
 SymbolPtr Attr::resolveOperator(int optag, Env* env, Type::List argtypes) {
     Name& name = treeinfo::operatorName(optag);
-//    SymbolPtr sym =
+    return findMethod(env, syms.predefClass->type,
+                      name, argtypes, true);
 }
 
 SymbolPtr Attr::findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator) {
-    return SymbolPtr();
+    //Simplified, without checking, chosing
+    ClassSymbolPtr sym = static_pointer_cast<ClassSymbol>(site->tsym.lock());
+    SymbolPtr result = sym->member()->lookUp(name);
+    log("find method of " + name.desc + ":" + result->name.desc);
+    return result;
 }
 
 TypePtr Attr::newMethTemplate(TypeList argtypes) {
@@ -427,11 +439,27 @@ TypePtr Attr::newMethTemplate(TypeList argtypes) {
 }
 
 SymbolPtr Attr::resolveConstructor(Env* env, TypePtr site, TypeList argtypes) {
-    return SymbolPtr();
+    return findMethod(env, site, *names.init, argtypes, false);
 }
 
 SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env* env, TypePtr pt, int pkind) {
-    return SymbolPtr();
+    Name& name = tree->selector;
+    switch (site->tag) {
+        case TypeTags::ARRAY:
+        case TypeTags::CLASS:
+            if (pt->tag == TypeTags::METHOD) {
+                return findMethod(env, site, name, pt->getParameterTypes(), false);
+            } else if (name == *names._this || name == *names._super) {
+                if (sitesym == env->enclClass->sym) {
+                    return env->info->scope->lookUp(name);
+                }
+            } else {
+                //Assume it is a field
+                ClassSymbol* cSym = static_cast<ClassSymbol*>(sitesym.get());
+                return cSym->member()->lookUp(name);
+            }
+    }
+    return syms.noSymbol;
 }
 
 //See javac checkId(), we have simpified this too much...
@@ -445,8 +473,29 @@ TypePtr Attr::selectType(SymbolPtr sym) {
             return sym->type;
         default:
             error("unexpeted type");
-
     }
+}
+
+SymbolPtr Attr::findVar(Env* env, const Name& name) {
+    SymbolPtr result = env->info->scope->lookUp(name);
+    if (result) {
+        return result;
+    }
+
+    result = env->enclClass->sym->member()->lookUp(name);
+    if (result) {
+        return result;
+    }
+
+    StarImportScope& gScope = StarImportScope::instance();
+
+    SymbolPtr sym = gScope.lookUp(name);
+
+    return sym;
+}
+
+SymbolPtr Attr::findField(Env* env, const Name& name, TypePtr site, SymbolPtr c) {
+    return SymbolPtr();
 }
 
 
