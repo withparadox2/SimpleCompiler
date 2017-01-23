@@ -10,6 +10,7 @@
 #include <string>
 #include "Flags.h"
 #include "TypeTags.h"
+#include "symbol.h"
 
 using std::string;
 
@@ -34,6 +35,8 @@ private:
     void enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode);
 
     void enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr res, int opcode);
+
+    void setUpArrayType(ClassSymbolPtr sym);
 
 public:
     ClassSymbolPtr predefClass;

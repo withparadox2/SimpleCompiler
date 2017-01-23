@@ -50,6 +50,8 @@ void Enter::visitVarDef(JCVariableDecl* that) {
     VarSymbol::Ptr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
     that->sym = v;
     //TODO init var
+
+    enclScope->enter(v);
 }
 
 void Enter::visitTree(Tree* that) {

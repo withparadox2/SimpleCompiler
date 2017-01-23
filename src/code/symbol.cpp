@@ -20,11 +20,12 @@ ClassSymbol::ClassSymbol(long flags, const Name& name, Type::Ptr type, Symbol::P
 }
 
 /**
- * Since this meth calls shared_from_this, it can not be inserted into a constructor.
+ * Since this meth calls shared_from_this(), it can not be inserted into a constructor.
  */
-void ClassSymbol::initOnShared() {
-    TypeSymbol::Ptr ptr = std::static_pointer_cast<TypeSymbol>(shared_from_this());
+SymbolPtr ClassSymbol::initOnShared() {
+    TypeSymbol::Ptr ptr = std::dynamic_pointer_cast<TypeSymbol>(shared_from_this());
     this->type->tsym = ptr;
+    return shared_from_this();
 }
 
 ScopePtr ClassSymbol::member() {
@@ -42,6 +43,10 @@ TypeSymbol::TypeSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr
 Symbol::Symbol(int kind, long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
         : kind(kind), flags(flags), name(name), type(type), owner(owner), completer(nullptr) {
 
+}
+
+ScopePtr Symbol::member() {
+    return ScopePtr();
 }
 
 VarSymbol::VarSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)

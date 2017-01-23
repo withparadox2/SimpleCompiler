@@ -82,6 +82,10 @@ void Attr::visitIdent(JCIdent* that) {
     }
     that->sym = sym;
 
+    if (!sym) {
+        error("Fail to find symbol " + that->name.desc);
+    }
+
     result = selectType(sym);
 }
 
@@ -93,14 +97,23 @@ void Attr::visitTypeArray(JCArrayTypeTree* that) {
 
 Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
     using namespace Kind;
-    if ((kind & TYP) != 0) {
-        return findType(env, name);
-    }
+    SymbolPtr bestSoFar = syms.noSymbol;
 
     if ((kind & VAR) != 0) {
-        return findVar(env, name);
+        bestSoFar = findVar(env, name);
+        if (bestSoFar) {
+            return bestSoFar;
+        }
     }
-    return syms.noSymbol;
+
+    if ((kind & TYP) != 0) {
+        bestSoFar = findType(env, name);
+        if (bestSoFar) {
+            return bestSoFar;
+        }
+    }
+
+    return bestSoFar;
 }
 
 Symbol::Ptr Attr::findType(Env* env, const Name& name) {
@@ -116,6 +129,7 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
     Symbol::Ptr sym = gScope.lookUp(name);
     if (sym) {
         log("find type : " + sym->name.desc);
+        return sym;
     }
     return syms.noSymbol;
 }
@@ -146,9 +160,7 @@ void Attr::visitMethodDef(JCMethodDecl* that) {
     Env::Ptr localEnv(enter().methodEnv(treePtr, env));
 
     // Attribute all value parameters.
-    for (auto iter = that->params.begin(); iter != that->params.end(); iter++) {
-        attribStat(iter->get(), localEnv.get());
-    }
+    attribStats(that->params, localEnv.get());
 
     attribStat(that->body.get(), localEnv.get());
 }
@@ -166,11 +178,13 @@ void Attr::visitBlock(JCBlock* that) {
 
 void Attr::visitForLoop(JCForLoop* that) {
     Env::Ptr loopEnv(env->dup(env->tree, env->info->dup(env->info->scope->dup())));
+    loopEnv->info->scope->printTable();
     attribStats(that->init, loopEnv.get());
     if (that->cond) {
         attribExpr(that->cond.get(), loopEnv.get(), syms.booleanType);
     }
     // before, we were not in loop!
+    loopEnv->tree = that->shared_from_this();
     attribStats(that->step, loopEnv.get());
     attribStat(that->body.get(), loopEnv.get());
     loopEnv->info->scope->leave();
@@ -368,6 +382,7 @@ void Attr::visitSelect(JCFieldAccess* that) {
 
     SymbolPtr sym = selectSym(that, sitesym, site, env, pt, pKind);
 
+    log("select sym " + sym->name.desc);
     that->sym = sym;
     that->type = selectType(sym);
     result = that->type;
@@ -437,9 +452,14 @@ SymbolPtr Attr::resolveOperator(int optag, Env* env, Type::List argtypes) {
 
 SymbolPtr Attr::findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator) {
     //Simplified, without checking, chosing
-    ClassSymbolPtr sym = static_pointer_cast<ClassSymbol>(site->tsym.lock());
+    ClassSymbolPtr sym = dynamic_pointer_cast<ClassSymbol>(site->tsym.lock());
     SymbolPtr result = sym->member()->lookUp(name);
-    log("find method of " + name.desc + ":" + result->name.desc);
+
+    if (result) {
+        log("find method of " + name.desc + ":" + result->name.desc);
+    } else {
+        log("not find method of " + name.desc);
+    }
     return result;
 }
 
@@ -465,8 +485,7 @@ SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, 
                 }
             } else {
                 //Assume it is a field
-                ClassSymbol* cSym = static_cast<ClassSymbol*>(sitesym.get());
-                return cSym->member()->lookUp(name);
+                return site->tsym.lock()->member()->lookUp(name);
             }
     }
     return syms.noSymbol;

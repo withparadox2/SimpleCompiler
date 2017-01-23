@@ -102,7 +102,7 @@ public:
     TypePtr attribStat(Tree* tree, Env* env);
 
     template<typename T>
-    TypePtr attribStats(std::vector<T>& list, Env* env);
+    void attribStats(std::vector<T>& list, Env* env);
 
     TypePtr attribExpr(Tree* tree, Env* env, TypePtr pt);
 
@@ -126,7 +126,7 @@ public:
 };
 
 template<typename T>
-TypePtr Attr::attribStats(std::vector<T>& list, Env* env) {
+void Attr::attribStats(std::vector<T>& list, Env* env) {
     for (auto iter = list.begin(); iter != list.end(); iter++) {
         attribStat(iter->get(), env);
     }

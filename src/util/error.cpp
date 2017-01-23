@@ -5,6 +5,6 @@
 #include "error.h"
 
 void error(std::string desc) {
-    std::cerr << desc;
+    std::cerr << desc << std::endl;
     exit(-1);
 }

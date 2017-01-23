@@ -16,6 +16,8 @@ Symtab& Symtab::instance() {
 
 Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), typeOfTag{Type::Ptr()} {
     predefClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.empty, nullptr));
+    predefClass->initOnShared();
+
     ScopePtr scope(new Scope(predefClass));
     predefClass->memberField = scope;
 
@@ -37,6 +39,9 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     methodClass = ClassSymbol::Ptr(new ClassSymbol(Flags::PUBLIC, *names.METHOD, nullptr));
     noSymbol = TypeSymbol::Ptr(nullptr);
 
+
+    setUpArrayType(arrayClass);
+
     initType(intType, "int");
     initType(booleanType, "boolean");
     initType(botType, "null");
@@ -56,7 +61,15 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     enterBinop("*", intType, intType, intType, bytecode::imul);
     enterBinop("/", intType, intType, intType, bytecode::idiv);
     enterBinop("%", intType, intType, intType, bytecode::imod);
+
+    enterBinop("<", intType, intType, booleanType, bytecode::if_icmplt);
+    enterBinop(">", intType, intType, booleanType, bytecode::if_icmpgt);
+    enterBinop("<=", intType, intType, booleanType, bytecode::if_icmple);
+    enterBinop(">=", intType, intType, booleanType, bytecode::if_icmpge);
+    enterBinop("==", intType, intType, booleanType, bytecode::if_icmpeq);
+    enterBinop("!=", intType, intType, booleanType, bytecode::if_icmpne);
 }
+
 
 Type::Ptr Symtab::enterClass(const string& fullName) {
     Name& name = names.fromString(fullName);
@@ -87,4 +100,18 @@ void Symtab::enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr r
                     new OperatorSymbol(names.fromString(name),
                                        MethodType::Ptr(new MethodType(ofList(left, right), res, methodClass)),
                                        opcode, predefClass)));
+}
+
+void Symtab::setUpArrayType(ClassSymbolPtr sym) {
+    ClassType::Ptr arrayClassType =
+            std::dynamic_pointer_cast<ClassType>(sym->type);
+    arrayClassType->supertype_field = objectType;
+    sym->memberField = Scope::Ptr(new Scope(sym));
+    VarSymbol::Ptr lengthSym(
+            new VarSymbol(Flags::PUBLIC | Flags::FINAL,
+                          names.fromString("length"),
+                          intType,
+                          sym));
+    sym->memberField->enter(lengthSym);
+
 }

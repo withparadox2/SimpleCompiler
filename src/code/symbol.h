@@ -10,6 +10,7 @@
 #include "../comp/completer.h"
 #include "types.h"
 #include "../util/names.h"
+#include "symbols.h"
 
 class Name;
 class Scope;
@@ -48,6 +49,7 @@ public:
     Completer* completer;
 
     Symbol(int kind, long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
+    virtual ScopePtr member();
 };
 
 class TypeSymbol : public Symbol {
@@ -74,7 +76,7 @@ public:
 
     Name* fullName;
 
-    void initOnShared();
+    SymbolPtr initOnShared();
 
     ClassSymbol(long flags, const Name& name, Symbol::Ptr owner);
 

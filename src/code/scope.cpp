@@ -7,8 +7,10 @@
 #include "../jvm/ClassReader.h"
 #include "../util/names.h"
 #include "symbol.h"
+#include "../util/log.h"
 
 void Scope::enter(Symbol::Ptr symbol) {
+    log("enter symbol: " + symbol->name.desc);
     if (nameToSym->find(&symbol->name) == nameToSym->end()) {
         nameToSym->insert(std::make_pair(&symbol->name, symbol));
         elems.insert(&symbol->name);
@@ -58,6 +60,14 @@ Scope::Ptr Scope::leave() {
     }
     elems.clear();
     return next;
+}
+
+void Scope::printTable() {
+    log("==========begin table==========");
+    for (auto iter = nameToSym->begin(); iter != nameToSym->end(); iter++) {
+        log(iter->first->desc);
+    }
+    log("==========end table==========");
 }
 
 StarImportScope::StarImportScope() : Scope(Symtab::instance().noSymbol) {

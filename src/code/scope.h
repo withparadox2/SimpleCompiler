@@ -50,6 +50,8 @@ public:
     Scope::Ptr dup();
 
     Scope::Ptr leave();
+
+    void printTable();
 };
 
 class StarImportScope : public Scope {

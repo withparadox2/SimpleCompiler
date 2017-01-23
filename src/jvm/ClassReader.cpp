@@ -42,7 +42,7 @@ ClassSymbol* ClassReader::defineClass(const Name& name) {
 }
 
 void ClassReader::complete(Symbol::Ptr symP) {
-    ClassSymbol::Ptr sym = std::static_pointer_cast<ClassSymbol>(symP);
+    ClassSymbol::Ptr sym = std::dynamic_pointer_cast<ClassSymbol>(symP);
     Names& names = sym->name.names;
     sym->memberField = Scope::Ptr(new Scope(sym));
     if (sym->name == names.fromString("System")) {
@@ -61,5 +61,10 @@ void ClassReader::complete(Symbol::Ptr symP) {
                 new MethodSymbol(0, names.fromString("println"), printType, sym));
         sym->memberField->enter(printSym);
     } else if (sym->name == names.fromString("String")) {
+    } else if (sym->name == names.fromString("Object")) {
+        MethodType::Ptr type(new MethodType(Type::List(), Symtab::instance().voidType, sym));
+        MethodSymbol::Ptr printSym(
+                new MethodSymbol(0, *names.init, type, sym));
+        sym->memberField->enter(printSym);
     }
 }

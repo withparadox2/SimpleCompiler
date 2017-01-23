@@ -434,6 +434,7 @@ public:
 
     void accept(Visitor* visitor) override;
 
+    //TODO checkout why
     ~JCLiteral();
 };
 
