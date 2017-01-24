@@ -19,4 +19,8 @@ typedef std::shared_ptr<ClassType> ClassTypePtr;
 class MethodType;
 typedef std::shared_ptr<MethodType> MethodTypePtr;
 
+class ArrayType;
+typedef std::shared_ptr<ArrayType> ArrayTypePtr;
+
+
 #endif //SIMPLECOMPILER_TYPES_H

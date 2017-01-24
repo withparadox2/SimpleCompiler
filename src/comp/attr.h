@@ -108,6 +108,8 @@ public:
 
     TypePtr attribExpr(Tree* tree, Env* env);
 
+    TypeList attribExprs(JCExpression::List trees, Env* env, TypePtr pt);
+
     TypePtr attribType(Tree* tree, Env* env);
 
     TypePtr attribTree(Tree* tree, Env* env, int pkind, TypePtr pt);

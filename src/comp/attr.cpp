@@ -64,6 +64,12 @@ void Attr::visitVarDef(JCVariableDecl* that) {
         }
     }
     VarSymbolPtr v = that->sym;
+
+    if (that->init) {
+        //TODO use particular Env for init
+        attribExpr(that->init.get(), env, v->type);
+    }
+
     that->type = v->type;
     result = that->type;
 }
@@ -117,11 +123,15 @@ SymbolPtr Attr::resolveIdent(Env* env, const Name& name, int kind) {
 }
 
 SymbolPtr Attr::findType(Env* env, const Name& name) {
-    for (Env* env1 = env; env1->outer; env1 = env1->outer.get()) {
-        SymbolPtr sym = env1->info->scope->lookUp(name);
+    for (;;) {
+        SymbolPtr sym = env->info->scope->lookUp(name);
         if (sym && sym->kind == Kind::TYP) {
             return sym;
         }
+        if (!env->outer) {
+            break;
+        }
+        env = env->outer.get();
     }
 
     StarImportScope& gScope = StarImportScope::instance();
@@ -410,21 +420,26 @@ void Attr::visitUnary(JCUnary* that) {
 //int[2][3][][], dimens={2, 3}, elementType=int[][]
 void Attr::visitNewArray(JCNewArray* that) {
     TypePtr elementType;
+    TypePtr owntype;
     if (that->elementType) {
         elementType = attribType(that->elementType.get(), env);
-        TypePtr owntype = elementType;
+        owntype = elementType;
         for (auto iter = that->dimens.begin(); iter != that->dimens.end(); iter++) {
             attribExpr(iter->get(), env, syms.intType);
             owntype = TypePtr(new ArrayType(owntype, syms.arrayClass));
         }
-        result = owntype;
     } else {
         // TODO check why
     }
     // Doesn't support elems now, i.e. int[] a = new int[]{1, 2, 3}
     // If dimens is not support, then elems is ok, so
     // int[][] arr = new int[2][]{1, 2, 3}, is illegal.
-    if (that->elems.size() > 0) {}
+    if (that->elems.size() > 0) {
+        attribExprs(that->elems, env, elementType);
+        owntype = ArrayTypePtr(new ArrayType(elementType, syms.arrayClass));
+    }
+
+    result = owntype;
 }
 
 TypeList Attr::attribArgs(JCExpression::List& trees, Env* env) {
@@ -526,6 +541,14 @@ SymbolPtr Attr::findVar(Env* env, const Name& name) {
 
 SymbolPtr Attr::findField(Env* env, const Name& name, TypePtr site, SymbolPtr c) {
     return SymbolPtr();
+}
+
+TypeList Attr::attribExprs(JCExpression::List trees, Env* env, TypePtr pt) {
+    TypeList list;
+    for (auto iter = trees.begin(); iter != trees.end(); iter++) {
+        list.push_back(attribExpr(iter->get(), env, pt));
+    }
+    return list;
 }
 
 

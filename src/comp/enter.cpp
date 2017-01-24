@@ -29,6 +29,8 @@ void Enter::visitClassDef(JCClassDecl* that) {
     typeEnvs.insert(std::make_pair(c, env));
     //TODO calc flags_field
 
+    //TODO Technically, we should use the env wrapped this class symbol.
+    env->info->scope->enter(c);
     completeMember(c);
 }
 
@@ -49,7 +51,7 @@ void Enter::visitVarDef(JCVariableDecl* that) {
     Scope::Ptr enclScope = enterScope(env);
     VarSymbolPtr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
     that->sym = v;
-    //TODO init var
+    //TODO init final var
 
     enclScope->enter(v);
 }
