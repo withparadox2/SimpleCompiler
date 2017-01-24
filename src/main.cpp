@@ -8,6 +8,7 @@
 #include "comp/enter.h"
 #include "main.h"
 #include "comp/attr.h"
+#include "jvm/gen.h"
 
 using namespace std;
 
@@ -40,10 +41,10 @@ int main() {
     Pretty p;
     clazz->accept(&p);
 
-
     Enter::instance().complete(clazz.get(), nullptr);
 
     Env* env = Enter::instance().typeEnvs.at(clazz->sym);
     Attr::instance().attrib(env);
+    Gen::instance().genClass(env, clazz.get());
     return 0;
 }

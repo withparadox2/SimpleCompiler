@@ -29,7 +29,7 @@ void Enter::visitClassDef(JCClassDecl* that) {
     typeEnvs.insert(std::make_pair(c, env));
     //TODO calc flags_field
 
-    //TODO Technically, we should use the env wrapped this class symbol.
+    //TODO Technically, we should use env wrapped this class symbol.
     env->info->scope->enter(c);
     completeMember(c);
 }
