@@ -21,7 +21,7 @@ void Enter::complete(Tree* tree, Env* env) {
 }
 
 void Enter::visitClassDef(JCClassDecl* that) {
-    ClassSymbol::Ptr& c = reader.enterClass(that->name);
+    ClassSymbolPtr& c = reader.enterClass(that->name);
     c->memberField = Scope::Ptr(new Scope(c));
     that->sym = c;
     JCClassDecl::Ptr classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
@@ -34,7 +34,7 @@ void Enter::visitClassDef(JCClassDecl* that) {
 
 void Enter::visitMethodDef(JCMethodDecl* tree) {
     Scope::Ptr& enclScope = enterScope(this->env);
-    MethodSymbol::Ptr m(new MethodSymbol(0, tree->name, nullptr, enclScope->owner.lock()));
+    MethodSymbolPtr m(new MethodSymbol(0, tree->name, nullptr, enclScope->owner.lock()));
     //TODO   m->flags
     tree->sym = m;
     m->type = signature(tree->params, tree->resType, this->env);
@@ -47,7 +47,7 @@ void Enter::visitVarDef(JCVariableDecl* that) {
     //ignore static or interface
     attr.attribType(that->vartype.get(), env);
     Scope::Ptr enclScope = enterScope(env);
-    VarSymbol::Ptr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
+    VarSymbolPtr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
     that->sym = v;
     //TODO init var
 
@@ -72,7 +72,7 @@ Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
     return local;
 }
 
-void Enter::completeMember(ClassSymbol::Ptr& c) {
+void Enter::completeMember(ClassSymbolPtr& c) {
     ClassType* ct = static_cast<ClassType*>(c->type.get());
 
     Env* classEnv = typeEnvs.at(c);
@@ -92,11 +92,11 @@ void Enter::completeMember(ClassSymbol::Ptr& c) {
     if ((c->flags & Flags::INTERFACE) == 0) {
         Scope& scope = *classEnv->info->scope;
         long flag = Flags::FINAL | Flags::HASINIT;
-        VarSymbol::Ptr thisSym(new VarSymbol(flag, *names._this, c->type, c));
+        VarSymbolPtr thisSym(new VarSymbol(flag, *names._this, c->type, c));
         scope.enter(thisSym);
 
         //TODO exclude Object which shouldn't have super in scope.
-        VarSymbol::Ptr superSym(new VarSymbol(flag, *names._super, ct->supertype_field, c));
+        VarSymbolPtr superSym(new VarSymbol(flag, *names._super, ct->supertype_field, c));
         scope.enter(superSym);
     }
 
@@ -107,13 +107,13 @@ void Enter::completeMember(ClassSymbol::Ptr& c) {
     }
 }
 
-JCExpressionStatement* Enter::superCall(ClassSymbol::Ptr& c) {
+JCExpressionStatement* Enter::superCall(ClassSymbolPtr& c) {
     //TODO figure out : x_0.super(x_1, ..., x_n)
     JCExpression::List args;
     return new JCExpressionStatement(new JCMethodInvocation(args, new JCIdent(*names._super)));
 }
 
-Tree* Enter::defaultConstructor(ClassSymbol::Ptr& c) {
+Tree* Enter::defaultConstructor(ClassSymbolPtr& c) {
     //According to jls-8.8.9, default ctor shares a same access modifier with Class itself.
     JCModifiers* modifier = new JCModifiers((c->flags & Flags::AccessFlags) | Flags::GENERATEDCONSTR);
 
@@ -134,15 +134,15 @@ Scope::Ptr& Enter::enterScope(Env* env) {
     }
 }
 
-Type::Ptr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env) {
-    Type::List args;
+TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env) {
+    TypeList args;
     for (auto iter = params.begin(); iter != params.end(); iter++) {
         complete(iter->get(), env);
         args.push_back(iter->get()->vartype->type);
     }
-    Type::Ptr restype = !res ? syms.voidType : attr.attribType(res.get(), env);
+    TypePtr restype = !res ? syms.voidType : attr.attribType(res.get(), env);
 
-    return MethodType::Ptr(new MethodType(args, restype, syms.methodClass));
+    return MethodTypePtr(new MethodType(args, restype, syms.methodClass));
 }
 
 Env* Enter::methodEnv(JCMethodDecl::Ptr tree, Env* env) {

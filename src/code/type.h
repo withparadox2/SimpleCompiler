@@ -14,43 +14,37 @@ using std::vector;
 
 class Type {
 public:
-    typedef std::shared_ptr<Type> Ptr;
-    typedef vector<Ptr> List;
     int tag;
     TypeSymbolWeakPtr tsym;
 
     Type(int tag, TypeSymbolPtr tsym);
     virtual TypePtr getReturnType();
-    virtual List getParameterTypes();
+    virtual TypeList getParameterTypes();
 };
 
 class ClassType : public Type {
 public:
-    typedef std::shared_ptr<ClassType> Ptr;
-
-    Type::Ptr supertype_field;
+    TypePtr supertype_field;
 
     ClassType(TypeSymbolPtr tsym);
 };
 
 class MethodType : public Type {
 public:
-    typedef std::shared_ptr<MethodType> Ptr;
+    vector<TypePtr> argtypes;
+    TypePtr restype;
 
-    vector<Type::Ptr> argtypes;
-    Type::Ptr restype;
-
-    MethodType(vector<Type::Ptr> argtypes,
-               Type::Ptr restype,
+    MethodType(vector<TypePtr> argtypes,
+               TypePtr restype,
                TypeSymbolPtr methodClass);
     TypePtr getReturnType();
-    List getParameterTypes();
+    TypeList getParameterTypes();
 };
 
 class ArrayType : public Type {
 public:
-    Type::Ptr elemtype;
-    ArrayType(Type::Ptr elemtype, TypeSymbolPtr arrayClass);
+    TypePtr elemtype;
+    ArrayType(TypePtr elemtype, TypeSymbolPtr arrayClass);
 };
 
 #endif //SIMPLECOMPILER_TYPE_H

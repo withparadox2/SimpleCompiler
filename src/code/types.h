@@ -14,7 +14,9 @@ typedef std::shared_ptr<Type> TypePtr;
 typedef std::vector<TypePtr> TypeList;
 
 class ClassType;
+typedef std::shared_ptr<ClassType> ClassTypePtr;
 
 class MethodType;
+typedef std::shared_ptr<MethodType> MethodTypePtr;
 
 #endif //SIMPLECOMPILER_TYPES_H

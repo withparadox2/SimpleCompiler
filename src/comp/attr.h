@@ -80,7 +80,7 @@ private:
 
     SymbolPtr resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr right);
 
-    SymbolPtr resolveOperator(int optag, Env* env, Type::List argtypes);
+    SymbolPtr resolveOperator(int optag, Env* env, TypeList argtypes);
 
     SymbolPtr findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
 
@@ -97,7 +97,7 @@ public:
 
     void attrib(Env* env);
 
-    void attribClass(ClassSymbol::Ptr c);
+    void attribClass(ClassSymbolPtr c);
 
     TypePtr attribStat(Tree* tree, Env* env);
 

@@ -37,34 +37,25 @@ namespace Kind {
 
 class Symbol : public std::enable_shared_from_this<Symbol> {
 public:
-    typedef std::shared_ptr<Symbol> Ptr;
-    typedef std::vector<Ptr> List;
-    typedef std::weak_ptr<Symbol> WeakPtr;
     long long flags;
     const Name& name;
-    Symbol::Ptr owner;
+    SymbolPtr owner;
     TypePtr type;
     int kind;
     //TODO ClassReader(static instance) is ok, how about a new Completer
     Completer* completer;
 
-    Symbol(int kind, long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
+    Symbol(int kind, long flags, const Name& name, TypePtr type, SymbolPtr owner);
     virtual ScopePtr member();
 };
 
 class TypeSymbol : public Symbol {
 public:
-    typedef std::shared_ptr<TypeSymbol> Ptr;
-    typedef std::weak_ptr<TypeSymbol> WeakPtr;
-
-    TypeSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
+    TypeSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 
 class ClassSymbol : public TypeSymbol {
 public:
-    typedef std::shared_ptr<ClassSymbol> Ptr;
-    typedef std::weak_ptr<ClassSymbol> WeakPtr;
-
     /** a scope for all class members; variables, methods and inner classes
      *  type parameters are not part of this scope
      *
@@ -78,30 +69,24 @@ public:
 
     SymbolPtr initOnShared();
 
-    ClassSymbol(long flags, const Name& name, Symbol::Ptr owner);
+    ClassSymbol(long flags, const Name& name, SymbolPtr owner);
 
-    ClassSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
+    ClassSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 
 class VarSymbol : public Symbol {
 public:
-    typedef std::shared_ptr<VarSymbol> Ptr;
-
-    VarSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
+    VarSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 
 class MethodSymbol : public Symbol {
 public:
-    typedef std::shared_ptr<MethodSymbol> Ptr;
-
-    MethodSymbol(long flags, const Name& name, TypePtr type, Symbol::Ptr owner);
+    MethodSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 class OperatorSymbol : public MethodSymbol {
 public:
-    typedef std::shared_ptr<OperatorSymbol> Ptr;
-
     int opcode;
-    OperatorSymbol(const Name& name, TypePtr type, int opcode, Symbol::Ptr owner);
+    OperatorSymbol(const Name& name, TypePtr type, int opcode, SymbolPtr owner);
 };
 
 #endif //SIMPLECOMPILER_SYMBOL_H

@@ -6,16 +6,11 @@
 #include "type.h"
 #include "Flags.h"
 
-namespace Kind {
-
-};
-
-
-ClassSymbol::ClassSymbol(long flags, const Name& name, Symbol::Ptr owner)
+ClassSymbol::ClassSymbol(long flags, const Name& name, SymbolPtr owner)
         : ClassSymbol(flags, name, TypePtr(new ClassType(nullptr)), owner) {
 }
 
-ClassSymbol::ClassSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
+ClassSymbol::ClassSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : TypeSymbol(flags, name, type, owner), memberField(nullptr) {
 }
 
@@ -23,7 +18,7 @@ ClassSymbol::ClassSymbol(long flags, const Name& name, Type::Ptr type, Symbol::P
  * Since this meth calls shared_from_this(), it can not be inserted into a constructor.
  */
 SymbolPtr ClassSymbol::initOnShared() {
-    TypeSymbol::Ptr ptr = std::dynamic_pointer_cast<TypeSymbol>(shared_from_this());
+    TypeSymbolPtr ptr = std::dynamic_pointer_cast<TypeSymbol>(shared_from_this());
     this->type->tsym = ptr;
     return shared_from_this();
 }
@@ -36,11 +31,11 @@ ScopePtr ClassSymbol::member() {
     return memberField;
 }
 
-TypeSymbol::TypeSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
+TypeSymbol::TypeSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : Symbol(Kind::TYP, flags, name, type, owner) {
 }
 
-Symbol::Symbol(int kind, long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
+Symbol::Symbol(int kind, long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : kind(kind), flags(flags), name(name), type(type), owner(owner), completer(nullptr) {
 
 }
@@ -49,15 +44,15 @@ ScopePtr Symbol::member() {
     return ScopePtr();
 }
 
-VarSymbol::VarSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
+VarSymbol::VarSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : Symbol(Kind::VAR, flags, name, type, owner) {
 
 }
 
-MethodSymbol::MethodSymbol(long flags, const Name& name, Type::Ptr type, Symbol::Ptr owner)
+MethodSymbol::MethodSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : Symbol(Kind::MTH, flags, name, type, owner) {
 }
 
-OperatorSymbol::OperatorSymbol(const Name& name, TypePtr type, int opcode, Symbol::Ptr owner)
+OperatorSymbol::OperatorSymbol(const Name& name, TypePtr type, int opcode, SymbolPtr owner)
         : MethodSymbol(Flags::PUBLIC | Flags::STATIC, name, type, owner), opcode(opcode) {
 }

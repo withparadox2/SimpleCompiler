@@ -14,20 +14,20 @@ Symtab& Symtab::instance() {
     return inst;
 }
 
-Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), typeOfTag{Type::Ptr()} {
+Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), typeOfTag{TypePtr()} {
     predefClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.empty, nullptr));
     predefClass->initOnShared();
 
     ScopePtr scope(new Scope(predefClass));
     predefClass->memberField = scope;
 
-    intType = Type::Ptr(new Type(TypeTags::INT, nullptr));
-    booleanType = Type::Ptr(new Type(TypeTags::BOOLEAN, nullptr));
-    botType = Type::Ptr(new Type(TypeTags::BOT, nullptr));
-    voidType = Type::Ptr(new Type(TypeTags::VOID, nullptr));
-    unknownType = Type::Ptr(new Type(TypeTags::UNKNOWN, nullptr));
-    noType = Type::Ptr(new Type(TypeTags::NONE, nullptr));
-    anyType = Type::Ptr(new Type(TypeTags::NONE, nullptr));
+    intType = TypePtr(new Type(TypeTags::INT, nullptr));
+    booleanType = TypePtr(new Type(TypeTags::BOOLEAN, nullptr));
+    botType = TypePtr(new Type(TypeTags::BOT, nullptr));
+    voidType = TypePtr(new Type(TypeTags::VOID, nullptr));
+    unknownType = TypePtr(new Type(TypeTags::UNKNOWN, nullptr));
+    noType = TypePtr(new Type(TypeTags::NONE, nullptr));
+    anyType = TypePtr(new Type(TypeTags::NONE, nullptr));
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");
@@ -35,9 +35,9 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     printStreamType = enterClass("java.io.PrintStream");
     systemType = enterClass("java.lang.System");
 
-    arrayClass = ClassSymbol::Ptr(new ClassSymbol(Flags::PUBLIC, *names.Array, nullptr));
-    methodClass = ClassSymbol::Ptr(new ClassSymbol(Flags::PUBLIC, *names.METHOD, nullptr));
-    noSymbol = TypeSymbol::Ptr(nullptr);
+    arrayClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.Array, nullptr));
+    methodClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.METHOD, nullptr));
+    noSymbol = TypeSymbolPtr(nullptr);
 
 
     setUpArrayType(arrayClass);
@@ -71,13 +71,13 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
 }
 
 
-Type::Ptr Symtab::enterClass(const string& fullName) {
+TypePtr Symtab::enterClass(const string& fullName) {
     Name& name = names.fromString(fullName);
     return reader.enterClass(name)->type;
 }
 
-void Symtab::initType(Type::Ptr& type, std::string name) {
-    TypeSymbol::Ptr sym(new ClassSymbol(
+void Symtab::initType(TypePtr& type, std::string name) {
+    TypeSymbolPtr sym(new ClassSymbol(
             Flags::PUBLIC, names.fromString(name), type, nullptr));
     typeOfTag[type->tag] = type;
     type->tsym = sym;
@@ -88,26 +88,26 @@ void Symtab::initType(Type::Ptr& type, std::string name) {
 void Symtab::enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode) {
 
     predefClass->memberField->enter(
-            OperatorSymbol::Ptr(
+            OperatorSymbolPtr(
                     new OperatorSymbol(names.fromString(name),
-                                       MethodType::Ptr(new MethodType(ofList(arg), res, methodClass)),
+                                       MethodTypePtr(new MethodType(ofList(arg), res, methodClass)),
                                        opcode, predefClass)));
 }
 
 void Symtab::enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr res, int opcode) {
     predefClass->memberField->enter(
-            OperatorSymbol::Ptr(
+            OperatorSymbolPtr(
                     new OperatorSymbol(names.fromString(name),
-                                       MethodType::Ptr(new MethodType(ofList(left, right), res, methodClass)),
+                                       MethodTypePtr(new MethodType(ofList(left, right), res, methodClass)),
                                        opcode, predefClass)));
 }
 
 void Symtab::setUpArrayType(ClassSymbolPtr sym) {
-    ClassType::Ptr arrayClassType =
+    ClassTypePtr arrayClassType =
             std::dynamic_pointer_cast<ClassType>(sym->type);
     arrayClassType->supertype_field = objectType;
     sym->memberField = Scope::Ptr(new Scope(sym));
-    VarSymbol::Ptr lengthSym(
+    VarSymbolPtr lengthSym(
             new VarSymbol(Flags::PUBLIC | Flags::FINAL,
                           names.fromString("length"),
                           intType,

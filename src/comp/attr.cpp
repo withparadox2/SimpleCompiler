@@ -15,7 +15,7 @@ Attr& Attr::instance() {
     return attr;
 }
 
-Type::Ptr Attr::attribType(Tree* tree, Env* env) {
+TypePtr Attr::attribType(Tree* tree, Env* env) {
     return attribTree(tree, env, Kind::TYP, syms.noType);
 }
 
@@ -35,7 +35,7 @@ TypePtr Attr::attribStat(Tree* tree, Env* env) {
 }
 
 
-Type::Ptr Attr::attribTree(Tree* tree, Env* env, int pkind, TypePtr pt) {
+TypePtr Attr::attribTree(Tree* tree, Env* env, int pkind, TypePtr pt) {
     TypePtr prePt = this->pt;
     int preKind = this->pKind;
     Env* preEnv = this->env;
@@ -69,7 +69,7 @@ void Attr::visitVarDef(JCVariableDecl* that) {
 }
 
 void Attr::visitIdent(JCIdent* that) {
-    Symbol::Ptr sym;
+    SymbolPtr sym;
 
     //see visitApply
     if (pt->tag == TypeTags::METHOD) {
@@ -78,7 +78,7 @@ void Attr::visitIdent(JCIdent* that) {
     } else if (that->sym && that->sym->kind != Kind::VAR) {
         sym = that->sym;
     } else {
-        sym = Symbol::Ptr(resolveIdent(env, that->name, pKind));
+        sym = SymbolPtr(resolveIdent(env, that->name, pKind));
     }
     that->sym = sym;
 
@@ -95,7 +95,7 @@ void Attr::visitTypeArray(JCArrayTypeTree* that) {
     that->type = result;
 }
 
-Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
+SymbolPtr Attr::resolveIdent(Env* env, const Name& name, int kind) {
     using namespace Kind;
     SymbolPtr bestSoFar = syms.noSymbol;
 
@@ -116,9 +116,9 @@ Symbol::Ptr Attr::resolveIdent(Env* env, const Name& name, int kind) {
     return bestSoFar;
 }
 
-Symbol::Ptr Attr::findType(Env* env, const Name& name) {
+SymbolPtr Attr::findType(Env* env, const Name& name) {
     for (Env* env1 = env; env1->outer; env1 = env1->outer.get()) {
-        Symbol::Ptr sym = env1->info->scope->lookUp(name);
+        SymbolPtr sym = env1->info->scope->lookUp(name);
         if (sym && sym->kind == Kind::TYP) {
             return sym;
         }
@@ -126,7 +126,7 @@ Symbol::Ptr Attr::findType(Env* env, const Name& name) {
 
     StarImportScope& gScope = StarImportScope::instance();
 
-    Symbol::Ptr sym = gScope.lookUp(name);
+    SymbolPtr sym = gScope.lookUp(name);
     if (sym) {
         log("find type : " + sym->name.desc);
         return sym;
@@ -143,7 +143,7 @@ void Attr::attrib(Env* env) {
     attribClass(env->enclClass->sym);
 }
 
-void Attr::attribClass(ClassSymbol::Ptr c) {
+void Attr::attribClass(ClassSymbolPtr c) {
     Env* env = enter().typeEnvs.at(c);
     JCClassDecl::Ptr tree = env->enclClass;
     for (auto iter = tree->defs.begin(); iter != tree->defs.end(); iter++) {
@@ -154,7 +154,7 @@ void Attr::attribClass(ClassSymbol::Ptr c) {
 void Attr::visitMethodDef(JCMethodDecl* that) {
     log("attr method : " + that->name.desc);
     //ignore any check.
-    MethodSymbol::Ptr m = that->sym;
+    MethodSymbolPtr m = that->sym;
     JCMethodDecl::Ptr treePtr = std::dynamic_pointer_cast<JCMethodDecl>
             (that->shared_from_this());
     Env::Ptr localEnv(enter().methodEnv(treePtr, env));
@@ -444,7 +444,7 @@ SymbolPtr Attr::resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr
     return resolveOperator(optag, env, ofList(left, right));
 }
 
-SymbolPtr Attr::resolveOperator(int optag, Env* env, Type::List argtypes) {
+SymbolPtr Attr::resolveOperator(int optag, Env* env, TypeList argtypes) {
     Name& name = treeinfo::operatorName(optag);
     return findMethod(env, syms.predefClass->type,
                       name, argtypes, true);
@@ -464,7 +464,7 @@ SymbolPtr Attr::findMethod(Env* env, TypePtr site, const Name& name, TypeList ar
 }
 
 TypePtr Attr::newMethTemplate(TypeList argtypes) {
-    MethodType::Ptr mt(new MethodType(argtypes, TypePtr(nullptr), syms.methodClass));
+    MethodTypePtr mt(new MethodType(argtypes, TypePtr(nullptr), syms.methodClass));
     return mt;
 }
 

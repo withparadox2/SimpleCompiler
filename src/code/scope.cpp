@@ -9,7 +9,7 @@
 #include "symbol.h"
 #include "../util/log.h"
 
-void Scope::enter(Symbol::Ptr symbol) {
+void Scope::enter(SymbolPtr symbol) {
     log("enter symbol: " + symbol->name.desc);
     if (nameToSym->find(&symbol->name) == nameToSym->end()) {
         nameToSym->insert(std::make_pair(&symbol->name, symbol));
@@ -18,7 +18,7 @@ void Scope::enter(Symbol::Ptr symbol) {
 }
 
 void Scope::remove(const Name& name) {
-    Symbol::Ptr& sym = lookUp(name);
+    SymbolPtr& sym = lookUp(name);
     if (sym == Symtab::instance().noSymbol) {
         return;
     }
@@ -26,10 +26,10 @@ void Scope::remove(const Name& name) {
     elems.erase(&name);
 }
 
-Scope::Scope(Symbol::Ptr owner) : owner(owner), nameToSym(new Map) {
+Scope::Scope(SymbolPtr owner) : owner(owner), nameToSym(new Map) {
 }
 
-Symbol::Ptr& Scope::lookUp(const Name& name) {
+SymbolPtr& Scope::lookUp(const Name& name) {
     if (nameToSym->find(&name) != nameToSym->end()) {
         return nameToSym->at(&name);
     }

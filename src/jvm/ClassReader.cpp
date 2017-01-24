@@ -18,7 +18,7 @@ ClassReader& ClassReader::instance() {
     return reader;
 }
 
-ClassSymbol::Ptr& ClassReader::enterClass(const Name& flatName) {
+ClassSymbolPtr& ClassReader::enterClass(const Name& flatName) {
     auto iter = classes.find(&flatName);
     if (iter != classes.end()) {
         return classes.at(&flatName);
@@ -27,7 +27,7 @@ ClassSymbol::Ptr& ClassReader::enterClass(const Name& flatName) {
     //default means symbol is under package of java.lang
     bool isDefault = flatName.desc.find_last_of('.') != string::npos;
 
-    ClassSymbol::Ptr symbol(defineClass(shortName(flatName)));
+    ClassSymbolPtr symbol(defineClass(shortName(flatName)));
     symbol->initOnShared();
     if (isDefault) {
         symbol->completer = this;
@@ -41,12 +41,12 @@ ClassSymbol* ClassReader::defineClass(const Name& name) {
     return symbol;
 }
 
-void ClassReader::complete(Symbol::Ptr symP) {
-    ClassSymbol::Ptr sym = std::dynamic_pointer_cast<ClassSymbol>(symP);
+void ClassReader::complete(SymbolPtr symP) {
+    ClassSymbolPtr sym = std::dynamic_pointer_cast<ClassSymbol>(symP);
     Names& names = sym->name.names;
     sym->memberField = Scope::Ptr(new Scope(sym));
     if (sym->name == names.fromString("System")) {
-        VarSymbol::Ptr outSym(
+        VarSymbolPtr outSym(
                 new VarSymbol(0,
                               names.fromString("out"),
                               classes.at(&names.fromString("java.io.PrintStream"))->type,
@@ -55,15 +55,15 @@ void ClassReader::complete(Symbol::Ptr symP) {
     } else if (sym->name == names.fromString("PrintStream")) {
         vector<TypePtr> args;
         args.push_back(classes.at(&names.fromString("java.lang.String"))->type);
-        MethodType::Ptr printType(new MethodType(args, Symtab::instance().voidType, sym));
+        MethodTypePtr printType(new MethodType(args, Symtab::instance().voidType, sym));
 
-        MethodSymbol::Ptr printSym(
+        MethodSymbolPtr printSym(
                 new MethodSymbol(0, names.fromString("println"), printType, sym));
         sym->memberField->enter(printSym);
     } else if (sym->name == names.fromString("String")) {
     } else if (sym->name == names.fromString("Object")) {
-        MethodType::Ptr type(new MethodType(Type::List(), Symtab::instance().voidType, sym));
-        MethodSymbol::Ptr printSym(
+        MethodTypePtr type(new MethodType(TypeList(), Symtab::instance().voidType, sym));
+        MethodSymbolPtr printSym(
                 new MethodSymbol(0, *names.init, type, sym));
         sym->memberField->enter(printSym);
     }

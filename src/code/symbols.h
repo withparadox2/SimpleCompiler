@@ -29,5 +29,7 @@ typedef std::shared_ptr<VarSymbol> VarSymbolPtr;
 class MethodSymbol;
 typedef std::shared_ptr<MethodSymbol> MethodSymbolPtr;
 
+class OperatorSymbol;
+typedef std::shared_ptr<OperatorSymbol> OperatorSymbolPtr;
 
 #endif //SIMPLECOMPILER_SYMBOLS_H

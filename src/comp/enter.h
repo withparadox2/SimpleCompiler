@@ -32,7 +32,7 @@ private:
 public:
 
     //TODO delete env
-    map<TypeSymbol::Ptr, Env*> typeEnvs;
+    map<TypeSymbolPtr, Env*> typeEnvs;
 
     static Enter& instance();
 
@@ -48,11 +48,11 @@ public:
 
     Env* classEnv(JCClassDecl::Ptr& clazz);
 
-    void completeMember(ClassSymbol::Ptr& c);
+    void completeMember(ClassSymbolPtr& c);
 
-    Tree* defaultConstructor(ClassSymbol::Ptr& c);
+    Tree* defaultConstructor(ClassSymbolPtr& c);
 
-    JCExpressionStatement* superCall(ClassSymbol::Ptr& c);
+    JCExpressionStatement* superCall(ClassSymbolPtr& c);
 
     Scope::Ptr& enterScope(Env* env);
 
