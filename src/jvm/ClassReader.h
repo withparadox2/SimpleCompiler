@@ -9,19 +9,22 @@
 #include "../code/symbols.h"
 #include "../comp/completer.h"
 
-using std::map;
 class Name;
 
 class ClassReader : public Completer {
 private:
-    map<const Name*, ClassSymbolPtr> classes;
+    std::map<const Name*, ClassSymbolPtr> classes;
 
 public:
     static ClassReader& instance();
 
-    //there exists no concept about package.
+    /**There exists no concept about package.*/
     ClassSymbolPtr& enterClass(const Name& flatName);
 
+    /**
+     * Returns a raw pointer of class symbol, and it's necessary
+     * to call initOnShared() after being wrapped into a shared_pointer.
+     */
     ClassSymbol* defineClass(const Name& name);
 
     void complete(SymbolPtr sym);

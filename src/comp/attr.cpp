@@ -419,11 +419,11 @@ void Attr::visitNewArray(JCNewArray* that) {
         }
         result = owntype;
     } else {
-        //TODO check why
+        // TODO check why
     }
-    //doesn't support elems now, i.e. int[] a = new int[]{1, 2, 3}
-    //If dimens is not support, then elems is ok, so
-    //int[][] arr = new int[2][]{1, 2, 3}, is illegal.
+    // Doesn't support elems now, i.e. int[] a = new int[]{1, 2, 3}
+    // If dimens is not support, then elems is ok, so
+    // int[][] arr = new int[2][]{1, 2, 3}, is illegal.
     if (that->elems.size() > 0) {}
 }
 
@@ -487,8 +487,9 @@ SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, 
                 //Assume it is a field
                 return site->tsym.lock()->member()->lookUp(name);
             }
+        default:
+            return syms.noSymbol;
     }
-    return syms.noSymbol;
 }
 
 //See javac checkId(), we have simpified this too much...
