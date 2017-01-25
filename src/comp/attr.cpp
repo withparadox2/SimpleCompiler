@@ -468,7 +468,10 @@ SymbolPtr Attr::resolveUnaryOperator(int optag, Env<AttrContext>* env, TypePtr a
     return resolveOperator(optag, env, ofList(arg));
 }
 
-SymbolPtr Attr::resolveBinaryOperator(int optag, Env<AttrContext>* env, TypePtr left, TypePtr right) {
+SymbolPtr Attr::resolveBinaryOperator(int optag,
+                                      Env<AttrContext>* env,
+                                      TypePtr left,
+                                      TypePtr right) {
     return resolveOperator(optag, env, ofList(left, right));
 }
 
@@ -478,7 +481,12 @@ SymbolPtr Attr::resolveOperator(int optag, Env<AttrContext>* env, TypeList argty
                       name, argtypes, true);
 }
 
-SymbolPtr Attr::findMethod(Env<AttrContext>* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator) {
+SymbolPtr Attr::findMethod(Env<AttrContext>* env,
+                           TypePtr site,
+                           const Name& name,
+                           TypeList argTypes,
+                           bool isOperator) {
+
     //Simplified, without checking, chosing
     ClassSymbolPtr sym = dynamic_pointer_cast<ClassSymbol>(site->tsym.lock());
     SymbolPtr result = sym->member()->lookUp(name);
@@ -500,7 +508,12 @@ SymbolPtr Attr::resolveConstructor(Env<AttrContext>* env, TypePtr site, TypeList
     return findMethod(env, site, *names->init, argtypes, false);
 }
 
-SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env<AttrContext>* env, TypePtr pt, int pkind) {
+SymbolPtr Attr::selectSym(JCFieldAccess* tree,
+                          SymbolPtr sitesym,
+                          TypePtr site,
+                          Env<AttrContext>* env,
+                          TypePtr pt,
+                          int pkind) {
     Name& name = tree->selector;
     switch (site->tag) {
         case TypeTags::ARRAY:
@@ -552,11 +565,16 @@ SymbolPtr Attr::findVar(Env<AttrContext>* env, const Name& name) {
     return sym;
 }
 
-SymbolPtr Attr::findField(Env<AttrContext>* env, const Name& name, TypePtr site, SymbolPtr c) {
+SymbolPtr Attr::findField(Env<AttrContext>* env,
+                          const Name& name,
+                          TypePtr site,
+                          SymbolPtr c) {
     return SymbolPtr();
 }
 
-TypeList Attr::attribExprs(JCExpression::List trees, Env<AttrContext>* env, TypePtr pt) {
+TypeList Attr::attribExprs(JCExpression::List trees,
+                           Env<AttrContext>* env,
+                           TypePtr pt) {
     TypeList list;
     for (auto iter = trees.begin(); iter != trees.end(); iter++) {
         list.push_back(attribExpr(iter->get(), env, pt));

@@ -10,13 +10,11 @@
 #include "../code/symbol.h"
 #include "../tree/tree.h"
 
-class AttrContext;
-
 template <typename T>
 class Env {
 
 public :
-    typedef std::shared_ptr<T> AttrPtr;
+    typedef std::shared_ptr<T> CtxPtr;
 
     typedef std::shared_ptr<Env<T>> Ptr;
     /** The next enclosing environment.
@@ -55,28 +53,32 @@ public :
      *
      *  May be shared by calling dup(tree), use shared_ptr
      */
-    AttrPtr info;
+    CtxPtr info;
 
     /** Is this an environment for evaluating a base clause?
      */
     bool baseClause;
 
-    Env(Tree::Ptr tree, AttrPtr info);
+    Env(Tree::Ptr tree, CtxPtr info);
 
-    Env* dup(Tree::Ptr tree, AttrPtr info);
+    Env* dup(Tree::Ptr tree, CtxPtr info);
 
     Env* dup(Tree::Ptr tree);
 
     Env* dup(Tree* tree);
 
-    Env* dup(Tree* tree, AttrPtr info);
+    Env* dup(Tree* tree, CtxPtr info);
 
     Env(const Env& env);
 };
 
 template<typename T>
-Env<T>::Env(Tree::Ptr tree, AttrPtr info)
-        : tree(tree), info(info), next(nullptr), outer(nullptr), enclClass(nullptr), enclMethod(nullptr) {
+Env<T>::Env(Tree::Ptr tree, CtxPtr info) : tree(tree),
+                                            info(info),
+                                            next(nullptr),
+                                            outer(nullptr),
+                                            enclClass(nullptr),
+                                            enclMethod(nullptr) {
 }
 
 template<typename T>
@@ -85,7 +87,7 @@ Env<T>* Env<T>::dup(Tree::Ptr tree) {
 }
 
 template<typename T>
-Env<T>* Env<T>::dup(Tree::Ptr tree, AttrPtr info) {
+Env<T>* Env<T>::dup(Tree::Ptr tree, CtxPtr info) {
     Env* env = new Env(*this);
     env->tree = tree;
     env->info = info;
@@ -93,8 +95,12 @@ Env<T>* Env<T>::dup(Tree::Ptr tree, AttrPtr info) {
 }
 
 template<typename T>
-Env<T>::Env(const Env& env) : tree(env.tree), next(env.next), outer(env.outer), enclClass(env.enclClass),
-                              enclMethod(env.enclMethod), info(nullptr) {
+Env<T>::Env(const Env& env) : tree(env.tree),
+                              next(env.next),
+                              outer(env.outer),
+                              enclClass(env.enclClass),
+                              enclMethod(env.enclMethod),
+                              info(nullptr) {
 }
 
 template<typename T>
@@ -103,7 +109,7 @@ Env<T>* Env<T>::dup(Tree* tree) {
 }
 
 template<typename T>
-Env<T>* Env<T>::dup(Tree* tree, AttrPtr info) {
+Env<T>* Env<T>::dup(Tree* tree, CtxPtr info) {
     return dup(tree->shared_from_this(), info);
 }
 

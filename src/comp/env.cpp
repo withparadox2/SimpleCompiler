@@ -4,9 +4,10 @@
 
 #include "env.h"
 
-
-
-AttrContext::AttrContext() : scope(nullptr), isSelfCall(false), selectSuper(false), varArgs(false) {
+AttrContext::AttrContext() : scope(nullptr),
+                             isSelfCall(false),
+                             selectSuper(false),
+                             varArgs(false) {
 }
 
 AttrContext::Ptr AttrContext::dup(Scope::Ptr scope) {

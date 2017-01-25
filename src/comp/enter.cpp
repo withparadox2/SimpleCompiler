@@ -29,7 +29,8 @@ void Enter::visitClassDef(JCClassDecl* that) {
     ClassSymbolPtr& c = reader->enterClass(that->name);
     c->memberField = Scope::Ptr(new Scope(c));
     that->sym = c;
-    JCClassDecl::Ptr classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
+    JCClassDecl::Ptr classSharedPtr =
+            std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
     Env<AttrContext>* env = classEnv(classSharedPtr);
     typeEnvs.insert(std::make_pair(c, std::unique_ptr<Env<AttrContext>>(env)));
     //TODO calc flags_field
@@ -54,7 +55,10 @@ void Enter::visitVarDef(JCVariableDecl* that) {
     //ignore static or interface
     attr->attribType(that->vartype.get(), env);
     Scope::Ptr enclScope = enterScope(env);
-    VarSymbolPtr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
+    VarSymbolPtr v(new VarSymbol(0,
+                                 that->name,
+                                 that->vartype->type,
+                                 enclScope->owner.lock()));
     that->sym = v;
     //TODO init final var
 
@@ -118,12 +122,14 @@ void Enter::completeMember(ClassSymbolPtr& c) {
 JCExpressionStatement* Enter::superCall(ClassSymbolPtr& c) {
     //TODO figure out : x_0.super(x_1, ..., x_n)
     JCExpression::List args;
-    return new JCExpressionStatement(new JCMethodInvocation(args, new JCIdent(*names->_super)));
+    return new JCExpressionStatement
+            (new JCMethodInvocation(args, new JCIdent(*names->_super)));
 }
 
 Tree* Enter::defaultConstructor(ClassSymbolPtr& c) {
     //According to jls-8.8.9, default ctor shares a same access modifier with Class itself.
-    JCModifiers* modifier = new JCModifiers((c->flags & Flags::AccessFlags) | Flags::GENERATEDCONSTR);
+    JCModifiers* modifier =
+            new JCModifiers((c->flags & Flags::AccessFlags) | Flags::GENERATEDCONSTR);
 
     JCStatement::List stats;
     stats.push_back(JCStatement::Ptr(superCall(c)));
@@ -142,7 +148,9 @@ Scope::Ptr& Enter::enterScope(Env<AttrContext>* env) {
     }
 }
 
-TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env<AttrContext>* env) {
+TypePtr Enter::signature(JCVariableDecl::List& params,
+                         JCExpression::Ptr& res,
+                         Env<AttrContext>* env) {
     TypeList args;
     for (auto iter = params.begin(); iter != params.end(); iter++) {
         complete(iter->get(), env);
@@ -153,7 +161,8 @@ TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, E
     return MethodTypePtr(new MethodType(args, restype, syms->methodClass));
 }
 
-Env<AttrContext>* Enter::methodEnv(JCMethodDecl::Ptr tree, Env<AttrContext>* env) {
+Env<AttrContext>* Enter::methodEnv(JCMethodDecl::Ptr tree,
+                                   Env<AttrContext>* env) {
     Scope::Ptr ptr = env->info->scope->dupUnshared();
     Env<AttrContext>* localEnv = env->dup(tree, env->info->dup(ptr));
     localEnv->enclMethod = tree;

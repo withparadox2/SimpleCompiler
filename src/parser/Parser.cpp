@@ -9,7 +9,10 @@
 
 using namespace std;
 
-Parser::Parser(Lexer& lexer) : L(lexer), mode(0), lastMode(0), names(Names::instance()) {
+Parser::Parser(Lexer& lexer) : L(lexer),
+                               mode(0),
+                               lastMode(0),
+                               names(Names::instance()) {
     L.nextToken();
 }
 

@@ -97,17 +97,19 @@ void Symtab::enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode) {
 
     predefClass->memberField->enter(
             OperatorSymbolPtr(
-                    new OperatorSymbol(names->fromString(name),
-                                       MethodTypePtr(new MethodType(ofList(arg), res, methodClass)),
-                                       opcode, predefClass)));
+                    new OperatorSymbol(
+                            names->fromString(name),
+                            MethodTypePtr(new MethodType(ofList(arg), res, methodClass)),
+                            opcode, predefClass)));
 }
 
 void Symtab::enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr res, int opcode) {
     predefClass->memberField->enter(
             OperatorSymbolPtr(
-                    new OperatorSymbol(names->fromString(name),
-                                       MethodTypePtr(new MethodType(ofList(left, right), res, methodClass)),
-                                       opcode, predefClass)));
+                    new OperatorSymbol(
+                            names->fromString(name),
+                            MethodTypePtr(new MethodType(ofList(left, right), res, methodClass)),
+                            opcode, predefClass)));
 }
 
 void Symtab::setUpArrayType(ClassSymbolPtr sym) {
