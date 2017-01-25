@@ -83,6 +83,8 @@ public:
 
     template<typename T>
     void printTreeList(vector<T>& list, string split, string wLeft, string wRight);
+
+    void printBrackets(JCArrayTypeTree* tree);
 };
 
 

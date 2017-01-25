@@ -417,7 +417,10 @@ void Attr::visitUnary(JCUnary* that) {
     result = that->sym->type->getReturnType();
 }
 
-//int[2][3][][], dimens={2, 3}, elementType=int[][]
+// For code like new int[2][3][][]{{5, 6}, null}, we know:
+// dimens : [2, 3]
+// elementType : int[]
+// elems : {{5, 6}, null}.
 void Attr::visitNewArray(JCNewArray* that) {
     TypePtr elementType;
     TypePtr owntype;
@@ -429,11 +432,17 @@ void Attr::visitNewArray(JCNewArray* that) {
             owntype = TypePtr(new ArrayType(owntype, syms.arrayClass));
         }
     } else {
-        // TODO check why
+        //For code like int[] arr = {1, 2, 3}
+        if (pt->tag == TypeTags::ARRAY) {
+            elementType = dynamic_pointer_cast<ArrayType>(pt)->elemtype;
+        } else {
+            error("expected array.");
+        }
     }
-    // Doesn't support elems now, i.e. int[] a = new int[]{1, 2, 3}
-    // If dimens is not support, then elems is ok, so
-    // int[][] arr = new int[2][]{1, 2, 3}, is illegal.
+    // If dimens is not provided, then elems is ok, so
+    // int[][] arr = new int[2][]{1, 2, 3} is legal, same
+    // as arr = {{1, 2, 3}, {1, 2, 3}}.
+    // However, new int[][]{1, 2} is illegal.
     if (that->elems.size() > 0) {
         attribExprs(that->elems, env, elementType);
         owntype = ArrayTypePtr(new ArrayType(elementType, syms.arrayClass));

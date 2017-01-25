@@ -17,7 +17,6 @@ class Scope;
 
 typedef std::shared_ptr<Scope> ScopePtr;
 
-//TODO internal linkage, find out a way.
 namespace Kind {
     enum {
         NIL = 0,
@@ -42,7 +41,8 @@ public:
     SymbolPtr owner;
     TypePtr type;
     int kind;
-    //TODO ClassReader(static instance) is ok, how about a new Completer
+    // Refer to single instance of ClassReader(static instance),
+    // do not bother to clear it.
     Completer* completer;
 
     Symbol(int kind, long flags, const Name& name, TypePtr type, SymbolPtr owner);
@@ -57,10 +57,9 @@ public:
 
 class ClassSymbol : public TypeSymbol {
 public:
-    /** a scope for all class members; variables, methods and inner classes
-     *  type parameters are not part of this scope
-     *
-     *  But the method's symbol is actually entered into this. TODO check out why.
+    /** A scope for all class members, including fields,
+     *  methods and inner classes. Type parameters are
+     *  not part of this scope.
      */
     ScopePtr memberField;
 

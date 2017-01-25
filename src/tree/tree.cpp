@@ -341,6 +341,13 @@ JCExpression* ::treeinfo::skipParens(JCExpression* tree) {
     return tree;
 }
 
+Tree* ::treeinfo::innermostType(Tree* tree) {
+    if (tree->treeTag == Tree::TYPEARRAY) {
+        return innermostType(dynamic_cast<JCArrayTypeTree*>(tree)->elementType.get());
+    }
+    return tree;
+}
+
 JCBinary::JCBinary(int opcode, JCExpression* lhs, JCExpression* rhs)
         : JCExpression(opcode), opcode(opcode), lhs(lhs), rhs(rhs) {
 }

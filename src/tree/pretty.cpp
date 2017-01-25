@@ -259,11 +259,32 @@ void Pretty::printModifiers(JCModifiers* modifier) {
     }
 }
 
+//See visitNewArray in attr.cpp
 void Pretty::visitNewArray(JCNewArray* that) {
-    //todo handle dimens
     print("new ");
-    that->elementType->accept(this);
-    print("[]");
+
+    JCExpression* elementType = that->elementType.get();
+
+    //print base type part of elementType
+    if (elementType->treeTag == Tree::TYPEARRAY) {
+        //int[][]
+        treeinfo::innermostType(elementType)->accept(this);
+    } else {
+        //int
+        elementType->accept(this);
+    }
+
+    //print dimens
+    if (that->dimens.size() > 0) {
+        printTreeList(that->dimens, ",", "[", "]");
+    }
+
+    //print array part of elementType
+    if (elementType->treeTag == Tree::TYPEARRAY) {
+        printBrackets(dynamic_cast<JCArrayTypeTree*>(elementType));
+    }
+
+    //print init part
     printTreeList(that->elems, ",", " {", "}");
 }
 
@@ -311,5 +332,16 @@ void Pretty::printTreeList(vector<T>& list, string split, string wLeft, string w
         item->accept(this);
     }
     print(wRight);
+}
+
+void Pretty::printBrackets(JCArrayTypeTree* tree) {
+    while (true) {
+        Tree* ele = tree->elementType.get();
+        print("[]");
+        if (ele->treeTag != Tree::TYPEARRAY) {
+            break;
+        }
+        tree = dynamic_cast<JCArrayTypeTree*>(ele);
+    }
 }
 

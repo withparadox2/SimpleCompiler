@@ -619,7 +619,9 @@ JCStatement::List Parser::blockStatements() {
                     JCExpression* init = nullptr;
                     if (L.token() == Token::EQ) {
                         L.nextToken();
-                        init = term(EXPR);
+                        init = L.token() == Token::LBRACE
+                               ? arrayInitializer(nullptr) // int[] arr = {1, 2, 3}
+                               : term(EXPR);
                     }
                     stats.push_back(JCStatement::Ptr(new JCVariableDecl(name, t, init)));
                     match(Token::SEMI);
@@ -650,7 +652,6 @@ JCStatement* Parser::parseStatement() {
             return new JCIf(cond, thenpart, elsepart);
         }
         case Token::ID_FOR: {
-            //todo support for each
             L.nextToken();
             match(Token::LPAREN);
             JCStatement::List inits = forInit();

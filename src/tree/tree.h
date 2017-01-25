@@ -585,6 +585,8 @@ namespace treeinfo {
     JCExpression* skipParens(JCExpression* tree);
 
     SymbolPtr symbol(Tree* tree);
+
+    Tree* innermostType(Tree* tree);
 }
 
 #endif //SIMPLECOMPILER_TREE_H
