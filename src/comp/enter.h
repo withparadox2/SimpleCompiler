@@ -31,8 +31,8 @@ private:
     Env* env;
 public:
 
-    //TODO delete env
-    map<TypeSymbolPtr, Env*> typeEnvs;
+    //Global env last to the end.
+    map<TypeSymbolPtr, std::unique_ptr<Env>> typeEnvs;
 
     static Enter& instance();
 
@@ -59,7 +59,6 @@ public:
     TypePtr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env);
 
     Env* methodEnv(JCMethodDecl::Ptr tree, Env* env);
-
 };
 
 

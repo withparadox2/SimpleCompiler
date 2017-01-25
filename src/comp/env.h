@@ -70,7 +70,6 @@ public :
 
     Env* dup(Tree* tree, AttrPtr info);
 
-
     Env(const Env& env);
 };
 

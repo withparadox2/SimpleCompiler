@@ -154,7 +154,7 @@ void Attr::attrib(Env* env) {
 }
 
 void Attr::attribClass(ClassSymbolPtr c) {
-    Env* env = enter().typeEnvs.at(c);
+    Env* env = enter().typeEnvs.at(c).get();
     JCClassDecl::Ptr tree = env->enclClass;
     for (auto iter = tree->defs.begin(); iter != tree->defs.end(); iter++) {
         attribStat(iter->get(), env);

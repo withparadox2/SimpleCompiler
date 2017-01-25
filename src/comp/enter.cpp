@@ -26,7 +26,7 @@ void Enter::visitClassDef(JCClassDecl* that) {
     that->sym = c;
     JCClassDecl::Ptr classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
     Env* env = classEnv(classSharedPtr);
-    typeEnvs.insert(std::make_pair(c, env));
+    typeEnvs.insert(std::make_pair(c, std::unique_ptr<Env>(env)));
     //TODO calc flags_field
 
     //TODO Technically, we should use env wrapped this class symbol.
@@ -77,7 +77,7 @@ Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
 void Enter::completeMember(ClassSymbolPtr& c) {
     ClassType* ct = static_cast<ClassType*>(c->type.get());
 
-    Env* classEnv = typeEnvs.at(c);
+    Env* classEnv = typeEnvs.at(c).get();
     JCClassDecl* tree = dynamic_cast<JCClassDecl*>(classEnv->tree.get());
 
     c->flags |= Flags::UNATTRIBUTED;

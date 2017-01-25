@@ -303,7 +303,6 @@ Name& treeinfo::operatorName(int optag) {
 
 Tree* ::treeinfo::skipParens(Tree* tree) {
     if (tree->treeTag == Tree::PARENS) {
-        //TODO check infinite loop
         return skipParens(dynamic_cast<JCExpression*>(tree));
     } else {
         return tree;
