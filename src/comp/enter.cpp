@@ -18,8 +18,8 @@ Enter& Enter::instance() {
     return *inst;
 }
 
-void Enter::complete(Tree* tree, Env* env) {
-    Env* preEnv = this->env;
+void Enter::complete(Tree* tree, Env<AttrContext>* env) {
+    Env<AttrContext>* preEnv = this->env;
     this->env = env;
     tree->accept(this);
     this->env = preEnv;
@@ -30,8 +30,8 @@ void Enter::visitClassDef(JCClassDecl* that) {
     c->memberField = Scope::Ptr(new Scope(c));
     that->sym = c;
     JCClassDecl::Ptr classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
-    Env* env = classEnv(classSharedPtr);
-    typeEnvs.insert(std::make_pair(c, std::unique_ptr<Env>(env)));
+    Env<AttrContext>* env = classEnv(classSharedPtr);
+    typeEnvs.insert(std::make_pair(c, std::unique_ptr<Env<AttrContext>>(env)));
     //TODO calc flags_field
 
     //TODO Technically, we should use env wrapped this class symbol.
@@ -73,8 +73,8 @@ Enter::Enter() : env(nullptr) {
     attr = &Attr::instance();
 }
 
-Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
-    Env* local = new Env(clazz, AttrPtr(new AttrContext));
+Env<AttrContext>* Enter::classEnv(JCClassDecl::Ptr& clazz) {
+    Env<AttrContext>* local = new Env<AttrContext>(clazz, AttrContext::Ptr(new AttrContext));
     local->info->scope = Scope::Ptr(new Scope(clazz->sym));
     local->enclClass = clazz;
     return local;
@@ -83,7 +83,7 @@ Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
 void Enter::completeMember(ClassSymbolPtr& c) {
     ClassType* ct = static_cast<ClassType*>(c->type.get());
 
-    Env* classEnv = typeEnvs.at(c).get();
+    Env<AttrContext>* classEnv = typeEnvs.at(c).get();
     JCClassDecl* tree = dynamic_cast<JCClassDecl*>(classEnv->tree.get());
 
     c->flags |= Flags::UNATTRIBUTED;
@@ -134,7 +134,7 @@ Tree* Enter::defaultConstructor(ClassSymbolPtr& c) {
     return new JCMethodDecl(modifier, nullptr, *names->init, param, block);
 }
 
-Scope::Ptr& Enter::enterScope(Env* env) {
+Scope::Ptr& Enter::enterScope(Env<AttrContext>* env) {
     if (env->tree->treeTag == Tree::CLASSDEF) {
         return dynamic_cast<JCClassDecl*>(env->tree.get())->sym->memberField;
     } else {
@@ -142,7 +142,7 @@ Scope::Ptr& Enter::enterScope(Env* env) {
     }
 }
 
-TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env) {
+TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env<AttrContext>* env) {
     TypeList args;
     for (auto iter = params.begin(); iter != params.end(); iter++) {
         complete(iter->get(), env);
@@ -153,9 +153,9 @@ TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, E
     return MethodTypePtr(new MethodType(args, restype, syms->methodClass));
 }
 
-Env* Enter::methodEnv(JCMethodDecl::Ptr tree, Env* env) {
+Env<AttrContext>* Enter::methodEnv(JCMethodDecl::Ptr tree, Env<AttrContext>* env) {
     Scope::Ptr ptr = env->info->scope->dupUnshared();
-    Env* localEnv = env->dup(tree, env->info->dup(ptr));
+    Env<AttrContext>* localEnv = env->dup(tree, env->info->dup(ptr));
     localEnv->enclMethod = tree;
     localEnv->info->scope->owner = tree->sym;
     //ignore static level

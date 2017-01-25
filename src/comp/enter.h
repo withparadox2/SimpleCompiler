@@ -28,15 +28,15 @@ private:
 
     Enter();
 
-    Env* env;
+    Env<AttrContext>* env;
 public:
 
     //Global env last to the end.
-    map<TypeSymbolPtr, std::unique_ptr<Env>> typeEnvs;
+    map<TypeSymbolPtr, std::unique_ptr<Env<AttrContext>>> typeEnvs;
 
     static Enter& instance();
 
-    void complete(Tree* tree, Env* env);
+    void complete(Tree* tree, Env<AttrContext>* env);
 
     void visitClassDef(JCClassDecl* that) override;
 
@@ -46,7 +46,7 @@ public:
 
     void visitTree(Tree* that) override;
 
-    Env* classEnv(JCClassDecl::Ptr& clazz);
+    Env<AttrContext>* classEnv(JCClassDecl::Ptr& clazz);
 
     void completeMember(ClassSymbolPtr& c);
 
@@ -54,11 +54,11 @@ public:
 
     JCExpressionStatement* superCall(ClassSymbolPtr& c);
 
-    Scope::Ptr& enterScope(Env* env);
+    Scope::Ptr& enterScope(Env<AttrContext>* env);
 
-    TypePtr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env* env);
+    TypePtr signature(JCVariableDecl::List& params, JCExpression::Ptr& res, Env<AttrContext>* env);
 
-    Env* methodEnv(JCMethodDecl::Ptr tree, Env* env);
+    Env<AttrContext>* methodEnv(JCMethodDecl::Ptr tree, Env<AttrContext>* env);
 };
 
 

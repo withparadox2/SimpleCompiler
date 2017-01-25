@@ -43,7 +43,7 @@ int main() {
 
     Enter::instance().complete(clazz.get(), nullptr);
 
-    Env* env = Enter::instance().typeEnvs.at(clazz->sym).get();
+    Env<AttrContext>* env = Enter::instance().typeEnvs.at(clazz->sym).get();
     Attr::instance().attrib(env);
     Gen::instance().genClass(env, clazz.get());
     return 0;

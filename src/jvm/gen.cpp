@@ -14,6 +14,6 @@ Gen::Gen() {
 
 }
 
-void Gen::genClass(Env* env, JCClassDecl* cdef) {
+void Gen::genClass(Env<AttrContext>* env, JCClassDecl* cdef) {
 
 }

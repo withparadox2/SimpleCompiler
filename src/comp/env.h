@@ -12,12 +12,13 @@
 
 class AttrContext;
 
-typedef std::shared_ptr<AttrContext> AttrPtr;
-
+template <typename T>
 class Env {
 
 public :
-    typedef std::shared_ptr<Env> Ptr;
+    typedef std::shared_ptr<T> AttrPtr;
+
+    typedef std::shared_ptr<Env<T>> Ptr;
     /** The next enclosing environment.
      *
      *  If this env is generated from env1, then next point to env1.
@@ -73,9 +74,42 @@ public :
     Env(const Env& env);
 };
 
+template<typename T>
+Env<T>::Env(Tree::Ptr tree, AttrPtr info)
+        : tree(tree), info(info), next(nullptr), outer(nullptr), enclClass(nullptr), enclMethod(nullptr) {
+}
+
+template<typename T>
+Env<T>* Env<T>::dup(Tree::Ptr tree) {
+    return dup(tree, info);
+}
+
+template<typename T>
+Env<T>* Env<T>::dup(Tree::Ptr tree, AttrPtr info) {
+    Env* env = new Env(*this);
+    env->tree = tree;
+    env->info = info;
+    return env;
+}
+
+template<typename T>
+Env<T>::Env(const Env& env) : tree(env.tree), next(env.next), outer(env.outer), enclClass(env.enclClass),
+                              enclMethod(env.enclMethod), info(nullptr) {
+}
+
+template<typename T>
+Env<T>* Env<T>::dup(Tree* tree) {
+    return dup(tree->shared_from_this());
+}
+
+template<typename T>
+Env<T>* Env<T>::dup(Tree* tree, AttrPtr info) {
+    return dup(tree->shared_from_this(), info);
+}
+
 class AttrContext {
 public:
-
+    typedef std::shared_ptr<AttrContext> Ptr;
     /** The scope of local symbols.
      */
     Scope::Ptr scope;
@@ -92,8 +126,8 @@ public:
 
     AttrContext();
 
-    AttrPtr dup(Scope::Ptr scope);
-    AttrPtr dup();
+    Ptr dup(Scope::Ptr scope);
+    Ptr dup();
 };
 
 

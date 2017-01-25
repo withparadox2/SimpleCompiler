@@ -20,30 +20,30 @@ Attr& Attr::instance() {
     return *inst;
 }
 
-TypePtr Attr::attribType(Tree* tree, Env* env) {
+TypePtr Attr::attribType(Tree* tree, Env<AttrContext>* env) {
     return attribTree(tree, env, Kind::TYP, syms->noType);
 }
 
-TypePtr Attr::attribExpr(Tree* tree, Env* env, TypePtr pt) {
+TypePtr Attr::attribExpr(Tree* tree, Env<AttrContext>* env, TypePtr pt) {
     return attribTree(tree, env, Kind::VAL,
                       pt->tag != TypeTags::ERROR ? pt : syms->noType);
 }
 
 
-TypePtr Attr::attribExpr(Tree* tree, Env* env) {
+TypePtr Attr::attribExpr(Tree* tree, Env<AttrContext>* env) {
     return attribExpr(tree, env, syms->noType);
 }
 
 
-TypePtr Attr::attribStat(Tree* tree, Env* env) {
+TypePtr Attr::attribStat(Tree* tree, Env<AttrContext>* env) {
     return attribTree(tree, env, Kind::NIL, syms->noType);
 }
 
 
-TypePtr Attr::attribTree(Tree* tree, Env* env, int pkind, TypePtr pt) {
+TypePtr Attr::attribTree(Tree* tree, Env<AttrContext>* env, int pkind, TypePtr pt) {
     TypePtr prePt = this->pt;
     int preKind = this->pKind;
-    Env* preEnv = this->env;
+    Env<AttrContext>* preEnv = this->env;
     this->pt = pt;
     this->pKind = pkind;
     this->env = env;
@@ -109,7 +109,7 @@ void Attr::visitTypeArray(JCArrayTypeTree* that) {
     that->type = result;
 }
 
-SymbolPtr Attr::resolveIdent(Env* env, const Name& name, int kind) {
+SymbolPtr Attr::resolveIdent(Env<AttrContext>* env, const Name& name, int kind) {
     using namespace Kind;
     SymbolPtr bestSoFar = syms->noSymbol;
 
@@ -130,7 +130,7 @@ SymbolPtr Attr::resolveIdent(Env* env, const Name& name, int kind) {
     return bestSoFar;
 }
 
-SymbolPtr Attr::findType(Env* env, const Name& name) {
+SymbolPtr Attr::findType(Env<AttrContext>* env, const Name& name) {
     for (;;) {
         SymbolPtr sym = env->info->scope->lookUp(name);
         if (sym && sym->kind == Kind::TYP) {
@@ -157,12 +157,12 @@ void Attr::visitTypeIdent(JCPrimitiveTypeTree* that) {
     that->type = result;
 }
 
-void Attr::attrib(Env* env) {
+void Attr::attrib(Env<AttrContext>* env) {
     attribClass(env->enclClass->sym);
 }
 
 void Attr::attribClass(ClassSymbolPtr c) {
-    Env* env = enter->typeEnvs.at(c).get();
+    Env<AttrContext>* env = enter->typeEnvs.at(c).get();
     JCClassDecl::Ptr tree = env->enclClass;
     for (auto iter = tree->defs.begin(); iter != tree->defs.end(); iter++) {
         attribStat(iter->get(), env);
@@ -175,7 +175,7 @@ void Attr::visitMethodDef(JCMethodDecl* that) {
     MethodSymbolPtr m = that->sym;
     JCMethodDecl::Ptr treePtr = std::dynamic_pointer_cast<JCMethodDecl>
             (that->shared_from_this());
-    Env::Ptr localEnv(enter->methodEnv(treePtr, env));
+    Env<AttrContext>::Ptr localEnv(enter->methodEnv(treePtr, env));
 
     // Attribute all value parameters.
     attribStats(that->params, localEnv.get());
@@ -185,13 +185,13 @@ void Attr::visitMethodDef(JCMethodDecl* that) {
 
 void Attr::visitBlock(JCBlock* that) {
     //Not support static block or instance initialize
-    Env::Ptr localEnv(env->dup(that, env->info->dup(env->info->scope->dup())));
+    Env<AttrContext>::Ptr localEnv(env->dup(that, env->info->dup(env->info->scope->dup())));
     attribStats(that->stats, localEnv.get());
     localEnv->info->scope->leave();
 }
 
 void Attr::visitForLoop(JCForLoop* that) {
-    Env::Ptr loopEnv(env->dup(env->tree, env->info->dup(env->info->scope->dup())));
+    Env<AttrContext>::Ptr loopEnv(env->dup(env->tree, env->info->dup(env->info->scope->dup())));
     loopEnv->info->scope->printTable();
     attribStats(that->init, loopEnv.get());
     if (that->cond) {
@@ -215,7 +215,7 @@ void Attr::visitIf(JCIf* that) {
 }
 
 void Attr::visitExec(JCExpressionStatement* that) {
-    Env::Ptr localEnv(env->dup(that));
+    Env<AttrContext>::Ptr localEnv(env->dup(that));
     attribExpr(that->exp.get(), localEnv.get());
     result = nullptr;
 }
@@ -249,7 +249,7 @@ void Attr::visitReturn(JCReturn* that) {
 }
 
 void Attr::visitApply(JCMethodInvocation* that) {
-    Env::Ptr localEnv(env->dup(that, env->info->dup()));
+    Env<AttrContext>::Ptr localEnv(env->dup(that, env->info->dup()));
     Name* methName = treeinfo::name(that->meth.get());
     bool isConstructor =
             methName == names->_this || methName == names->_super;
@@ -305,7 +305,7 @@ void Attr::visitApply(JCMethodInvocation* that) {
 }
 
 void Attr::visitNewClass(JCNewClass* that) {
-    Env* localEnv = env->dup(that, env->info->dup());
+    Env<AttrContext>* localEnv = env->dup(that, env->info->dup());
     JCExpression::Ptr clazz = that->clazz;
 
     TypePtr clazztype = attribType(clazz.get(), env);
@@ -455,7 +455,7 @@ void Attr::visitNewArray(JCNewArray* that) {
     result = owntype;
 }
 
-TypeList Attr::attribArgs(JCExpression::List& trees, Env* env) {
+TypeList Attr::attribArgs(JCExpression::List& trees, Env<AttrContext>* env) {
     TypeList argtypes;
     for (auto iter = trees.begin(); iter != trees.end(); iter++) {
         TypePtr type = attribTree(iter->get(), env, Kind::VAL, syms->anyType);
@@ -464,21 +464,21 @@ TypeList Attr::attribArgs(JCExpression::List& trees, Env* env) {
     return argtypes;
 }
 
-SymbolPtr Attr::resolveUnaryOperator(int optag, Env* env, TypePtr arg) {
+SymbolPtr Attr::resolveUnaryOperator(int optag, Env<AttrContext>* env, TypePtr arg) {
     return resolveOperator(optag, env, ofList(arg));
 }
 
-SymbolPtr Attr::resolveBinaryOperator(int optag, Env* env, TypePtr left, TypePtr right) {
+SymbolPtr Attr::resolveBinaryOperator(int optag, Env<AttrContext>* env, TypePtr left, TypePtr right) {
     return resolveOperator(optag, env, ofList(left, right));
 }
 
-SymbolPtr Attr::resolveOperator(int optag, Env* env, TypeList argtypes) {
+SymbolPtr Attr::resolveOperator(int optag, Env<AttrContext>* env, TypeList argtypes) {
     Name& name = treeinfo::operatorName(optag);
     return findMethod(env, syms->predefClass->type,
                       name, argtypes, true);
 }
 
-SymbolPtr Attr::findMethod(Env* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator) {
+SymbolPtr Attr::findMethod(Env<AttrContext>* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator) {
     //Simplified, without checking, chosing
     ClassSymbolPtr sym = dynamic_pointer_cast<ClassSymbol>(site->tsym.lock());
     SymbolPtr result = sym->member()->lookUp(name);
@@ -496,11 +496,11 @@ TypePtr Attr::newMethTemplate(TypeList argtypes) {
     return mt;
 }
 
-SymbolPtr Attr::resolveConstructor(Env* env, TypePtr site, TypeList argtypes) {
+SymbolPtr Attr::resolveConstructor(Env<AttrContext>* env, TypePtr site, TypeList argtypes) {
     return findMethod(env, site, *names->init, argtypes, false);
 }
 
-SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env* env, TypePtr pt, int pkind) {
+SymbolPtr Attr::selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env<AttrContext>* env, TypePtr pt, int pkind) {
     Name& name = tree->selector;
     switch (site->tag) {
         case TypeTags::ARRAY:
@@ -534,7 +534,7 @@ TypePtr Attr::selectType(SymbolPtr sym) {
     }
 }
 
-SymbolPtr Attr::findVar(Env* env, const Name& name) {
+SymbolPtr Attr::findVar(Env<AttrContext>* env, const Name& name) {
     SymbolPtr result = env->info->scope->lookUp(name);
     if (result) {
         return result;
@@ -552,11 +552,11 @@ SymbolPtr Attr::findVar(Env* env, const Name& name) {
     return sym;
 }
 
-SymbolPtr Attr::findField(Env* env, const Name& name, TypePtr site, SymbolPtr c) {
+SymbolPtr Attr::findField(Env<AttrContext>* env, const Name& name, TypePtr site, SymbolPtr c) {
     return SymbolPtr();
 }
 
-TypeList Attr::attribExprs(JCExpression::List trees, Env* env, TypePtr pt) {
+TypeList Attr::attribExprs(JCExpression::List trees, Env<AttrContext>* env, TypePtr pt) {
     TypeList list;
     for (auto iter = trees.begin(); iter != trees.end(); iter++) {
         list.push_back(attribExpr(iter->get(), env, pt));

@@ -6,15 +6,14 @@
 #define SIMPLECOMPILER_GEN_H
 
 #include "../tree/alltree.h"
-
-class Env;
+#include "../comp/env.h"
 
 class Gen {
 private:
     Gen();
 public:
     static Gen& instance();
-    void genClass(Env* env, JCClassDecl* cdef);
+    void genClass(Env<AttrContext>* env, JCClassDecl* cdef);
 };
 
 
