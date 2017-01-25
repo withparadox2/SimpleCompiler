@@ -1,5 +1,5 @@
 //
-// Created by ruancongyong on 2017/1/25.
+// Created by withparadox2 on 2017/1/25.
 //
 
 #ifndef SIMPLECOMPILER_CONTEXT_H
