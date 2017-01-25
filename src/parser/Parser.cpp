@@ -3,7 +3,6 @@
 //
 #include <iostream>
 #include <cassert>
-
 #include "./Parser.h"
 #include "../util/error.h"
 #include "../code/Flags.h"

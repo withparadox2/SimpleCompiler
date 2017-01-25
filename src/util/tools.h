@@ -6,8 +6,8 @@
 #define SIMPLECOMPILER_TOOLS_H
 
 #include <vector>
-#include "names.h"
 #include "stdarg.h"
+#include "names.h"
 
 const Name& shortName(const Name& src);
 

@@ -5,12 +5,13 @@
 #ifndef SIMPLECOMPILER_PARSER_H
 #define SIMPLECOMPILER_PARSER_H
 
-#include "Lexer.h"
-#include "Token.h"
 #include <deque>
 #include <vector>
-#include "../tree/tree.h"
 #include <string>
+#include "Lexer.h"
+#include "Token.h"
+#include "../tree/tree.h"
+
 
 using std::vector;
 using std::string;

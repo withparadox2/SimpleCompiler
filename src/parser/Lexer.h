@@ -6,8 +6,8 @@
 #define SIMPLECOMPILER_LEXER_H
 
 #include <fstream>
-#include "Token.h"
 #include <string>
+#include "Token.h"
 #include "../util/names.h"
 
 class Lexer {

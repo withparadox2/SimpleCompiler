@@ -6,7 +6,6 @@
 #define SIMPLECOMPILER_ENTER_H
 
 #include <map>
-
 #include "../tree/tree.h"
 #include "../code/symbols.h"
 #include "./env.h"

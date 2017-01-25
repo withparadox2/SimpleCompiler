@@ -3,8 +3,8 @@
 //
 
 #include "ClassReader.h"
-#include "../util/error.h"
 #include <cstddef>
+#include "../util/error.h"
 #include "../code/scope.h"
 #include "../code/type.h"
 #include "../code/Symtab.h"

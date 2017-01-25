@@ -5,9 +5,9 @@
 #ifndef SIMPLECOMPILER_SYMTAB_H
 #define SIMPLECOMPILER_SYMTAB_H
 
+#include <string>
 #include "types.h"
 #include "symbols.h"
-#include <string>
 #include "Flags.h"
 #include "TypeTags.h"
 #include "symbol.h"

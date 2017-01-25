@@ -5,10 +5,10 @@
 #ifndef SIMPLECOMPILER_ENV_H
 #define SIMPLECOMPILER_ENV_H
 
+#include <memory>
 #include "../code/scope.h"
 #include "../code/symbol.h"
 #include "../tree/tree.h"
-#include <memory>
 
 class AttrContext;
 
