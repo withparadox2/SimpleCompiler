@@ -11,6 +11,7 @@
 #include "../code/Flags.h"
 #include "../tree/visitor.h"
 #include "../code/type.h"
+#include "../util/context.h"
 
 class Symtab;
 
@@ -18,12 +19,13 @@ class Enter;
 
 class Names;
 
-class Attr : public Visitor {
+class Attr : public Visitor, public EnableMapHelper {
 private:
     int pKind;
     Env* env;
-    Symtab& syms;
-    Names& names;
+    Symtab* syms;
+    Names* names;
+    Enter* enter;
     //type expected in current visit pass
     TypePtr pt;
     TypePtr result;
@@ -123,8 +125,6 @@ public:
     SymbolPtr findVar(Env* env, const Name& name);
 
     SymbolPtr findField(Env* env, const Name& name, TypePtr site, SymbolPtr c);
-
-    inline Enter& enter();
 };
 
 template<typename T>

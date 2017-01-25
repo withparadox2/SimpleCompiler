@@ -5,8 +5,6 @@
 #include "scope.h"
 #include "Symtab.h"
 #include "../jvm/ClassReader.h"
-#include "../util/names.h"
-#include "symbol.h"
 #include "../util/log.h"
 
 void Scope::enter(SymbolPtr symbol) {

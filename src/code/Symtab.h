@@ -11,6 +11,7 @@
 #include "Flags.h"
 #include "TypeTags.h"
 #include "symbol.h"
+#include "../util/context.h"
 
 using std::string;
 
@@ -20,10 +21,10 @@ class Names;
 /**
  * predefined symbol, type
  */
-class Symtab {
+class Symtab : public EnableMapHelper {
 private:
-    ClassReader& reader;
-    Names& names;
+    ClassReader* reader;
+    Names* names;
     // Symbol of primitive type (int, boolean, void, null) is dangling, so we provide
     // a root for it.
     Symtab();

@@ -3,6 +3,8 @@
 //
 #include "names.h"
 
+#define KEY_NAMES "names"
+
 using std::make_pair;
 
 Name::Name(Names& names, const string& desc) : names(names), desc(desc) {}
@@ -24,6 +26,7 @@ bool Name::operator==(const Name& name) {
 }
 
 Names::Names() {
+    Context::instance().put(KEY_NAMES, this);
     init = &fromString("<init>");
     _this = &fromString("this");
     _class = &fromString("class");
@@ -43,8 +46,11 @@ Name& Names::fromString(const string& str) {
 }
 
 Names& Names::instance() {
-    static Names inst;
-    return inst;
+    Names* inst = Context::instance().get<Names>(KEY_NAMES);
+    if (inst == nullptr) {
+        inst = new Names();
+    }
+    return *inst;
 }
 
 

@@ -9,13 +9,21 @@
 #include "../util/tools.h"
 #include "../jvm/bytecode.h"
 
+#define KEY_SYMTAB "symtab"
+
 Symtab& Symtab::instance() {
-    static Symtab inst;
-    return inst;
+    Symtab* inst = Context::instance().get<Symtab>(KEY_SYMTAB);
+    if (inst == nullptr) {
+        inst = new Symtab();
+    }
+    return *inst;
 }
 
-Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), typeOfTag{TypePtr()} {
-    predefClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.empty, nullptr));
+Symtab::Symtab() : typeOfTag{TypePtr()} {
+    Context::instance().put(KEY_SYMTAB, this);
+    reader = &ClassReader::instance();
+    names = &Names::instance();
+    predefClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names->empty, nullptr));
     predefClass->initOnShared();
 
     ScopePtr scope(new Scope(predefClass));
@@ -35,8 +43,8 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
     printStreamType = enterClass("java.io.PrintStream");
     systemType = enterClass("java.lang.System");
 
-    arrayClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.Array, nullptr));
-    methodClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names.METHOD, nullptr));
+    arrayClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names->Array, nullptr));
+    methodClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names->METHOD, nullptr));
     noSymbol = TypeSymbolPtr(nullptr);
 
 
@@ -72,13 +80,13 @@ Symtab::Symtab() : reader(ClassReader::instance()), names(Names::instance()), ty
 
 
 TypePtr Symtab::enterClass(const string& fullName) {
-    Name& name = names.fromString(fullName);
-    return reader.enterClass(name)->type;
+    Name& name = names->fromString(fullName);
+    return reader->enterClass(name)->type;
 }
 
 void Symtab::initType(TypePtr& type, std::string name) {
     TypeSymbolPtr sym(new ClassSymbol(
-            Flags::PUBLIC, names.fromString(name), type, nullptr));
+            Flags::PUBLIC, names->fromString(name), type, nullptr));
     typeOfTag[type->tag] = type;
     type->tsym = sym;
 
@@ -89,7 +97,7 @@ void Symtab::enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode) {
 
     predefClass->memberField->enter(
             OperatorSymbolPtr(
-                    new OperatorSymbol(names.fromString(name),
+                    new OperatorSymbol(names->fromString(name),
                                        MethodTypePtr(new MethodType(ofList(arg), res, methodClass)),
                                        opcode, predefClass)));
 }
@@ -97,7 +105,7 @@ void Symtab::enterUnop(std::string name, TypePtr arg, TypePtr res, int opcode) {
 void Symtab::enterBinop(std::string name, TypePtr left, TypePtr right, TypePtr res, int opcode) {
     predefClass->memberField->enter(
             OperatorSymbolPtr(
-                    new OperatorSymbol(names.fromString(name),
+                    new OperatorSymbol(names->fromString(name),
                                        MethodTypePtr(new MethodType(ofList(left, right), res, methodClass)),
                                        opcode, predefClass)));
 }
@@ -109,7 +117,7 @@ void Symtab::setUpArrayType(ClassSymbolPtr sym) {
     sym->memberField = Scope::Ptr(new Scope(sym));
     VarSymbolPtr lengthSym(
             new VarSymbol(Flags::PUBLIC | Flags::FINAL,
-                          names.fromString("length"),
+                          names->fromString("length"),
                           intType,
                           sym));
     sym->memberField->enter(lengthSym);

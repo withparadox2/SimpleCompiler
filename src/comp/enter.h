@@ -11,6 +11,7 @@
 #include "../code/symbols.h"
 #include "./env.h"
 #include "../tree/visitor.h"
+#include "../util/context.h"
 
 class Attr;
 class Symtab;
@@ -19,12 +20,12 @@ class ClassReader;
 
 using std::map;
 
-class Enter : public Visitor {
+class Enter : public Visitor, public EnableMapHelper {
 private:
-    ClassReader& reader;
-    Symtab& syms;
-    Names& names;
-    Attr& attr;
+    ClassReader* reader;
+    Symtab* syms;
+    Names* names;
+    Attr* attr;
 
     Enter();
 

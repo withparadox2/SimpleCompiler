@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include "context.h"
 
 using std::string;
 using std::map;
@@ -28,10 +29,11 @@ public:
     bool operator!=(const Name& name) const;
 
     bool operator!=(const Name& name);
+
     bool operator==(const Name& name);
 };
 
-class Names {
+class Names : public EnableMapHelper {
 private:
     map<string, std::unique_ptr<Name>> table;
 

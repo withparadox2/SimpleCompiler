@@ -9,13 +9,18 @@
 #include "../code/type.h"
 #include "../code/Symtab.h"
 #include "../util/tools.h"
-#include "../code/symbol.h"
 
 using std::vector;
 
+#define KEY_CLASS_READER "class_reader"
+
 ClassReader& ClassReader::instance() {
-    static ClassReader reader;
-    return reader;
+    ClassReader* inst = Context::instance()
+            .get<ClassReader>(KEY_CLASS_READER);
+    if (inst == nullptr) {
+        inst = new ClassReader();
+    }
+    return *inst;
 }
 
 ClassSymbolPtr& ClassReader::enterClass(const Name& flatName) {

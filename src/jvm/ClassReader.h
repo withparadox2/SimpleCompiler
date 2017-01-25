@@ -8,10 +8,11 @@
 #include <map>
 #include "../code/symbols.h"
 #include "../comp/completer.h"
+#include "../util/context.h"
 
 class Name;
 
-class ClassReader : public Completer {
+class ClassReader : public Completer, public EnableMapHelper {
 private:
     std::map<const Name*, ClassSymbolPtr> classes;
 

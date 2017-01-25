@@ -8,9 +8,14 @@
 #include "../jvm/ClassReader.h"
 #include "../code/Symtab.h"
 
+#define KEY_ENTER "enter"
+
 Enter& Enter::instance() {
-    static Enter inst;
-    return inst;
+    Enter* inst = Context::instance().get<Enter>(KEY_ENTER);
+    if (inst == nullptr) {
+        inst = new Enter();
+    }
+    return *inst;
 }
 
 void Enter::complete(Tree* tree, Env* env) {
@@ -21,7 +26,7 @@ void Enter::complete(Tree* tree, Env* env) {
 }
 
 void Enter::visitClassDef(JCClassDecl* that) {
-    ClassSymbolPtr& c = reader.enterClass(that->name);
+    ClassSymbolPtr& c = reader->enterClass(that->name);
     c->memberField = Scope::Ptr(new Scope(c));
     that->sym = c;
     JCClassDecl::Ptr classSharedPtr = std::dynamic_pointer_cast<JCClassDecl>(that->shared_from_this());
@@ -47,7 +52,7 @@ void Enter::visitMethodDef(JCMethodDecl* tree) {
 
 void Enter::visitVarDef(JCVariableDecl* that) {
     //ignore static or interface
-    attr.attribType(that->vartype.get(), env);
+    attr->attribType(that->vartype.get(), env);
     Scope::Ptr enclScope = enterScope(env);
     VarSymbolPtr v(new VarSymbol(0, that->name, that->vartype->type, enclScope->owner.lock()));
     that->sym = v;
@@ -60,11 +65,12 @@ void Enter::visitTree(Tree* that) {
     //do nothing
 }
 
-Enter::Enter() : reader(ClassReader::instance()),
-                 syms(Symtab::instance()),
-                 names(Names::instance()),
-                 env(nullptr),
-                 attr(Attr::instance()) {
+Enter::Enter() : env(nullptr) {
+    Context::instance().put(KEY_ENTER, this);
+    reader = &ClassReader::instance();
+    syms = &Symtab::instance();
+    names = &Names::instance();
+    attr = &Attr::instance();
 }
 
 Env* Enter::classEnv(JCClassDecl::Ptr& clazz) {
@@ -83,7 +89,7 @@ void Enter::completeMember(ClassSymbolPtr& c) {
     c->flags |= Flags::UNATTRIBUTED;
 
     //Not support extend, super type must be Object type.
-    ct->supertype_field = syms.objectType;
+    ct->supertype_field = syms->objectType;
 
     if (!treeinfo::hasConstructors(tree->defs)) {
         //Not support anonymous class
@@ -94,11 +100,11 @@ void Enter::completeMember(ClassSymbolPtr& c) {
     if ((c->flags & Flags::INTERFACE) == 0) {
         Scope& scope = *classEnv->info->scope;
         long flag = Flags::FINAL | Flags::HASINIT;
-        VarSymbolPtr thisSym(new VarSymbol(flag, *names._this, c->type, c));
+        VarSymbolPtr thisSym(new VarSymbol(flag, *names->_this, c->type, c));
         scope.enter(thisSym);
 
         //TODO exclude Object which shouldn't have super in scope.
-        VarSymbolPtr superSym(new VarSymbol(flag, *names._super, ct->supertype_field, c));
+        VarSymbolPtr superSym(new VarSymbol(flag, *names->_super, ct->supertype_field, c));
         scope.enter(superSym);
     }
 
@@ -112,7 +118,7 @@ void Enter::completeMember(ClassSymbolPtr& c) {
 JCExpressionStatement* Enter::superCall(ClassSymbolPtr& c) {
     //TODO figure out : x_0.super(x_1, ..., x_n)
     JCExpression::List args;
-    return new JCExpressionStatement(new JCMethodInvocation(args, new JCIdent(*names._super)));
+    return new JCExpressionStatement(new JCMethodInvocation(args, new JCIdent(*names->_super)));
 }
 
 Tree* Enter::defaultConstructor(ClassSymbolPtr& c) {
@@ -125,7 +131,7 @@ Tree* Enter::defaultConstructor(ClassSymbolPtr& c) {
 
     //no type, no arguments
     JCVariableDecl::List param;
-    return new JCMethodDecl(modifier, nullptr, *names.init, param, block);
+    return new JCMethodDecl(modifier, nullptr, *names->init, param, block);
 }
 
 Scope::Ptr& Enter::enterScope(Env* env) {
@@ -142,9 +148,9 @@ TypePtr Enter::signature(JCVariableDecl::List& params, JCExpression::Ptr& res, E
         complete(iter->get(), env);
         args.push_back(iter->get()->vartype->type);
     }
-    TypePtr restype = !res ? syms.voidType : attr.attribType(res.get(), env);
+    TypePtr restype = !res ? syms->voidType : attr->attribType(res.get(), env);
 
-    return MethodTypePtr(new MethodType(args, restype, syms.methodClass));
+    return MethodTypePtr(new MethodType(args, restype, syms->methodClass));
 }
 
 Env* Enter::methodEnv(JCMethodDecl::Ptr tree, Env* env) {
