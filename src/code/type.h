@@ -20,6 +20,7 @@ public:
     Type(int tag, TypeSymbolPtr tsym);
     virtual TypePtr getReturnType();
     virtual TypeList getParameterTypes();
+    virtual ~Type();
 };
 
 class ClassType : public Type {

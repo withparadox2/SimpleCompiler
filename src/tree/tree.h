@@ -41,6 +41,19 @@ public:
 
     virtual void accept(Visitor* visitor) = 0;
 
+    /**
+     * Clion or Gcc complains that this virtual dtor hides
+     * the non-virtual one in enable_shared_from_this.
+     * However, people usually will not delete an instance
+     * by reference to enable_shared_from_this, but will
+     * delete an instance of derivied class by reference to
+     * Tree. So, it's Ok and necessary to declare it with
+     * virtual.
+     *
+     */
+    //TODO why hide?
+    virtual ~Tree();
+
     static const int CLASSDEF = 1;
 
     /** Method definitions, of type MethodDef.
@@ -434,7 +447,6 @@ public:
 
     void accept(Visitor* visitor) override;
 
-    //TODO checkout why
     ~JCLiteral();
 };
 

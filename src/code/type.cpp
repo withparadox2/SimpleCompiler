@@ -21,6 +21,10 @@ TypeList Type::getParameterTypes() {
     return TypeList();
 }
 
+Type::~Type() {
+
+}
+
 MethodType::MethodType(vector<TypePtr> argtypes, TypePtr restype, TypeSymbolPtr methodClass)
         : Type(TypeTags::METHOD, methodClass), argtypes(argtypes), restype(restype) {
 

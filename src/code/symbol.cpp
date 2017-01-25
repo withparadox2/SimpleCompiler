@@ -44,6 +44,10 @@ ScopePtr Symbol::member() {
     return ScopePtr();
 }
 
+Symbol::~Symbol() {
+
+}
+
 VarSymbol::VarSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : Symbol(Kind::VAR, flags, name, type, owner) {
 

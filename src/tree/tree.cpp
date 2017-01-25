@@ -36,6 +36,9 @@ void JCArrayTypeTree::accept(Visitor* visitor) {
 Tree::Tree(int tag) : treeTag(tag) {
 }
 
+Tree::~Tree() {
+}
+
 
 JCIdent::JCIdent(Name& name) : JCExpression(IDENT), name(name) {
 
