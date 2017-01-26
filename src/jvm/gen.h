@@ -8,7 +8,7 @@
 #include "../tree/alltree.h"
 #include "../comp/env.h"
 
-class Gen {
+class Gen : public EnableMapHelper {
 private:
     Gen();
 public:
