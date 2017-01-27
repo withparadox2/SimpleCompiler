@@ -3,6 +3,8 @@
 //
 
 #include "gen.h"
+#include "../code/type.h"
+#include "Code.h"
 
 #define KEY_GEN "gen"
 
@@ -38,6 +40,31 @@ void Gen::genDef(Tree* tree, Env<GenContext>* env) {
 }
 
 void Gen::visitMethodDef(JCMethodDecl* that) {
+    Env<GenContext>::Ptr localEnv(env->dup(that));
+    localEnv->enclMethod = that->shared_from_this();
 
+    this->pt = that->sym->type->getReturnType();
+
+    //TODO check dimensions
+
+    genMethod(that, localEnv.get(), false);
+}
+
+void Gen::genMethod(JCMethodDecl* tree, Env<GenContext>* env, bool fatcode) {
+    //Ignore checking params count
+    if (tree->body) {
+        initCode(tree, env);
+        //ignore checking CodeSizeOverflow
+        genStat(tree, env);
+    }
+}
+
+//Assume fatcode = false
+void Gen::initCode(JCMethodDecl* tree, Env<GenContext>* env) {
+    MethodSymbolPtr meth = tree->sym;
+    meth->code = Code::Ptr(new Code);
+}
+
+void Gen::genStat(Tree* tree, Env<GenContext>* env) {
 
 }

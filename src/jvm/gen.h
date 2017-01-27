@@ -8,8 +8,7 @@
 #include <memory>
 #include "../tree/alltree.h"
 #include "../comp/env.h"
-
-class Visitor;
+#include "../tree/visitor.h"
 
 class GenContext {
 public:
@@ -21,6 +20,8 @@ class Gen : public EnableMapHelper, public Visitor {
 private:
     Gen();
     Env<GenContext>* env;
+    /**Expected type.*/
+    TypePtr pt;
 public:
     static Gen& instance();
     void genClass(Env<AttrContext>* env, JCClassDecl* cdef);
@@ -28,6 +29,12 @@ public:
     void genDef(Tree* tree, Env<GenContext>* env);
 
     void visitMethodDef(JCMethodDecl* that) override;
+
+    void genMethod(JCMethodDecl* tree, Env<GenContext>* env, bool fatcode);
+
+    void initCode(JCMethodDecl* tree, Env<GenContext>* env);
+
+    void genStat(Tree* tree, Env<GenContext>* env);
 };
 
 

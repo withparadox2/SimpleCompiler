@@ -79,8 +79,10 @@ public:
     VarSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 
+class Code;
 class MethodSymbol : public Symbol {
 public:
+    std::shared_ptr<Code> code;
     MethodSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 class OperatorSymbol : public MethodSymbol {
