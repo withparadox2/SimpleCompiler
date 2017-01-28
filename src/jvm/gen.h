@@ -9,6 +9,12 @@
 #include "../tree/alltree.h"
 #include "../comp/env.h"
 #include "../tree/visitor.h"
+#include "Code.h"
+#include "items.h"
+#include "Pool.h"
+
+class Symtab;
+class Names;
 
 class GenContext {
 public:
@@ -22,19 +28,75 @@ private:
     Env<GenContext>* env;
     /**Expected type.*/
     TypePtr pt;
+
+    Code::Ptr code;
+    Items::Ptr items;
+    Pool::Ptr pool;
+
+    Symtab& syms;
+    Names& names;
+
+    Item::Ptr result;
+
+    void visitMethodDef(JCMethodDecl* that);
+
+    void visitVarDef(JCVariableDecl* that);
+
+    void visitBlock(JCBlock* that);
+
+    void visitForLoop(JCForLoop* that);
+
+    void visitIf(JCIf* that);
+
+    void visitExec(JCExpressionStatement* that);
+
+    void visitBreak(JCBreak* that);
+
+    void visitContinue(JCContinue* that);
+
+    void visitReturn(JCReturn* that);
+
+    void visitApply(JCMethodInvocation* that);
+
+    void visitNewClass(JCNewClass* that);
+
+    void visitParens(JCParens* that);
+
+    void visitAssign(JCAssign* that);
+
+    void visitConditional(JCConditional* that);
+
+    void visitBinary(JCBinary* that);
+
+    void visitIndexed(JCArrayAccess* that);
+
+    void visitSelect(JCFieldAccess* that);
+
+    void visitIdent(JCIdent* that);
+
+    void visitLiteral(JCLiteral* that);
+
+    void visitTypeIdent(JCPrimitiveTypeTree* that);
+
+    void visitTypeArray(JCArrayTypeTree* that);
+
+    void visitUnary(JCUnary* that);
+
+    void visitNewArray(JCNewArray* that);
+
 public:
     static Gen& instance();
     void genClass(Env<AttrContext>* env, JCClassDecl* cdef);
 
     void genDef(Tree* tree, Env<GenContext>* env);
 
-    void visitMethodDef(JCMethodDecl* that) override;
-
     void genMethod(JCMethodDecl* tree, Env<GenContext>* env, bool fatcode);
 
     void initCode(JCMethodDecl* tree, Env<GenContext>* env);
 
     void genStat(Tree* tree, Env<GenContext>* env);
+
+    Item::Ptr genExpr(Tree* tree, TypePtr ptr);
 };
 
 

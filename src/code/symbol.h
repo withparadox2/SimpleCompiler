@@ -84,6 +84,7 @@ class MethodSymbol : public Symbol {
 public:
     std::shared_ptr<Code> code;
     MethodSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
+    bool isConstructor();
 };
 class OperatorSymbol : public MethodSymbol {
 public:

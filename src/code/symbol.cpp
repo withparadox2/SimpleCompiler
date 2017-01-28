@@ -57,6 +57,10 @@ MethodSymbol::MethodSymbol(long flags, const Name& name, TypePtr type, SymbolPtr
         : Symbol(Kind::MTH, flags, name, type, owner) {
 }
 
+bool MethodSymbol::isConstructor() {
+    return name == *name.names.init;
+}
+
 OperatorSymbol::OperatorSymbol(const Name& name, TypePtr type, int opcode, SymbolPtr owner)
         : MethodSymbol(Flags::PUBLIC | Flags::STATIC, name, type, owner), opcode(opcode) {
 }
