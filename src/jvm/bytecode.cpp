@@ -217,4 +217,16 @@ namespace bytecode {
             bool_not        = 257,  // boolean !
             bool_and        = 258,  // boolean &&
             bool_or         = 259;  // boolean ||
+    /** Type codes.
+ */
+    int INTcode         = 0,
+            LONGcode        = 1,
+            FLOATcode       = 2,
+            DOUBLEcode      = 3,
+            OBJECTcode      = 4,
+            BYTEcode        = 5,
+            CHARcode        = 6,
+            SHORTcode       = 7,
+            VOIDcode        = 8,
+            TypeCodeCount   = 9;
 }

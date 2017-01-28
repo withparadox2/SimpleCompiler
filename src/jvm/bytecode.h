@@ -219,6 +219,18 @@ namespace bytecode {
             bool_not,  // boolean !
             bool_and,  // boolean &&
             bool_or;  // boolean ||
+    /** Type codes.
+ */
+    extern int INTcode,
+            LONGcode,
+            FLOATcode,
+            DOUBLEcode,
+            OBJECTcode,
+            BYTEcode,
+            CHARcode,
+            SHORTcode,
+            VOIDcode,
+            TypeCodeCount;
 }
 
 #endif //SIMPLECOMPILER_BYTECODE_H

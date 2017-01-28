@@ -76,6 +76,10 @@ public:
 
 class VarSymbol : public Symbol {
 public:
+    /** The variable's address.
+     *  If this is a local variable, its logical slot number.
+     */
+    int adr = -1;
     VarSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner);
 };
 

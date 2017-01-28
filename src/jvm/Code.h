@@ -16,7 +16,7 @@ public:
 
     int newLocal(VarSymbolPtr v);
 
-    static int typecode(const Type& type);
+    static int typecode(const TypePtr& type);
 
 };
 

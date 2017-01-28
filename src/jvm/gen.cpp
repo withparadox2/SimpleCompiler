@@ -45,8 +45,8 @@ void Gen::genDef(Tree* tree, Env<GenContext>* env) {
 
 void Gen::visitMethodDef(JCMethodDecl* that) {
     Env<GenContext>::Ptr localEnv(env->dup(that));
-//    localEnv->enclMethod =  that->shared_from_this();
-
+    localEnv->enclMethod =
+            std::dynamic_pointer_cast<JCMethodDecl>(that->shared_from_this());
     this->pt = that->sym->type->getReturnType();
 
     //TODO check dimensions
@@ -109,7 +109,12 @@ void Gen::visitVarDef(JCVariableDecl* that) {
     code->newLocal(v);
     if (that->init) {
         //TODO check init expr tobe const value
+
+        //lhs = rhs
+        //1, Load rhs value into stack
+        //2, Store top of stack into this item(lhs)
         genExpr(that->init.get(), v->type)->load();
+        items->makeLocalItem(v)->store();
     }
 }
 

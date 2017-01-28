@@ -11,24 +11,16 @@
 #include "../code/types.h"
 
 class Symtab;
-class Item;
 class LocalItem;
-
-class Items {
-public:
-    typedef std::shared_ptr<Items> Ptr;
-    Symtab& syms;
-    Code::Ptr code;
-    Pool::Ptr pool;
-
-    Items(Code::Ptr code, Pool::Ptr pool);
-};
+class Items;
 
 class Item {
 private:
     int typecode;
+protected:
+    Items& items;
 public:
-    Item(int typecode);
+    Item(Items& items, int typecode);
     typedef std::shared_ptr<Item> Ptr;
     virtual Ptr load() = 0;
     virtual void store() = 0;
@@ -42,8 +34,27 @@ class LocalItem : public Item {
 public:
     int reg;
     TypePtr type;
-    LocalItem(TypePtr type, int reg);
+    LocalItem(Items& items, TypePtr type, int reg);
+    Item::Ptr load();
+    void store();
 
 };
+
+class Items {
+public:
+    typedef std::shared_ptr<Items> Ptr;
+    Symtab& syms;
+    Code::Ptr code;
+    Pool::Ptr pool;
+
+    Items(Code::Ptr code, Pool::Ptr pool);
+
+    //TODO can we just use raw pointer?
+    LocalItem::Ptr makeLocalItem(VarSymbolPtr v);
+
+    /**Emit an opcode with no operand field.*/
+    void emitop0(int op);
+};
+
 
 #endif //SIMPLECOMPILER_ITEMS_H
