@@ -5,103 +5,105 @@
 #ifndef SIMPLECOMPILER_TYPETAGS_H
 #define SIMPLECOMPILER_TYPETAGS_H
 
-class TypeTags {
-public:
-    /** The tag of the basic type `byte'.
-   */
-    static const int BYTE = 1;
+namespace TypeTags {
+    enum {
+        /** The tag of the basic type `byte'.
+*/
+        BYTE = 1,
 
-    /** The tag of the basic type `char'.
-     */
-    static const int CHAR = BYTE + 1;
+        /** The tag of the basic type `char'.
+         */
+        CHAR = BYTE + 1,
 
-    /** The tag of the basic type `short'.
-     */
-    static const int SHORT = CHAR + 1;
+        /** The tag of the basic type `short'.
+         */
+        SHORT = CHAR + 1,
 
-    /** The tag of the basic type `int'.
-     */
-    static const int INT = SHORT + 1;
+        /** The tag of the basic type `int'.
+         */
+        INT = SHORT + 1,
 
-    /** The tag of the basic type `long'.
-     */
-    static const int LONG = INT + 1;
+        /** The tag of the basic type `long'.
+         */
+        LONG = INT + 1,
 
-    /** The tag of the basic type `float'.
-     */
-    static const int FLOAT = LONG + 1;
+        /** The tag of the basic type `float'.
+         */
+        FLOAT = LONG + 1,
 
-    /** The tag of the basic type `double'.
-     */
-    static const int DOUBLE = FLOAT + 1;
+        /** The tag of the basic type `double'.
+         */
+        DOUBLE = FLOAT + 1,
 
-    /** The tag of the basic type `boolean'.
-     */
-    static const int BOOLEAN = DOUBLE + 1;
+        /** The tag of the basic type `boolean'.
+         */
+        BOOLEAN = DOUBLE + 1,
 
-    /** The tag of the type `void'.
-     */
-    static const int VOID = BOOLEAN + 1;
+        /** The tag of the type `void'.
+         */
+        VOID = BOOLEAN + 1,
 
-    /** The tag of all class and interface types.
-     */
-    static const int CLASS = VOID + 1;
+        /** The tag of all class and interface types.
+         */
+        CLASS = VOID + 1,
 
-    /** The tag of all array types.
-     */
-    static const int ARRAY = CLASS + 1;
+        /** The tag of all array types.
+         */
+        ARRAY = CLASS + 1,
 
-    /** The tag of all (monomorphic) method types.
-     */
-    static const int METHOD = ARRAY + 1;
+        /** The tag of all (monomorphic) method types.
+         */
+        METHOD = ARRAY + 1,
 
-    /** The tag of all package "types".
-     */
-    static const int PACKAGE = METHOD + 1;
+        /** The tag of all package "types".
+         */
+        PACKAGE = METHOD + 1,
 
-    /** The tag of all (source-level) type variables.
-     */
-    static const int TYPEVAR = PACKAGE + 1;
+        /** The tag of all (source-level) type variables.
+         */
+        TYPEVAR = PACKAGE + 1,
 
-    /** The tag of all type arguments.
-     */
-    static const int WILDCARD = TYPEVAR + 1;
+        /** The tag of all type arguments.
+         */
+        WILDCARD = TYPEVAR + 1,
 
-    /** The tag of all polymorphic (method-) types.
-     */
-    static const int FORALL = WILDCARD + 1;
+        /** The tag of all polymorphic (method-) types.
+         */
+        FORALL = WILDCARD + 1,
 
-    /** The tag of the bottom type <null>.
-     */
-    static const int BOT = FORALL + 1;
+        /** The tag of the bottom type <null>.
+         */
+        BOT = FORALL + 1,
 
-    /** The tag of a missing type.
-     */
-    static const int NONE = BOT + 1;
+        /** The tag of a missing type.
+         */
+        NONE = BOT + 1,
 
-    /** The tag of the error type.
-     */
-    static const int ERROR = NONE + 1;
+        /** The tag of the error type.
+         */
+        ERROR = NONE + 1,
 
-    /** The tag of an unknown type
-     */
-    static const int UNKNOWN = ERROR + 1;
+        /** The tag of an unknown type
+         */
+        UNKNOWN = ERROR + 1,
 
-    /** The tag of all instantiatable type variables.
-     */
-    static const int UNDETVAR = UNKNOWN + 1;
+        /** The tag of all instantiatable type variables.
+         */
+        UNDETVAR = UNKNOWN + 1,
 
-    /** The number of type tags.
-     */
-    static const int TypeTagCount = UNDETVAR + 1;
+        /** The number of type tags.
+         */
+        TypeTagCount = UNDETVAR + 1,
 
-    /** The maximum tag of a basic type.
-     */
-    static const int lastBaseTag = BOOLEAN;
+        /** The maximum tag of a basic type.
+         */
+        lastBaseTag = BOOLEAN,
 
-    /** The minimum tag of a partial type
-     */
-    static const int firstPartialTag = ERROR;
+        /** The minimum tag of a partial type
+         */
+        firstPartialTag = ERROR
+    };
+
 };
 
 #endif //SIMPLECOMPILER_TYPETAGS_H
