@@ -51,3 +51,27 @@ int Code::newLocal(VarSymbolPtr v) {
 void Code::setDefined(int adr) {
 
 }
+
+void Code::emitop0(int op) {
+
+}
+
+void Code::emitop(int op) {
+
+}
+
+int Code::truncate(int typecode) {
+    using namespace bytecode;
+    switch (typecode) {
+        case BYTEcode:
+        case SHORTcode:
+        case CHARcode:
+            return INTcode;
+        default:
+            return typecode;
+    }
+}
+
+void Code::emitop1w(int op, int od) {
+
+}

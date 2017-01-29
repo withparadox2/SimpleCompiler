@@ -221,16 +221,18 @@ namespace bytecode {
             bool_or;  // boolean ||
     /** Type codes.
  */
-    extern int INTcode,
-            LONGcode,
-            FLOATcode,
-            DOUBLEcode,
-            OBJECTcode,
-            BYTEcode,
-            CHARcode,
-            SHORTcode,
-            VOIDcode,
-            TypeCodeCount;
+    enum {
+        INTcode,//0
+        LONGcode,//1
+        FLOATcode,
+        DOUBLEcode,
+        OBJECTcode,
+        BYTEcode,
+        CHARcode,
+        SHORTcode,
+        VOIDcode,
+        TypeCodeCount//9
+    };
 }
 
 #endif //SIMPLECOMPILER_BYTECODE_H

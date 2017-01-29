@@ -10,13 +10,21 @@
 #include "../code/types.h"
 
 class Code {
+private:
+    void emitop(int op);
 public:
     typedef std::shared_ptr<Code> Ptr;
     void setDefined(int adr);
 
     int newLocal(VarSymbolPtr v);
 
+    void emitop0(int op);
+
+    void emitop1w(int op, int od);
+
     static int typecode(const TypePtr& type);
+
+    static int truncate(int typecode);
 
 };
 

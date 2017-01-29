@@ -9,23 +9,31 @@
 #include "Code.h"
 #include "Pool.h"
 #include "../code/types.h"
+#include "bytecode.h"
 
 class Symtab;
+
 class LocalItem;
+
 class Items;
 
 class Item {
-private:
-    int typecode;
 protected:
     Items& items;
+    int typecode;
 public:
     Item(Items& items, int typecode);
+
     typedef std::shared_ptr<Item> Ptr;
-    virtual Ptr load() = 0;
-    virtual void store() = 0;
-    virtual Ptr invoke() = 0;
+
+    virtual Ptr load();
+
+    virtual void store();
+
+    virtual Ptr invoke();
+
     void duplicate();
+
     void drop();
 
 };
@@ -34,26 +42,47 @@ class LocalItem : public Item {
 public:
     int reg;
     TypePtr type;
+
     LocalItem(Items& items, TypePtr type, int reg);
+
     Item::Ptr load();
+
     void store();
 
 };
 
+class StackItem : public Item {
+public:
+    StackItem(Items& items, int typecode);
+
+    Item::Ptr load();
+};
+
+class SelfItem : public Item {
+public:
+    bool isSuper;
+
+    SelfItem(Items& items, bool isSuper);
+
+    Item::Ptr load() override;
+};
+
 class Items {
+private:
+    Item::Ptr voidItem;
+    Item::Ptr thisItem;
+    Item::Ptr superItem;
 public:
     typedef std::shared_ptr<Items> Ptr;
     Symtab& syms;
     Code::Ptr code;
     Pool::Ptr pool;
+    Item::Ptr stackItem[bytecode::TypeCodeCount];
 
     Items(Code::Ptr code, Pool::Ptr pool);
 
-    //TODO can we just use raw pointer?
+    //TODO Can we just use raw pointer?
     LocalItem::Ptr makeLocalItem(VarSymbolPtr v);
-
-    /**Emit an opcode with no operand field.*/
-    void emitop0(int op);
 };
 
 
