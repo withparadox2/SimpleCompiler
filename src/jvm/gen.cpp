@@ -170,6 +170,20 @@ void Gen::visitConditional(JCConditional* that) {
 }
 
 void Gen::visitBinary(JCBinary* that) {
+    OperatorSymbolPtr sym =
+            std::dynamic_pointer_cast<OperatorSymbol>(that->sym);
+    if (sym->opcode == bytecode::string_add) {
+        //TODO finish
+    } else if (that->treeTag == Tree::AND) {
+
+    } else if (that->treeTag == Tree::OR) {
+
+    } else {
+        Item::Ptr od = genExpr(that->lhs.get(),
+                               sym->type->getParameterTypes().at(0));
+        od->load();
+        result = completeBinop(that->lhs, that->rhs, sym);
+    }
 }
 
 void Gen::visitIndexed(JCArrayAccess* that) {
@@ -179,6 +193,25 @@ void Gen::visitSelect(JCFieldAccess* that) {
 }
 
 void Gen::visitIdent(JCIdent* that) {
+    SymbolPtr sym = that->sym;
+    if (that->name == *names._this
+        || that->name == *names._super) {
+        Item::Ptr res = that->name == *names._this
+                        ? items->thisItem
+                        : items->superItem;
+        if (sym->kind == Kind::MTH) {
+            res->load();
+            res = items->makeLocalItem()
+        }
+
+    } else if (sym->kind == Kind::VAR && sym->owner->kind == Kind::MTH) {
+        result = items->makeLocalItem(
+                std::dynamic_pointer_cast<VarSymbol>(sym));
+    } else if ((sym->flags & Flags::STATIC) != 0) {
+
+    } else {
+
+    }
 }
 
 void Gen::visitLiteral(JCLiteral* that) {
@@ -209,4 +242,13 @@ void Gen::genStats(std::vector<T>& list, Env<GenContext>* env) {
     for (auto iter = list.begin(); iter < list.end(); iter++) {
         genStat(iter->get(), env);
     }
+}
+
+/** Complete generating code for operation, with left operand
+ *  already on stack.
+ */
+Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
+                             Tree::Ptr rhs,
+                             OperatorSymbolPtr sym) {
+
 }

@@ -100,6 +100,8 @@ public:
     void genStats(std::vector<T>& list, Env<GenContext>* env);
 
     Item::Ptr genExpr(Tree* tree, TypePtr ptr);
+
+    Item::Ptr completeBinop(Tree::Ptr lhs, Tree::Ptr rhs, OperatorSymbolPtr sym);
 };
 
 

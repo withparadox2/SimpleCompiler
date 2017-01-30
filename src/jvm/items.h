@@ -67,13 +67,25 @@ public:
     Item::Ptr load() override;
 };
 
+class MemberItem : public Item {
+public:
+    SymbolPtr member;
+    bool  nonvirtual;
+
+    MemberItem(Items& items, SymbolPtr member, bool nonvirtual);
+    Item::Ptr load() override;
+    void store() override;
+};
+
 class Items {
-private:
+
+public:
+    typedef std::shared_ptr<Items> Ptr;
+
     Item::Ptr voidItem;
     Item::Ptr thisItem;
     Item::Ptr superItem;
-public:
-    typedef std::shared_ptr<Items> Ptr;
+
     Symtab& syms;
     Code::Ptr code;
     Pool::Ptr pool;
@@ -83,6 +95,7 @@ public:
 
     //TODO Can we just use raw pointer?
     LocalItem::Ptr makeLocalItem(VarSymbolPtr v);
+
 };
 
 

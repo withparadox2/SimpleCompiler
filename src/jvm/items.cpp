@@ -13,7 +13,7 @@ Items::Items(Code::Ptr code, Pool::Ptr pool)
     superItem = Item::Ptr(new SelfItem(*this, true));
 
     //TODO Exclude void code?
-    for(int i = 0; i < bytecode::VOIDcode; i++) {
+    for (int i = 0; i < bytecode::VOIDcode; i++) {
         stackItem[i] = Item::Ptr(new StackItem(*this, i));
     }
 
@@ -93,4 +93,20 @@ SelfItem::SelfItem(Items& items, bool isSuper)
 Item::Ptr SelfItem::load() {
     items.code->emitop0(bytecode::aload_0);
     return items.stackItem[typecode];
+}
+
+MemberItem::MemberItem(Items& items, SymbolPtr member, bool nonvirtual)
+        : Item(items, Code::typecode(member->type.get())),
+          member(member),
+          nonvirtual(nonvirtual) {
+
+}
+
+Item::Ptr MemberItem::load() {
+    items.code->emitop2(bytecode::getfield, );
+    return items.stackItem[typecode];
+}
+
+void MemberItem::store() {
+
 }

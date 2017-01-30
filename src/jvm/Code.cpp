@@ -75,10 +75,6 @@ int Code::truncate(int typecode) {
     }
 }
 
-void Code::emitop1w(int op, int od) {
-
-}
-
 int Code::newLocal(const Type* type) {
     return newLocal(typecode(type));
 }
@@ -126,6 +122,18 @@ void Code::addLocalVar(VarSymbolPtr v) {
     //TODO if (pendingJumps != null) resolvePending();
     lvar[adr] = LocalVar::Ptr(new LocalVar(v));
     //TODO state.defined.excl(adr);
+}
+
+void Code::emitop2(int op, int od) {
+
+}
+
+void Code::emitop1w(int op, int od1, int od2) {
+
+}
+
+void Code::emitop1w(int op, int od) {
+
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)

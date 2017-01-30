@@ -9,6 +9,7 @@
 #include <vector>
 #include "../code/symbols.h"
 #include "../code/types.h"
+
 class LocalVar {
 public:
     typedef std::shared_ptr<LocalVar> Ptr;
@@ -16,14 +17,18 @@ public:
     const char16_t reg;
     char16_t start_pc;
     char16_t length;
+
     LocalVar(VarSymbolPtr v);
+
     LocalVar* dup();
 };
 
 class Code {
 private:
     void emitop(int op);
+
     int newLocal(const Type* type);
+
     int newLocal(int typecode);
 
     void addLocalVar(VarSymbolPtr varSymbolPtr);
@@ -51,6 +56,13 @@ public:
     void emitop0(int op);
 
     void emitop1w(int op, int od);
+
+    /** Emit an opcode with two one-byte operand fields;
+     *  widen if either field does not fit in a byte.
+     */
+    void emitop1w(int op, int od1, int od2);
+
+    void emitop2(int op, int od);
 
     static int typecode(const Type* type);
 
