@@ -45,9 +45,9 @@ public:
 
     LocalItem(Items& items, TypePtr type, int reg);
 
-    Item::Ptr load();
+    Item::Ptr load() override;
 
-    void store();
+    void store() override;
 
 };
 

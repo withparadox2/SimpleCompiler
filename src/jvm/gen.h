@@ -96,6 +96,9 @@ public:
 
     void genStat(Tree* tree, Env<GenContext>* env);
 
+    template<typename T>
+    void genStats(std::vector<T>& list, Env<GenContext>* env);
+
     Item::Ptr genExpr(Tree* tree, TypePtr ptr);
 };
 

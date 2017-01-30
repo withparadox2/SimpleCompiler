@@ -8,7 +8,7 @@
 #include "bytecode.h"
 #include "../util/error.h"
 
-int Code::typecode(const TypePtr& type) {
+int Code::typecode(const Type* type) {
     using namespace TypeTags;
     using namespace bytecode;
 
@@ -45,6 +45,9 @@ int Code::typecode(const TypePtr& type) {
 }
 
 int Code::newLocal(VarSymbolPtr v) {
+    int reg = newLocal(v->type.get());
+    v->adr = reg;
+    addLocalVar(v);
     return 0;
 }
 
@@ -74,4 +77,64 @@ int Code::truncate(int typecode) {
 
 void Code::emitop1w(int op, int od) {
 
+}
+
+int Code::newLocal(const Type* type) {
+    return newLocal(typecode(type));
+}
+
+int Code::newLocal(int typecode) {
+    int reg = nextreg;
+    int w = width(typecode);
+    nextreg = reg + w;
+    if (nextreg > max_locals) {
+        max_locals = nextreg;
+    }
+    return reg;
+}
+
+Code::Code() : nextreg(0) {
+}
+
+int Code::width(int typecode) {
+    switch (typecode) {
+        case bytecode::LONGcode:
+        case bytecode::DOUBLEcode:
+            return 2;
+        case bytecode::VOIDcode:
+            //TODO Figures out how to store void type
+            return 0;
+        default:
+            return 1;
+    }
+}
+
+int Code::width(const Type* type) {
+    return type == nullptr ? 1 : width(typecode(type));
+}
+
+void Code::addLocalVar(VarSymbolPtr v) {
+    int adr = v->adr;
+    if (adr + 1 >= lvar.capacity()) {
+        std::vector::size_type newLen
+                = lvar.capacity() << 1;
+        if (newLen <= adr) {
+            newLen = (vector::size_type) (adr + 10);
+        }
+        lvar.reserve(newLen);
+    }
+    //TODO if (pendingJumps != null) resolvePending();
+    lvar[adr] = LocalVar::Ptr(new LocalVar(v));
+    //TODO state.defined.excl(adr);
+}
+
+LocalVar::LocalVar(VarSymbolPtr v)
+        : sym(v),
+          reg(static_cast<char16_t>(v->adr)),
+          start_pc(0xffff),
+          length(0xffff) {
+}
+
+LocalVar* LocalVar::dup() {
+    return new LocalVar(sym);
 }

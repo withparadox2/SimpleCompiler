@@ -109,7 +109,6 @@ void Gen::visitVarDef(JCVariableDecl* that) {
     code->newLocal(v);
     if (that->init) {
         //TODO check init expr tobe const value
-
         //lhs = rhs
         //1, Load rhs value into stack
         //2, Store top of stack into this item(lhs)
@@ -119,12 +118,28 @@ void Gen::visitVarDef(JCVariableDecl* that) {
 }
 
 void Gen::visitBlock(JCBlock* that) {
+    int limit = code->nextreg;
+    Env<GenContext>::Ptr localEnv = Env<GenContext>::Ptr(
+            env->dup(that,
+                     GenContext::Ptr(new GenContext)));
+    genStats(that->stats, localEnv.get());
+
+    // TODO End the scope of all block-local variables in variable info.
+    if (env->tree->treeTag != Tree::METHODDEF) {
+
+    }
 }
 
 void Gen::visitForLoop(JCForLoop* that) {
+    int limit = code->nextreg;
+    genStats(that->init, env);
+    //TODO genLoop
+    //TODO endScopes
 }
 
 void Gen::visitIf(JCIf* that) {
+    int limit = code->nextreg;
+
 }
 
 void Gen::visitExec(JCExpressionStatement* that) {
@@ -187,4 +202,11 @@ Item::Ptr Gen::genExpr(Tree* tree, TypePtr ptr) {
     tree->accept(this);
     this->pt = prePt;
     return result;
+}
+
+template<typename T>
+void Gen::genStats(std::vector<T>& list, Env<GenContext>* env) {
+    for (auto iter = list.begin(); iter < list.end(); iter++) {
+        genStat(iter->get(), env);
+    }
 }

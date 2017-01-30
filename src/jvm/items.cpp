@@ -49,7 +49,7 @@ void Item::drop() {
 }
 
 LocalItem::LocalItem(Items& items, TypePtr type, int reg)
-        : Item(items, Code::typecode(type)), reg(reg) {
+        : Item(items, Code::typecode(type.get())), reg(reg) {
 }
 
 Item::Ptr LocalItem::load() {
@@ -75,7 +75,7 @@ void LocalItem::store() {
         int op = bytecode::istore + Code::truncate(typecode);
         items.code->emitop1w(op, reg);
     }
-
+    //TODO setDefined
 }
 
 StackItem::StackItem(Items& items, int typecode)
