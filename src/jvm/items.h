@@ -70,11 +70,28 @@ public:
 class MemberItem : public Item {
 public:
     SymbolPtr member;
-    bool  nonvirtual;
+    bool nonvirtual;
 
     MemberItem(Items& items, SymbolPtr member, bool nonvirtual);
+
     Item::Ptr load() override;
+
     void store() override;
+
+    Item::Ptr invoke();
+};
+
+class StaticItem : public Item {
+public:
+    SymbolPtr member;
+
+    StaticItem(Items& items, SymbolPtr member);
+
+    Item::Ptr load() override;
+
+    void store() override;
+
+    Item::Ptr invoke();
 };
 
 class Items {
@@ -95,6 +112,10 @@ public:
 
     //TODO Can we just use raw pointer?
     LocalItem::Ptr makeLocalItem(VarSymbolPtr v);
+
+    Item::Ptr makeMemberItem(SymbolPtr member, bool nonvirtual);
+
+    Item::Ptr makeStaticItem(SymbolPtr member);
 
 };
 

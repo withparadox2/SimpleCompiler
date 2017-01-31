@@ -201,16 +201,20 @@ void Gen::visitIdent(JCIdent* that) {
                         : items->superItem;
         if (sym->kind == Kind::MTH) {
             res->load();
-            res = items->makeLocalItem()
+            res = items->makeMemberItem(sym, true);
         }
-
+        //TODO What will happen if sym is not a method?
+        result = res;
     } else if (sym->kind == Kind::VAR && sym->owner->kind == Kind::MTH) {
         result = items->makeLocalItem(
                 std::dynamic_pointer_cast<VarSymbol>(sym));
     } else if ((sym->flags & Flags::STATIC) != 0) {
-
+        result = items->makeStaticItem(sym);
     } else {
-
+        items->thisItem->load();
+        //Not support inner class, ignore binaryQualifier
+        result = items->makeMemberItem(
+                sym, (sym->flags & Flags::PRIVATE) != 0);
     }
 }
 

@@ -24,6 +24,14 @@ LocalItem::Ptr Items::makeLocalItem(VarSymbolPtr v) {
     return LocalItem::Ptr(new LocalItem(*this, v->type, v->adr));
 }
 
+Item::Ptr Items::makeMemberItem(SymbolPtr member, bool nonvirtual) {
+    return Item::Ptr(new MemberItem(*this, member, nonvirtual));
+}
+
+Item::Ptr Items::makeStaticItem(SymbolPtr member) {
+    return Item::Ptr(new StaticItem(*this, member));
+}
+
 Item::Item(Items& items, int typecode)
         : items(items), typecode(typecode) {
 }
@@ -103,10 +111,32 @@ MemberItem::MemberItem(Items& items, SymbolPtr member, bool nonvirtual)
 }
 
 Item::Ptr MemberItem::load() {
-    items.code->emitop2(bytecode::getfield, );
+    //TODO finish pool
+    items.code->emitop2(bytecode::getfield, 0);
     return items.stackItem[typecode];
 }
 
 void MemberItem::store() {
+    //TODO finish pool
+    items.code->emitop2(bytecode::putfield, 0);
+}
 
+Item::Ptr MemberItem::invoke() {
+    return Item::invoke();
+}
+
+StaticItem::StaticItem(Items& items, SymbolPtr member)
+        : Item(items, Code::typecode(member->type.get())), member(member) {
+}
+
+Item::Ptr StaticItem::load() {
+    return Item::load();
+}
+
+void StaticItem::store() {
+    Item::store();
+}
+
+Item::Ptr StaticItem::invoke() {
+    return Item::invoke();
 }
