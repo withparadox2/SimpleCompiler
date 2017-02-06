@@ -4,6 +4,7 @@
 
 #include "items.h"
 #include "../code/Symtab.h"
+#include "../code/type.h"
 
 Items::Items(Code::Ptr code, Pool::Ptr pool)
         : syms(Symtab::instance()), pool(pool), code(code) {
@@ -130,13 +131,20 @@ StaticItem::StaticItem(Items& items, SymbolPtr member)
 }
 
 Item::Ptr StaticItem::load() {
-    return Item::load();
+    //TODO finish pool
+    items.code->emitop2(bytecode::getstatic, 0);
+    return items.stackItem[typecode];
 }
 
 void StaticItem::store() {
-    Item::store();
+    //TODO finish pool
+    items.code->emitop2(bytecode::putstatic, 0);
 }
 
 Item::Ptr StaticItem::invoke() {
-    return Item::invoke();
+    MethodTypePtr mtype = std::dynamic_pointer_cast<MethodType>(member->type);
+    int rescode = Code::typecode(mtype->restype.get());
+    //TODO finish pool
+    items.code->emitInvokestatic(0, mtype);
+    return items.stackItem[rescode];
 }

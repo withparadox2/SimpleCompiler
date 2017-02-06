@@ -89,7 +89,7 @@ int Code::newLocal(int typecode) {
     return reg;
 }
 
-Code::Code() : nextreg(0) {
+Code::Code() : nextreg(0), alive(true), cp(0) {
 }
 
 int Code::width(int typecode) {
@@ -112,10 +112,9 @@ int Code::width(const Type* type) {
 void Code::addLocalVar(VarSymbolPtr v) {
     int adr = v->adr;
     if (adr + 1 >= lvar.capacity()) {
-        std::vector::size_type newLen
-                = lvar.capacity() << 1;
+        v_size newLen = lvar.capacity() << 1;
         if (newLen <= adr) {
-            newLen = (vector::size_type) (adr + 10);
+            newLen = (v_size) (adr + 10);
         }
         lvar.reserve(newLen);
     }
@@ -134,6 +133,18 @@ void Code::emitop1w(int op, int od1, int od2) {
 
 void Code::emitop1w(int op, int od) {
 
+}
+
+void Code::emitInvokestatic(int meth, TypePtr mtype) {
+
+}
+
+void Code::emit1(int od) {
+    if (!alive) return;
+    if (cp == code.size()) {
+        code.reserve(cp == 0 ? 64 : (v_size) cp * 2);
+    }
+    code[cp++] = (char) od;
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)

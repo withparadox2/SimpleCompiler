@@ -25,7 +25,14 @@ public:
 
 class Code {
 private:
+    bool alive;
+    /** the current code pointer.*/
+    int cp;
+
     void emitop(int op);
+
+    /** Emit a byte of code.*/
+    void emit1(int od);
 
     int newLocal(const Type* type);
 
@@ -36,6 +43,9 @@ private:
     std::vector<LocalVar::Ptr> lvar;
 public:
     typedef std::shared_ptr<Code> Ptr;
+
+    std::vector<char> code;
+    typedef std::vector<char>::size_type v_size;
 
     int nextreg;
 
@@ -63,6 +73,8 @@ public:
     void emitop1w(int op, int od1, int od2);
 
     void emitop2(int op, int od);
+
+    void emitInvokestatic(int meth, TypePtr mtype);
 
     static int typecode(const Type* type);
 

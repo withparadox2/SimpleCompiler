@@ -187,6 +187,9 @@ void Gen::visitBinary(JCBinary* that) {
 }
 
 void Gen::visitIndexed(JCArrayAccess* that) {
+    genExpr(that->indexed.get(), that->indexed->type)->load();
+    genExpr(that->index.get(), syms.intType)->load();
+    result = items->m
 }
 
 void Gen::visitSelect(JCFieldAccess* that) {
