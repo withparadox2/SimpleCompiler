@@ -10,6 +10,7 @@
 #include "Pool.h"
 #include "../code/types.h"
 #include "bytecode.h"
+#include "../tree/tree.h"
 
 class Symtab;
 
@@ -94,6 +95,23 @@ public:
     Item::Ptr invoke();
 };
 
+class IndexedItem : public Item {
+public:
+    IndexedItem(Items& items, TypePtr type);
+    Item::Ptr load() override;
+
+    void store() override;
+};
+
+class ImmediateItem : public Item {
+public:
+    IValueHolder::Ptr value;
+    ImmediateItem(Items& items, TypePtr type, IValueHolder::Ptr value);
+    Item::Ptr load() override;
+
+    void store() override;
+};
+
 class Items {
 
 public:
@@ -116,6 +134,12 @@ public:
     Item::Ptr makeMemberItem(SymbolPtr member, bool nonvirtual);
 
     Item::Ptr makeStaticItem(SymbolPtr member);
+
+    Item::Ptr makeStaticItem(TypePtr type);
+
+    Item::Ptr makeIndexedItem(TypePtr typePtr);
+
+    Item::Ptr makeImmediateItem(TypePtr typePtr, IValueHolder::Ptr value);
 
 };
 
