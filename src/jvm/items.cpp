@@ -108,6 +108,12 @@ Item::Ptr StackItem::load() {
     return Item::Ptr();
 }
 
+void StackItem::drop() {
+    items.code->emitop0(Code::width(typecode) == 2
+                        ? bytecode::pop2
+                        : bytecode::pop);
+}
+
 SelfItem::SelfItem(Items& items, bool isSuper)
         : Item(items, bytecode::OBJECTcode), isSuper(isSuper) {
 }
@@ -137,6 +143,11 @@ void MemberItem::store() {
 
 Item::Ptr MemberItem::invoke() {
     return Item::invoke();
+}
+
+void MemberItem::drop() {
+    //TODO why bytecode::OBJECTcode not typecode?
+    items.stackItem[bytecode::OBJECTcode]->drop();
 }
 
 StaticItem::StaticItem(Items& items, SymbolPtr member)
@@ -171,6 +182,11 @@ Item::Ptr IndexedItem::load() {
 
 void IndexedItem::store() {
     items.code->emitop0(bytecode::iastore + typecode);
+}
+
+void IndexedItem::drop() {
+    //pop arr[3] equals pop 3 and arr
+    items.code->emitop0(bytecode::pop2);
 }
 
 ImmediateItem::ImmediateItem(Items& items,

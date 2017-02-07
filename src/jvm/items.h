@@ -35,7 +35,7 @@ public:
 
     void duplicate();
 
-    void drop();
+    virtual void drop();
 
 };
 
@@ -56,7 +56,9 @@ class StackItem : public Item {
 public:
     StackItem(Items& items, int typecode);
 
-    Item::Ptr load();
+    Item::Ptr load() override;
+    void drop() override;
+
 };
 
 class SelfItem : public Item {
@@ -80,6 +82,8 @@ public:
     void store() override;
 
     Item::Ptr invoke();
+
+    void drop() override;
 };
 
 class StaticItem : public Item {
@@ -101,6 +105,7 @@ public:
     Item::Ptr load() override;
 
     void store() override;
+    void drop() override;
 };
 
 class ImmediateItem : public Item {

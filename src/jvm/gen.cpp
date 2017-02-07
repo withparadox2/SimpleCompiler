@@ -143,7 +143,7 @@ void Gen::visitIf(JCIf* that) {
 }
 
 void Gen::visitExec(JCExpressionStatement* that) {
-
+    genExpr(that->exp.get(), that->exp->type)->drop();
 }
 
 void Gen::visitBreak(JCBreak* that) {
