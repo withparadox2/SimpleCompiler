@@ -59,7 +59,7 @@ void Gen::genMethod(JCMethodDecl* tree, Env<GenContext>* env, bool fatcode) {
     if (tree->body) {
         initCode(tree, env);
         //Ignore checking CodeSizeOverflow
-        genStat(tree, env);
+        genStat(tree->body.get(), env);
     }
 }
 
@@ -70,7 +70,7 @@ void Gen::initCode(JCMethodDecl* tree, Env<GenContext>* env) {
     meth->code = Code::Ptr(new Code);
     this->code = meth->code;
 
-    items = Items::Ptr(new Items(code, pool));
+    this->items = Items::Ptr(new Items(code, pool));
 
     //For non static method, insert `this` as the
     //first parameter.
@@ -87,16 +87,15 @@ void Gen::initCode(JCMethodDecl* tree, Env<GenContext>* env) {
                                                    *names._this,
                                                    selfType,
                                                    meth->owner))));
-
-        for (auto iter = tree->params.begin();
-             iter != tree->params.end();
-             iter++) {
-            this->code->setDefined(
-                    this->code->newLocal(iter->get()->sym));
-        }
-
-        //TODO entryPoint
     }
+
+    for (auto iter = tree->params.begin();
+         iter != tree->params.end();
+         iter++) {
+        this->code->setDefined(
+                this->code->newLocal(iter->get()->sym));
+    }
+    //TODO entryPoint
 
 }
 
@@ -118,6 +117,7 @@ void Gen::visitVarDef(JCVariableDecl* that) {
 }
 
 void Gen::visitBlock(JCBlock* that) {
+    //We will remove registers beyond limit at the end of the block.
     int limit = code->nextreg;
     Env<GenContext>::Ptr localEnv = Env<GenContext>::Ptr(
             env->dup(that,
@@ -126,7 +126,6 @@ void Gen::visitBlock(JCBlock* that) {
 
     // TODO End the scope of all block-local variables in variable info.
     if (env->tree->treeTag != Tree::METHODDEF) {
-
     }
 }
 
@@ -189,7 +188,7 @@ void Gen::visitBinary(JCBinary* that) {
 void Gen::visitIndexed(JCArrayAccess* that) {
     genExpr(that->indexed.get(), that->indexed->type)->load();
     genExpr(that->index.get(), syms.intType)->load();
-    result = items->m
+//    result = items->m
 }
 
 void Gen::visitSelect(JCFieldAccess* that) {

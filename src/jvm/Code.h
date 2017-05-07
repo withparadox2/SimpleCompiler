@@ -15,6 +15,8 @@ public:
     typedef std::shared_ptr<LocalVar> Ptr;
     VarSymbolPtr sym;
     const char16_t reg;
+
+    //Ignore these two attributes
     char16_t start_pc;
     char16_t length;
 
@@ -41,6 +43,8 @@ private:
     void addLocalVar(VarSymbolPtr varSymbolPtr);
 
     std::vector<LocalVar::Ptr> lvar;
+
+    void endScope(int start);
 public:
     typedef std::shared_ptr<Code> Ptr;
 
@@ -58,6 +62,8 @@ public:
     int max_stack;
 
     Code();
+
+    void endScopes(int start);
 
     void setDefined(int adr);
 

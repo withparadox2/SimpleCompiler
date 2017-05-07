@@ -80,7 +80,7 @@ int Code::newLocal(const Type* type) {
 }
 
 int Code::newLocal(int typecode) {
-    int reg = nextreg;
+    int reg = this->nextreg;
     int w = width(typecode);
     nextreg = reg + w;
     if (nextreg > max_locals) {
@@ -111,12 +111,12 @@ int Code::width(const Type* type) {
 
 void Code::addLocalVar(VarSymbolPtr v) {
     int adr = v->adr;
-    if (adr + 1 >= lvar.capacity()) {
-        v_size newLen = lvar.capacity() << 1;
+    if (adr + 1 >= this->lvar.capacity()) {
+        v_size newLen = this->lvar.capacity() << 1;
         if (newLen <= adr) {
             newLen = (v_size) (adr + 10);
         }
-        lvar.reserve(newLen);
+        this->lvar.reserve(newLen);
     }
     //TODO if (pendingJumps != null) resolvePending();
     lvar[adr] = LocalVar::Ptr(new LocalVar(v));
