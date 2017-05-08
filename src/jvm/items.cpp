@@ -5,6 +5,7 @@
 #include "items.h"
 #include "../code/Symtab.h"
 #include "../code/type.h"
+#include "../util/error.h"
 
 Items::Items(Code::Ptr code, Pool::Ptr pool)
         : syms(Symtab::instance()), pool(pool), code(code) {
@@ -31,6 +32,18 @@ Item::Ptr Items::makeMemberItem(SymbolPtr member, bool nonvirtual) {
 
 Item::Ptr Items::makeStaticItem(SymbolPtr member) {
     return Item::Ptr(new StaticItem(*this, member));
+}
+
+Item::Ptr Items::makeIndexedItem(TypePtr typePtr) {
+//    return Item::Ptr(new );
+}
+
+Item::Ptr Items::makeStaticItem(TypePtr type) {
+    return stackItem[Code::typecode(type.get())];
+}
+
+Item::Ptr Items::makeImmediateItem(TypePtr typePtr, IValueHolder::Ptr value) {
+    return Item::Ptr(new ImmediateItem(*this, typePtr, value));
 }
 
 Item::Item(Items& items, int typecode)
@@ -95,6 +108,12 @@ Item::Ptr StackItem::load() {
     return Item::Ptr();
 }
 
+void StackItem::drop() {
+    items.code->emitop0(Code::width(typecode) == 2
+                        ? bytecode::pop2
+                        : bytecode::pop);
+}
+
 SelfItem::SelfItem(Items& items, bool isSuper)
         : Item(items, bytecode::OBJECTcode), isSuper(isSuper) {
 }
@@ -126,6 +145,11 @@ Item::Ptr MemberItem::invoke() {
     return Item::invoke();
 }
 
+void MemberItem::drop() {
+    //TODO why bytecode::OBJECTcode not typecode?
+    items.stackItem[bytecode::OBJECTcode]->drop();
+}
+
 StaticItem::StaticItem(Items& items, SymbolPtr member)
         : Item(items, Code::typecode(member->type.get())), member(member) {
 }
@@ -147,4 +171,42 @@ Item::Ptr StaticItem::invoke() {
     //TODO finish pool
     items.code->emitInvokestatic(0, mtype);
     return items.stackItem[rescode];
+}
+
+IndexedItem::IndexedItem(Items& items, TypePtr type) : Item(items, Code::typecode(type.get())) {}
+
+Item::Ptr IndexedItem::load() {
+    items.code->emitop0(bytecode::iaload + typecode);
+    return items.stackItem[typecode];
+}
+
+void IndexedItem::store() {
+    items.code->emitop0(bytecode::iastore + typecode);
+}
+
+void IndexedItem::drop() {
+    //pop arr[3] equals pop 3 and arr
+    items.code->emitop0(bytecode::pop2);
+}
+
+ImmediateItem::ImmediateItem(Items& items,
+                             TypePtr type,
+                             IValueHolder::Ptr value)
+        : Item(items, Code::typecode(type.get())), value(value) {
+}
+
+Item::Ptr ImmediateItem::load() {
+    switch (typecode) {
+        case bytecode::INTcode:
+            //TODO finish
+        case bytecode::OBJECTcode:
+            //TODO finish
+        default:
+            error("ImmediateItem::load only support int and string");
+    }
+    return items.stackItem[typecode];
+}
+
+void ImmediateItem::store() {
+    Item::store();
 }

@@ -419,22 +419,24 @@ public:
     void accept(Visitor* visitor) override;
 };
 
-class JCLiteral : public JCExpression {
-private:
-
-    class IValueHolder {
-    };
-
-    template<typename T>
-    class ValueHolder : public IValueHolder {
-    public://let outer class read value
-        T value;
-
-        ValueHolder(T value);
-    };
-
-    IValueHolder* value;
+class IValueHolder {
 public:
+    typedef shared_ptr<IValueHolder> Ptr;
+};
+
+template<typename T>
+class ValueHolder : public IValueHolder {
+public://let outer class read value
+    T value;
+
+    ValueHolder(T value);
+};
+
+class JCLiteral : public JCExpression {
+
+public:
+
+
     typedef shared_ptr<JCLiteral> Ptr;
 
     int typetag;
@@ -448,10 +450,12 @@ public:
     void accept(Visitor* visitor) override;
 
     ~JCLiteral();
+
+    IValueHolder::Ptr value;
 };
 
 template<typename T>
-JCLiteral::ValueHolder<T>::ValueHolder(T value) : value(value) {}
+ValueHolder<T>::ValueHolder(T value) : value(value) {}
 
 template<typename R>
 JCLiteral::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(new ValueHolder<R>(value)) {
@@ -459,7 +463,7 @@ JCLiteral::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(type
 
 template<typename R>
 R JCLiteral::getValue() {
-    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(value);
+    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(value.get());
     return p->value;
 }
 

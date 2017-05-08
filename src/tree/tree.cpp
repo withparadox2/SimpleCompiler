@@ -430,5 +430,4 @@ void JCLiteral::accept(Visitor* visitor) {
 }
 
 JCLiteral::~JCLiteral() {
-    delete value;
 }

@@ -142,6 +142,7 @@ void Gen::visitIf(JCIf* that) {
 }
 
 void Gen::visitExec(JCExpressionStatement* that) {
+    genExpr(that->exp.get(), that->exp->type)->drop();
 }
 
 void Gen::visitBreak(JCBreak* that) {
@@ -160,6 +161,7 @@ void Gen::visitNewClass(JCNewClass* that) {
 }
 
 void Gen::visitParens(JCParens* that) {
+    result = genExpr(that->expr.get(), that->expr->type);
 }
 
 void Gen::visitAssign(JCAssign* that) {
@@ -188,7 +190,7 @@ void Gen::visitBinary(JCBinary* that) {
 void Gen::visitIndexed(JCArrayAccess* that) {
     genExpr(that->indexed.get(), that->indexed->type)->load();
     genExpr(that->index.get(), syms.intType)->load();
-//    result = items->m
+    result = items->makeIndexedItem(that->type);
 }
 
 void Gen::visitSelect(JCFieldAccess* that) {
@@ -221,12 +223,27 @@ void Gen::visitIdent(JCIdent* that) {
 }
 
 void Gen::visitLiteral(JCLiteral* that) {
+    //literal of null
+    if (that->type->tag == TypeTags::BOT) {
+        code->emitop0(bytecode::aconst_null);
+
+        if (Types::dimensions(pt) > 1) {
+            //TODO int[] a = null;
+        } else {
+            result = items->makeStaticItem(that->type);
+        }
+
+    } else {
+        result = items->makeImmediateItem(that->type, that->value);
+    }
 }
 
 void Gen::visitTypeIdent(JCPrimitiveTypeTree* that) {
+    //do nothing
 }
 
 void Gen::visitTypeArray(JCArrayTypeTree* that) {
+    //do nothing
 }
 
 void Gen::visitUnary(JCUnary* that) {
@@ -256,5 +273,8 @@ void Gen::genStats(std::vector<T>& list, Env<GenContext>* env) {
 Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
                              Tree::Ptr rhs,
                              OperatorSymbolPtr sym) {
+    MethodTypePtr optype =
+            std::dynamic_pointer_cast<MethodType>(sym->type);
+
 
 }

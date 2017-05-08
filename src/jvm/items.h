@@ -10,6 +10,7 @@
 #include "Pool.h"
 #include "../code/types.h"
 #include "bytecode.h"
+#include "../tree/tree.h"
 
 class Symtab;
 
@@ -34,7 +35,7 @@ public:
 
     void duplicate();
 
-    void drop();
+    virtual void drop();
 
 };
 
@@ -55,7 +56,9 @@ class StackItem : public Item {
 public:
     StackItem(Items& items, int typecode);
 
-    Item::Ptr load();
+    Item::Ptr load() override;
+    void drop() override;
+
 };
 
 class SelfItem : public Item {
@@ -79,6 +82,8 @@ public:
     void store() override;
 
     Item::Ptr invoke();
+
+    void drop() override;
 };
 
 class StaticItem : public Item {
@@ -92,6 +97,24 @@ public:
     void store() override;
 
     Item::Ptr invoke();
+};
+
+class IndexedItem : public Item {
+public:
+    IndexedItem(Items& items, TypePtr type);
+    Item::Ptr load() override;
+
+    void store() override;
+    void drop() override;
+};
+
+class ImmediateItem : public Item {
+public:
+    IValueHolder::Ptr value;
+    ImmediateItem(Items& items, TypePtr type, IValueHolder::Ptr value);
+    Item::Ptr load() override;
+
+    void store() override;
 };
 
 class Items {
@@ -116,6 +139,12 @@ public:
     Item::Ptr makeMemberItem(SymbolPtr member, bool nonvirtual);
 
     Item::Ptr makeStaticItem(SymbolPtr member);
+
+    Item::Ptr makeStaticItem(TypePtr type);
+
+    Item::Ptr makeIndexedItem(TypePtr typePtr);
+
+    Item::Ptr makeImmediateItem(TypePtr typePtr, IValueHolder::Ptr value);
 
 };
 

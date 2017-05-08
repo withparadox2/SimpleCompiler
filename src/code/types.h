@@ -22,5 +22,8 @@ typedef std::shared_ptr<MethodType> MethodTypePtr;
 class ArrayType;
 typedef std::shared_ptr<ArrayType> ArrayTypePtr;
 
-
+class Types {
+public:
+    static int dimensions(TypePtr t);
+};
 #endif //SIMPLECOMPILER_TYPES_H
