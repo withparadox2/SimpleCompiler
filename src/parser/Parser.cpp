@@ -436,6 +436,7 @@ JCExpression* Parser::arrayCreatorRest(JCExpression* elemtype) {
         if (L.token() == Token::LBRACE) {
             return arrayInitializer(elemtype);
         } else {
+            //int[] arr = new int[]; not allowed
             error("missing dimension for array");
         }
     } else {

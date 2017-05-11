@@ -44,7 +44,7 @@ private:
 
     std::vector<LocalVar::Ptr> lvar;
 
-    void endScope(int start);
+    void endScope(int adr);
 public:
     typedef std::shared_ptr<Code> Ptr;
 
@@ -82,7 +82,11 @@ public:
 
     void emitInvokestatic(int meth, TypePtr mtype);
 
+    void emitNewarray(int elemCode, TypePtr arrType);
+
     static int typecode(const Type* type);
+
+    static int arraycode(const Type* type);
 
     static int truncate(int typecode);
 

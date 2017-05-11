@@ -36,6 +36,7 @@ Symtab::Symtab() : typeOfTag{TypePtr()} {
     unknownType = TypePtr(new Type(TypeTags::UNKNOWN, nullptr));
     noType = TypePtr(new Type(TypeTags::NONE, nullptr));
     anyType = TypePtr(new Type(TypeTags::NONE, nullptr));
+    errorType = TypePtr(new Type(TypeTags::ERROR, nullptr));
     objectType = enterClass("java.lang.Object");
     classType = enterClass("java.lang.Class");
     stringType = enterClass("java.lang.String");

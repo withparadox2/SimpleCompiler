@@ -56,6 +56,7 @@ public:
     TypePtr unknownType;
     TypePtr noType;
     TypePtr anyType;
+    TypePtr errorType;
     TypePtr classType;
     TypePtr stringType;
     TypePtr systemType;

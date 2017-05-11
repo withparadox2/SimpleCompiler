@@ -7,6 +7,7 @@
 #include "../code/type.h"
 #include "../code/Flags.h"
 #include "../code/Symtab.h"
+#include "../util/error.h"
 
 #define KEY_GEN "gen"
 
@@ -126,6 +127,7 @@ void Gen::visitBlock(JCBlock* that) {
 
     // TODO End the scope of all block-local variables in variable info.
     if (env->tree->treeTag != Tree::METHODDEF) {
+        this->code->endScopes(limit);
     }
 }
 
@@ -250,6 +252,55 @@ void Gen::visitUnary(JCUnary* that) {
 }
 
 void Gen::visitNewArray(JCNewArray* that) {
+    if (that->elems.size() > 0) {
+        // We create a one dimentional array and initialize each item with
+        // respected value stored in JCNewArray.elems
+
+        // Load array's implicit length to stack, then call `newarray`
+        this->loadIntConst((int) that->elems.size());
+        Item::Ptr arr = this->makeNewArray(that->type, 1);
+
+        TypePtr elemType = Types::elemtype(that->type);
+
+        int i = 0;
+        // Now, arr is on the top of stack, we have to duplicate arr every time
+        for (auto iter = that->elems.begin(); iter != that->elems.end(); iter++) {
+            // Load arr again
+            arr->duplicate();
+            // Load item's index
+            this->loadIntConst(i);
+            i++;
+            // Load item's value
+            this->genExpr(iter->get(), elemType);
+            this->items->makeIndexedItem(elemType)->load();
+        }
+        this->result = arr;
+    } else {
+        // Load values of dimens to stack, then call `newarray`
+        for (auto iter = that->dimens.begin(); iter < that->dimens.end(); iter++) {
+            // Type of each dimention must be int
+            genExpr(iter->get(), syms.intType)->load();
+        }
+        this->result = makeNewArray(that->type, (int) that->dimens.size());
+    }
+}
+
+
+Item::Ptr Gen::makeNewArray(TypePtr t, int ndims) {
+    TypePtr elemType = Types::elemtype(t);
+    if (Types::dimensions(t) > 0xff) {
+        error("Dimension of Array can not exceed 255");
+    }
+
+    int elemCode = Code::arraycode(elemType.get());
+    if (elemCode == 0 || (elemCode == 1 && ndims == 1)) {
+        //TODO new Object[]; or new int[1][]{1, 2, 3};
+    } else if (elemCode == 1) {
+        //TODO new int[1][2];
+    } else {
+        //Simple, new int[2]; or new int[]{1, 2, 3};
+        this->code->emitNewarray(elemCode, t);
+    }
 }
 
 Item::Ptr Gen::genExpr(Tree* tree, TypePtr ptr) {
@@ -278,3 +329,10 @@ Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
 
 
 }
+
+void Gen::loadIntConst(int n) {
+    this->items->makeImmediateItem(syms.intType,
+                                   IValueHolder::Ptr(new ValueHolder<int>(n)))->load();
+}
+
+

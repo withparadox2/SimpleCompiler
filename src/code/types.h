@@ -25,5 +25,9 @@ typedef std::shared_ptr<ArrayType> ArrayTypePtr;
 class Types {
 public:
     static int dimensions(TypePtr t);
+
+    static TypePtr elemtype(TypePtr t);
 };
+
+
 #endif //SIMPLECOMPILER_TYPES_H

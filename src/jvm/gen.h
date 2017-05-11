@@ -84,6 +84,8 @@ private:
 
     void visitNewArray(JCNewArray* that);
 
+    void loadIntConst(int n);
+
 public:
     static Gen& instance();
     void genClass(Env<AttrContext>* env, JCClassDecl* cdef);
@@ -102,6 +104,8 @@ public:
     Item::Ptr genExpr(Tree* tree, TypePtr ptr);
 
     Item::Ptr completeBinop(Tree::Ptr lhs, Tree::Ptr rhs, OperatorSymbolPtr sym);
+
+    Item::Ptr makeNewArray(TypePtr typePtr, int ndims);
 };
 
 

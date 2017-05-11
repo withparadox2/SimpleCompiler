@@ -14,6 +14,7 @@
 #include "../code/TypeTags.h"
 #include "../code/symbols.h"
 #include "../code/types.h"
+#include "../util/log.h"
 
 using std::vector;
 using std::shared_ptr;

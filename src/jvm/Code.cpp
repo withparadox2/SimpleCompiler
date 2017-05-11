@@ -44,6 +44,37 @@ int Code::typecode(const Type* type) {
     }
 }
 
+
+int Code::arraycode(const Type* type) {
+    using namespace TypeTags;
+
+    switch (type->tag) {
+        case BYTE:
+            return 8;
+        case BOOLEAN:
+            return 4;
+        case SHORT:
+            return 9;
+        case CHAR:
+            return 5;
+        case INT:
+            return 10;
+        case LONG:
+            return 11;
+        case FLOAT:
+            return 6;
+        case DOUBLE:
+            return 7;
+        case CLASS:
+            return 0;
+        case ARRAY:
+            return 1;
+        default:
+            error("No array code for type tag " + std::to_string(type->tag));
+    }
+}
+
+
 int Code::newLocal(VarSymbolPtr v) {
     int reg = newLocal(v->type.get());
     v->adr = reg;
@@ -60,7 +91,8 @@ void Code::emitop0(int op) {
 }
 
 void Code::emitop(int op) {
-
+    //TODO pending jump, alive check
+    this->emit1(op);
 }
 
 int Code::truncate(int typecode) {
@@ -116,10 +148,11 @@ void Code::addLocalVar(VarSymbolPtr v) {
         if (newLen <= adr) {
             newLen = (v_size) (adr + 10);
         }
-        this->lvar.reserve(newLen);
+        //TODO check where does ele store, stack or heap?
+        this->lvar.resize(newLen);
     }
     //TODO if (pendingJumps != null) resolvePending();
-    lvar[adr] = LocalVar::Ptr(new LocalVar(v));
+    this->lvar.at(adr) = LocalVar::Ptr(new LocalVar(v));
     //TODO state.defined.excl(adr);
 }
 
@@ -145,6 +178,26 @@ void Code::emit1(int od) {
         code.reserve(cp == 0 ? 64 : (v_size) cp * 2);
     }
     code[cp++] = (char) od;
+}
+
+void Code::endScopes(int start) {
+    int preNextReg = this->nextreg;
+    this->nextreg = start;
+    for (int i = start; i < preNextReg; ++i) {
+        this->endScope(i);
+    }
+}
+
+void Code::endScope(int adr) {
+    LocalVar::Ptr sptr = this->lvar.at(adr);
+    if (sptr) {
+        sptr.reset();
+    }
+}
+
+void Code::emitNewarray(int elemCode, TypePtr arrType) {
+    this->emitop(bytecode::newarray);
+    this->emit1(elemCode);
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)
