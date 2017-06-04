@@ -12,6 +12,7 @@
 #include "Code.h"
 #include "items.h"
 #include "Pool.h"
+#include "../code/type.h"
 
 class Symtab;
 class Names;
@@ -37,6 +38,8 @@ private:
     Names& names;
 
     Item::Ptr result;
+
+    MethodTypePtr methodType;
 
     void visitMethodDef(JCMethodDecl* that);
 
@@ -86,6 +89,7 @@ private:
 
     void loadIntConst(int n);
 
+
 public:
     static Gen& instance();
     void genClass(Env<AttrContext>* env, JCClassDecl* cdef);
@@ -100,6 +104,8 @@ public:
 
     template<typename T>
     void genStats(std::vector<T>& list, Env<GenContext>* env);
+
+    void genArgs(JCExpression::List& trees, TypeList& pts);
 
     Item::Ptr genExpr(Tree* tree, TypePtr ptr);
 

@@ -71,6 +71,8 @@ public:
 
     void emitop0(int op);
 
+    void emitop1(int op, int od);
+
     void emitop1w(int op, int od);
 
     /** Emit an opcode with two one-byte operand fields;
@@ -81,6 +83,8 @@ public:
     void emitop2(int op, int od);
 
     void emitInvokestatic(int meth, TypePtr mtype);
+    void emitInvokespecial(int meth, TypePtr mtype);
+    void emitInvokevirtual(int meth, TypePtr mtype);
 
     void emitNewarray(int elemCode, TypePtr arrType);
 

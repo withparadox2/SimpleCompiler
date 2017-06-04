@@ -200,6 +200,19 @@ void Code::emitNewarray(int elemCode, TypePtr arrType) {
     this->emit1(elemCode);
 }
 
+void Code::emitInvokespecial(int meth, TypePtr mtype) {
+
+}
+
+void Code::emitInvokevirtual(int meth, TypePtr mtype) {
+
+}
+
+void Code::emitop1(int op, int od) {
+    this->emitop(op);
+    this->emit1(od);
+}
+
 LocalVar::LocalVar(VarSymbolPtr v)
         : sym(v),
           reg(static_cast<char16_t>(v->adr)),

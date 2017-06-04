@@ -4,7 +4,6 @@
 
 #include <memory>
 #include "gen.h"
-#include "../code/type.h"
 #include "../code/Flags.h"
 #include "../code/Symtab.h"
 #include "../util/error.h"
@@ -23,6 +22,8 @@ Gen::Gen() : pool(new Pool),
              syms(Symtab::instance()),
              names(Names::instance()) {
     Context::instance().put(KEY_GEN, this);
+    vector<TypePtr> args;
+    methodType = MethodTypePtr(new MethodType(args, TypePtr(nullptr), syms.methodClass));
 }
 
 void Gen::genClass(Env<AttrContext>* env, JCClassDecl* cdef) {
@@ -157,9 +158,14 @@ void Gen::visitReturn(JCReturn* that) {
 }
 
 void Gen::visitApply(JCMethodInvocation* that) {
+    Item::Ptr method = this->genExpr(that->meth.get(), this->methodType);
+    MethodTypePtr mPtr = dynamic_pointer_cast<MethodType>(treeinfo::symbol(that->meth.get())->type);
+    this->genArgs(that->args, mPtr->argtypes);
+    result = method->invoke();
 }
 
 void Gen::visitNewClass(JCNewClass* that) {
+    int a = 1;
 }
 
 void Gen::visitParens(JCParens* that) {
@@ -167,6 +173,10 @@ void Gen::visitParens(JCParens* that) {
 }
 
 void Gen::visitAssign(JCAssign* that) {
+    Item::Ptr l = this->genExpr(that->lhs.get(), that->lhs->type);
+    genExpr(that->rhs.get(), that->lhs->type)->load();
+    this->result = this->items->makeAssignItem(l);
+    //Calling drop() in visitExec will store value to lhs
 }
 
 void Gen::visitConditional(JCConditional* that) {
@@ -196,6 +206,7 @@ void Gen::visitIndexed(JCArrayAccess* that) {
 }
 
 void Gen::visitSelect(JCFieldAccess* that) {
+
 }
 
 void Gen::visitIdent(JCIdent* that) {
@@ -301,6 +312,7 @@ Item::Ptr Gen::makeNewArray(TypePtr t, int ndims) {
         //Simple, new int[2]; or new int[]{1, 2, 3};
         this->code->emitNewarray(elemCode, t);
     }
+    return items->makeStaticItem(t);
 }
 
 Item::Ptr Gen::genExpr(Tree* tree, TypePtr ptr) {
@@ -330,9 +342,20 @@ Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
 
 }
 
+//TODO this is too slow
 void Gen::loadIntConst(int n) {
     this->items->makeImmediateItem(syms.intType,
                                    IValueHolder::Ptr(new ValueHolder<int>(n)))->load();
+}
+
+void Gen::genArgs(JCExpression::List& list, TypeList& typeList) {
+    auto aIter = list.begin();
+    auto pIter = typeList.begin();
+    while (aIter != list.end() && pIter != typeList.end()) {
+        this->genExpr(aIter->get(), *pIter)->load();
+        aIter++;
+        pIter++;
+    }
 }
 
 

@@ -35,7 +35,7 @@ Item::Ptr Items::makeStaticItem(SymbolPtr member) {
 }
 
 Item::Ptr Items::makeIndexedItem(TypePtr typePtr) {
-//    return Item::Ptr(new );
+    return Item::Ptr(new IndexedItem(*this, typePtr));
 }
 
 Item::Ptr Items::makeStaticItem(TypePtr type) {
@@ -44,6 +44,10 @@ Item::Ptr Items::makeStaticItem(TypePtr type) {
 
 Item::Ptr Items::makeImmediateItem(TypePtr typePtr, IValueHolder::Ptr value) {
     return Item::Ptr(new ImmediateItem(*this, typePtr, value));
+}
+
+Item::Ptr Items::makeAssignItem(Item::Ptr lhs) {
+    return Item::Ptr(new AssignItem(*this, lhs));
 }
 
 Item::Item(Items& items, int typecode)
@@ -68,6 +72,10 @@ void Item::duplicate() {
 
 void Item::drop() {
 
+}
+
+int Item::width() {
+    return 0;
 }
 
 LocalItem::LocalItem(Items& items, TypePtr type, int reg)
@@ -142,7 +150,16 @@ void MemberItem::store() {
 }
 
 Item::Ptr MemberItem::invoke() {
-    return Item::invoke();
+    MethodTypePtr mType = dynamic_pointer_cast<MethodType>(member->type);
+    int rescode = Code::typecode(mType->restype.get());
+    if (this->member->owner->flags & Flags::INTERFACE != 0) {
+        //TODO invoke interface method
+    } else if (this->nonvirtual) {
+        items.code->emitInvokespecial(items.pool->put(this->member), mType);
+    } else {
+        items.code->emitInvokevirtual(items.pool->put(this->member), mType);
+    }
+    return items.stackItem[rescode];
 }
 
 void MemberItem::drop() {
@@ -197,10 +214,23 @@ ImmediateItem::ImmediateItem(Items& items,
 
 Item::Ptr ImmediateItem::load() {
     switch (typecode) {
-        case bytecode::INTcode:
-            //TODO finish
+        case bytecode::INTcode: {
+            int val = this->value->getValue<int>();
+            log("load Immediate int " + std::to_string(val));
+            if (-1 <= val && val <= 5) {
+                this->items.code->emitop0(bytecode::iconst_0 + val);
+            } else if (-128 <= val && val <= 127) {
+                this->items.code->emitop1(bytecode::bipush, val);
+            } else if (-32768 <= val && val <= 32767) {
+                this->items.code->emitop2(bytecode::sipush, val);
+            } else {
+                //TODO ldc for large number
+            }
+            break;
+        }
         case bytecode::OBJECTcode:
             //TODO finish
+            break;
         default:
             error("ImmediateItem::load only support int and string");
     }
@@ -209,4 +239,24 @@ Item::Ptr ImmediateItem::load() {
 
 void ImmediateItem::store() {
     Item::store();
+}
+
+AssignItem::AssignItem(Items& items, Item::Ptr lhs):Item(items, lhs->typecode), lhs(lhs) {
+
+}
+
+Item::Ptr AssignItem::load() {
+    return Item::load();
+}
+
+void AssignItem::store() {
+    Item::store();
+}
+
+int AssignItem::width() {
+    return Item::width();
+}
+
+void AssignItem::drop() {
+    this->lhs->store();
 }

@@ -7,3 +7,11 @@
 Pool::Pool() {
 
 }
+
+int Pool::put(SymbolPtr value) {
+    return 0;
+}
+
+void Pool::reset() {
+
+}

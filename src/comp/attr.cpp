@@ -409,6 +409,7 @@ void Attr::visitLiteral(JCLiteral* that) {
     } else {
         result = syms->typeOfTag[that->typetag];
     }
+    that->type = result;
 }
 
 void Attr::visitUnary(JCUnary* that) {
@@ -451,6 +452,8 @@ void Attr::visitNewArray(JCNewArray* that) {
         attribExprs(that->elems, env, elementType);
         owntype = ArrayTypePtr(new ArrayType(elementType, syms->arrayClass));
     }
+
+    that->type = owntype;
 
     result = owntype;
 }

@@ -21,8 +21,9 @@ class Items;
 class Item {
 protected:
     Items& items;
-    int typecode;
 public:
+    int typecode;
+
     Item(Items& items, int typecode);
 
     typedef std::shared_ptr<Item> Ptr;
@@ -37,6 +38,7 @@ public:
 
     virtual void drop();
 
+    virtual int width();
 };
 
 class LocalItem : public Item {
@@ -117,6 +119,16 @@ public:
     void store() override;
 };
 
+class AssignItem : public Item {
+public:
+    Item::Ptr lhs;
+    AssignItem(Items& items, Item::Ptr lhs);
+    Item::Ptr load() override;
+    void store() override ;
+    int width() override ;
+    void drop() override ;
+};
+
 class Items {
 
 public:
@@ -145,6 +157,8 @@ public:
     Item::Ptr makeIndexedItem(TypePtr typePtr);
 
     Item::Ptr makeImmediateItem(TypePtr typePtr, IValueHolder::Ptr value);
+
+    Item::Ptr makeAssignItem(Item::Ptr lhs);
 
 };
 

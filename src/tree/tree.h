@@ -423,6 +423,9 @@ public:
 class IValueHolder {
 public:
     typedef shared_ptr<IValueHolder> Ptr;
+
+    template<typename R>
+    R getValue();
 };
 
 template<typename T>
@@ -433,10 +436,15 @@ public://let outer class read value
     ValueHolder(T value);
 };
 
+template<typename R>
+R IValueHolder::getValue() {
+    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(this);
+    return p->value;
+}
+
 class JCLiteral : public JCExpression {
 
 public:
-
 
     typedef shared_ptr<JCLiteral> Ptr;
 
