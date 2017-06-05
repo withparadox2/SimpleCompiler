@@ -50,6 +50,10 @@ Item::Ptr Items::makeAssignItem(Item::Ptr lhs) {
     return Item::Ptr(new AssignItem(*this, lhs));
 }
 
+CondItem::Ptr Items::makeCondItem(int opcode) {
+    return CondItem::Ptr(new CondItem(*this, opcode, nullptr, nullptr));
+}
+
 Item::Item(Items& items, int typecode)
         : items(items), typecode(typecode) {
 }
@@ -76,6 +80,11 @@ void Item::drop() {
 
 int Item::width() {
     return 0;
+}
+
+CondItem::Ptr Item::mkCond() {
+    load();
+    return items.makeCondItem(bytecode::ifne);
 }
 
 LocalItem::LocalItem(Items& items, TypePtr type, int reg)
@@ -277,6 +286,14 @@ CondItem::CondItem(Items& items, int opcode, Chain* truejumps, Chain* falsejumps
         : Item(items, bytecode::BYTEcode), opcode(opcode), trueJumps(truejumps), falseJumps(falsejumps) {
 }
 
-ItemPtr CondItem::load() {
-    return Item::load();
+Item::Ptr CondItem::load() {
+}
+
+CondItem::Ptr CondItem::mkCond() {
+    return shared_from_this();
+}
+
+Chain* CondItem::jumpFalse() {
+    return items.code->branch(Code::negate(opcode));
+
 }

@@ -237,6 +237,72 @@ void Code::emit2(int od) {
     }
 }
 
+int Code::negate(int opcode) {
+    if (opcode == bytecode::if_acmp_null) return bytecode::if_acmp_nonnull;
+    else if (opcode == bytecode::if_acmp_nonnull) return bytecode::if_acmp_null;
+    else return ((opcode + 1) ^ 1) - 1;
+}
+
+Chain* Code::branch(int opcode) {
+    Chain* result = nullptr;
+    if (opcode == bytecode::goto_) {
+        result = pendingJumps;
+        pendingJumps = nullptr;
+    }
+    if (opcode != bytecode::jsr) {
+        result = new Chain(emitJump(opcode), result);
+        if (opcode == bytecode::goto_) {
+            alive = false;
+        }
+    }
+    return result;
+}
+
+int Code::emitJump(int opcode) {
+    emitop2(opcode, 0);
+    return cp - 3;
+}
+
+void Code::resolve(Chain* chain) {
+    pendingJumps = mergeChains(chain, pendingJumps);
+}
+
+Chain* Code::mergeChains(Chain* chain1, Chain* chain2) {
+    if (chain2 == nullptr) return chain1;
+    if (chain1 == nullptr) return chain2;
+    if (chain1->pc < chain2->pc)
+        return new Chain(
+                chain2->pc,
+                mergeChains(chain1, chain2->next));
+    return new Chain(
+            chain1->pc,
+            mergeChains(chain1->next, chain2));
+}
+
+void Code::resolve(Chain* chain, int target) {
+    //Jump can be dropped
+    if (get1(chain->pc) == bytecode::goto_
+            && chain->pc + 3 == target
+            && target == cp) {
+        cp = cp - 3;
+        target = target - 3;
+    }
+    put2(chain->pc, target);
+}
+
+void Code::put2(int pc, int od) {
+    put1(pc, od >> 8);
+    put1(pc + 1, od);
+}
+
+void Code::put1(int pc, int od) {
+    code[pc] = (char) od;
+}
+
+int Code::get1(int pc) {
+    return code[pc] & 0xff;
+}
+
 LocalVar::LocalVar(VarSymbolPtr v)
         : sym(v),
           reg(static_cast<char16_t>(v->adr)),

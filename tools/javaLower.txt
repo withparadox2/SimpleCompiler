@@ -1,0 +1,6 @@
+Gen.java
+if (【false &&】opcode >= if_icmpeq && opcode <= if_icmple &&
+                rhs.type.constValue() instanceof Number &&
+                ((Number) rhs.type.constValue()).intValue() == 0) {
+                opcode = opcode + (ifeq - if_icmpeq);
+            }

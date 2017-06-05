@@ -18,6 +18,10 @@ class LocalItem;
 
 class Items;
 
+class CondItem;
+
+typedef std::shared_ptr<CondItem> CondItemPtr;
+
 class Item {
 protected:
     Items& items;
@@ -39,6 +43,8 @@ public:
     virtual void drop();
 
     virtual int width();
+
+    virtual CondItemPtr mkCond();
 };
 
 class LocalItem : public Item {
@@ -142,7 +148,7 @@ public:
     void drop() override;
 };
 
-class CondItem : public Item {
+class CondItem : public Item, public std::enable_shared_from_this<CondItem> {
 public:
     typedef std::shared_ptr<CondItem> Ptr;
     Chain* trueJumps;
@@ -154,8 +160,14 @@ public:
 
     Item::Ptr load() override;
 
-    void duplicate() override ;
-    void drop() override ;
+//    void duplicate() override;
+
+//    void drop() override;
+
+    Ptr mkCond() override;
+
+    Chain* jumpFalse();
+
 };
 
 class Items {
@@ -189,6 +201,7 @@ public:
 
     Item::Ptr makeAssignItem(Item::Ptr lhs);
 
+    CondItem::Ptr makeCondItem(int opcode);
 };
 
 

@@ -141,7 +141,19 @@ void Gen::visitForLoop(JCForLoop* that) {
 
 void Gen::visitIf(JCIf* that) {
     int limit = code->nextreg;
+    CondItemPtr c = genCond(treeinfo::skipParens(that->cond.get()));
+    Chain* elseChain = c->jumpFalse();
+    Chain* thenExit = nullptr;
 
+    genStat(that->thenPart.get(), env);
+    thenExit = code->branch(bytecode::goto_);
+
+    code->resolve(elseChain, code->cp);
+
+    genStat(that->elsePart.get(), env);
+    code->resolve(thenExit, code->cp);
+
+    code->endScopes(limit);
 }
 
 void Gen::visitExec(JCExpressionStatement* that) {
@@ -155,6 +167,16 @@ void Gen::visitContinue(JCContinue* that) {
 }
 
 void Gen::visitReturn(JCReturn* that) {
+    int limit = code->nextreg;
+    if (that->expr) {
+        Item::Ptr r = genExpr(that->expr.get(), pt)->load();
+        r->load();
+        code->emitop0(bytecode::ireturn
+                      + Code::truncate(Code::typecode(pt.get())))
+    } else {
+        code->emitop0(bytecode::ireturn);
+    }
+    code->endScopes(limit);
 }
 
 void Gen::visitApply(JCMethodInvocation* that) {
@@ -211,7 +233,7 @@ void Gen::visitIndexed(JCArrayAccess* that) {
 
 void Gen::visitSelect(JCFieldAccess* that) {
     SymbolPtr sym = that->sym;
-    if (that->selector == this->names._class) {
+    if (that->selector == *this->names._class) {
         //TODO
         return;
     }
@@ -364,8 +386,12 @@ Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
                              OperatorSymbolPtr sym) {
     MethodTypePtr optype =
             std::dynamic_pointer_cast<MethodType>(sym->type);
-    //TODO finish this
+    int opcode = sym->opcode;
 
+    TypePtr rtype = sym->type->getParameterTypes().at(0);
+    genExpr(rhs.get(), rtype)->load();
+
+    return items->makeCondItem(opcode);
 }
 
 //TODO this is too slow
@@ -397,8 +423,9 @@ void Gen::genLoop(JCStatement* loop,
                   JCExpression* cond,
                   JCExpressionStatement::List step,
                   bool testFirst) {
-    Env<GenContext>::Ptr localEnv(env->dup(loop,
-                                           GenContext::Ptr(new GenContext)));
+    Env<GenContext>::Ptr localEnv(env->dup(loop, GenContext::Ptr(new GenContext)));
+
+    int startpc = code->cp;
 
     if (testFirst) {
         CondItem::Ptr c;
@@ -407,13 +434,24 @@ void Gen::genLoop(JCStatement* loop,
         } else {
             //TODO makeCondItem
         }
+        Chain* loopDone = c->jumpFalse();
+        code->resolve(c->trueJumps);
+        genStat(body, localEnv.get());
+        genStats(step, localEnv.get());
+
+        code->resolve(code->branch(bytecode::goto_), startpc);
+        code->resolve(loopDone, code->cp);
     }
-
-
 }
 
 CondItem::Ptr Gen::genCond(Tree* tree) {
-
+    Tree* innerTree = treeinfo::skipParens(tree);
+    if (innerTree->treeTag == Tree::CONDEXPR) {
+        //TODO
+    } else {
+        CondItem::Ptr result = genExpr(tree, syms.booleanType)->mkCond();
+        return result;
+    }
 }
 
 

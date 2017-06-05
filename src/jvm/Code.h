@@ -28,8 +28,7 @@ public:
 class Code {
 private:
     bool alive;
-    /** the current code pointer.*/
-    int cp;
+
 
     void emitop(int op);
 
@@ -48,6 +47,9 @@ private:
 
     void endScope(int adr);
 public:
+    /** the current code pointer.*/
+    int cp;
+
     typedef std::shared_ptr<Code> Ptr;
 
     std::vector<char> code;
@@ -62,6 +64,8 @@ public:
 
     /** The maximum stack size.*/
     int max_stack;
+
+    Chain* pendingJumps;
 
     Code();
 
@@ -84,11 +88,28 @@ public:
 
     void emitop2(int op, int od);
 
+    int emitJump(int opcode);
+
     void emitInvokestatic(int meth, TypePtr mtype);
     void emitInvokespecial(int meth, TypePtr mtype);
     void emitInvokevirtual(int meth, TypePtr mtype);
 
     void emitNewarray(int elemCode, TypePtr arrType);
+
+    Chain* branch(int opcode);
+
+    void resolve(Chain* chain);
+
+    void resolve(Chain* chain, int target);
+
+    void put2(int pc, int od);
+    void put1(int pc, int od);
+
+    int get1(int pc);
+
+    static Chain* mergeChains(Chain* c1, Chain* c2);
+
+    static int negate(int opcode);
 
     static int typecode(const Type* type);
 
