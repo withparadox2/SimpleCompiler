@@ -89,6 +89,7 @@ private:
 
     void loadIntConst(int n);
 
+    int makeRef(TypePtr type);
 
 public:
     static Gen& instance();
@@ -106,6 +107,10 @@ public:
     void genStats(std::vector<T>& list, Env<GenContext>* env);
 
     void genArgs(JCExpression::List& trees, TypeList& pts);
+
+    void genLoop(JCStatement* loop, JCStatement* body, JCExpression* cond, JCExpressionStatement::List step, bool testFirst);
+
+    CondItem::Ptr genCond(Tree* tree);
 
     Item::Ptr genExpr(Tree* tree, TypePtr ptr);
 

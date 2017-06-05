@@ -36,6 +36,8 @@ private:
     /** Emit a byte of code.*/
     void emit1(int od);
 
+    void emit2(int od);
+
     int newLocal(const Type* type);
 
     int newLocal(int typecode);
@@ -98,6 +100,15 @@ public:
     static int width(int typecode);
 
     static int width(const Type* type);
+
+    static int width(TypeList types);
+};
+
+class Chain {
+public:
+    const int pc;
+    Chain* next;//TODO use sharedptr
+    Chain(int pc, Chain* next);
 };
 
 

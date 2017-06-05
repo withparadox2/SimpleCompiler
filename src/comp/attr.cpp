@@ -311,7 +311,11 @@ void Attr::visitNewClass(JCNewClass* that) {
     TypePtr clazztype = attribType(clazz.get(), env);
 
     TypeList argtypes = attribArgs(that->arguments, localEnv);
+
+    that->constructor = this->resolveConstructor(localEnv, clazztype, argtypes);
+
     that->type = clazztype;
+    that->argtypes = argtypes;
     result = that->type;
 }
 

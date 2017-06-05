@@ -329,6 +329,9 @@ public:
 
     JCExpression::List arguments;
     JCExpression::Ptr clazz;
+    TypeList argtypes;
+
+    SymbolPtr constructor;
 
     JCNewClass(JCExpression* clazz, JCExpression::List& arguments);
 

@@ -59,6 +59,7 @@ public:
     StackItem(Items& items, int typecode);
 
     Item::Ptr load() override;
+
     void drop() override;
 
 };
@@ -104,16 +105,23 @@ public:
 class IndexedItem : public Item {
 public:
     IndexedItem(Items& items, TypePtr type);
+
     Item::Ptr load() override;
 
     void store() override;
+
     void drop() override;
 };
 
 class ImmediateItem : public Item {
+private:
+    void ldc();
+
 public:
     IValueHolder::Ptr value;
+
     ImmediateItem(Items& items, TypePtr type, IValueHolder::Ptr value);
+
     Item::Ptr load() override;
 
     void store() override;
@@ -122,10 +130,31 @@ public:
 class AssignItem : public Item {
 public:
     Item::Ptr lhs;
+
     AssignItem(Items& items, Item::Ptr lhs);
+
     Item::Ptr load() override;
-    void store() override ;
-    int width() override ;
+
+    void store() override;
+
+    int width() override;
+
+    void drop() override;
+};
+
+class CondItem : public Item {
+public:
+    typedef std::shared_ptr<CondItem> Ptr;
+    Chain* trueJumps;
+    Chain* falseJumps;
+    int opcode;
+    Tree::Ptr tree;
+
+    CondItem(Items& items, int opcode, Chain* truejumps, Chain* falsejumps);
+
+    Item::Ptr load() override;
+
+    void duplicate() override ;
     void drop() override ;
 };
 
@@ -152,7 +181,7 @@ public:
 
     Item::Ptr makeStaticItem(SymbolPtr member);
 
-    Item::Ptr makeStaticItem(TypePtr type);
+    Item::Ptr makeStackItem(TypePtr type);
 
     Item::Ptr makeIndexedItem(TypePtr typePtr);
 

@@ -135,8 +135,8 @@ void Gen::visitBlock(JCBlock* that) {
 void Gen::visitForLoop(JCForLoop* that) {
     int limit = code->nextreg;
     genStats(that->init, env);
-    //TODO genLoop
-    //TODO endScopes
+    genLoop(that, that->body.get(), that->cond.get(), that->step, true);
+    code->endScopes(limit);
 }
 
 void Gen::visitIf(JCIf* that) {
@@ -165,7 +165,11 @@ void Gen::visitApply(JCMethodInvocation* that) {
 }
 
 void Gen::visitNewClass(JCNewClass* that) {
-    int a = 1;
+    this->code->emitop2(bytecode::new_, this->makeRef(that->type));
+    this->code->emitop0(bytecode::dup);
+    this->genArgs(that->arguments, that->argtypes);
+    this->items->makeMemberItem(that->constructor, true)->invoke();
+    result = this->items->makeStackItem(that->type);
 }
 
 void Gen::visitParens(JCParens* that) {
@@ -206,7 +210,29 @@ void Gen::visitIndexed(JCArrayAccess* that) {
 }
 
 void Gen::visitSelect(JCFieldAccess* that) {
+    SymbolPtr sym = that->sym;
+    if (that->selector == this->names._class) {
+        //TODO
+        return;
+    }
 
+    SymbolPtr ssym = treeinfo::symbol(that->selected.get());
+
+    Item::Ptr base = this->genExpr(that->selected.get(), that->selected->type);
+
+    //TODO binaryQualifier
+    if ((sym->flags && Flags::STATIC) != 0) {
+        base->drop();
+        result = items->makeStaticItem(sym);
+    } else {
+        base->load();
+        if (sym == syms.lengthVar) {
+            this->code->emitop0(bytecode::arraylength);
+            result = items->makeStaticItem(sym);
+        } else {
+            result = items->makeMemberItem(sym, (sym->flags && Flags::PRIVATE) != 0);
+        }
+    }
 }
 
 void Gen::visitIdent(JCIdent* that) {
@@ -243,7 +269,7 @@ void Gen::visitLiteral(JCLiteral* that) {
         if (Types::dimensions(pt) > 1) {
             //TODO int[] a = null;
         } else {
-            result = items->makeStaticItem(that->type);
+            result = items->makeStackItem(that->type);
         }
 
     } else {
@@ -289,7 +315,7 @@ void Gen::visitNewArray(JCNewArray* that) {
     } else {
         // Load values of dimens to stack, then call `newarray`
         for (auto iter = that->dimens.begin(); iter < that->dimens.end(); iter++) {
-            // Type of each dimention must be int
+            // Type of each dimension must be int
             genExpr(iter->get(), syms.intType)->load();
         }
         this->result = makeNewArray(that->type, (int) that->dimens.size());
@@ -312,7 +338,7 @@ Item::Ptr Gen::makeNewArray(TypePtr t, int ndims) {
         //Simple, new int[2]; or new int[]{1, 2, 3};
         this->code->emitNewarray(elemCode, t);
     }
-    return items->makeStaticItem(t);
+    return items->makeStackItem(t);
 }
 
 Item::Ptr Gen::genExpr(Tree* tree, TypePtr ptr) {
@@ -338,7 +364,7 @@ Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
                              OperatorSymbolPtr sym) {
     MethodTypePtr optype =
             std::dynamic_pointer_cast<MethodType>(sym->type);
-
+    //TODO finish this
 
 }
 
@@ -356,6 +382,38 @@ void Gen::genArgs(JCExpression::List& list, TypeList& typeList) {
         aIter++;
         pIter++;
     }
+}
+
+int Gen::makeRef(TypePtr type) {
+    if (type->tag == TypeTags::CLASS) {
+        return pool->put(type->tsym.lock());
+    } else {
+        return pool->put(type);
+    }
+}
+
+void Gen::genLoop(JCStatement* loop,
+                  JCStatement* body,
+                  JCExpression* cond,
+                  JCExpressionStatement::List step,
+                  bool testFirst) {
+    Env<GenContext>::Ptr localEnv(env->dup(loop,
+                                           GenContext::Ptr(new GenContext)));
+
+    if (testFirst) {
+        CondItem::Ptr c;
+        if (cond != nullptr) {
+            c = genCond(treeinfo::skipParens(cond));
+        } else {
+            //TODO makeCondItem
+        }
+    }
+
+
+}
+
+CondItem::Ptr Gen::genCond(Tree* tree) {
+
 }
 
 

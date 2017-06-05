@@ -38,7 +38,7 @@ Item::Ptr Items::makeIndexedItem(TypePtr typePtr) {
     return Item::Ptr(new IndexedItem(*this, typePtr));
 }
 
-Item::Ptr Items::makeStaticItem(TypePtr type) {
+Item::Ptr Items::makeStackItem(TypePtr type) {
     return stackItem[Code::typecode(type.get())];
 }
 
@@ -224,12 +224,12 @@ Item::Ptr ImmediateItem::load() {
             } else if (-32768 <= val && val <= 32767) {
                 this->items.code->emitop2(bytecode::sipush, val);
             } else {
-                //TODO ldc for large number
+                this->ldc();
             }
             break;
         }
         case bytecode::OBJECTcode:
-            //TODO finish
+            this->ldc();
             break;
         default:
             error("ImmediateItem::load only support int and string");
@@ -241,7 +241,18 @@ void ImmediateItem::store() {
     Item::store();
 }
 
-AssignItem::AssignItem(Items& items, Item::Ptr lhs):Item(items, lhs->typecode), lhs(lhs) {
+void ImmediateItem::ldc() {
+    int idx = this->items.pool->put(value);
+    if (typecode == bytecode::FLOATcode || typecode == bytecode::DOUBLEcode) {
+        this->items.code->emitop2(bytecode::ldc2w, idx);
+    } else if (idx <= 255) {
+        this->items.code->emitop1(bytecode::ldc1, idx);
+    } else {
+        this->items.code->emitop2(bytecode::ldc2, idx);
+    }
+}
+
+AssignItem::AssignItem(Items& items, Item::Ptr lhs) : Item(items, lhs->typecode), lhs(lhs) {
 
 }
 
@@ -259,4 +270,13 @@ int AssignItem::width() {
 
 void AssignItem::drop() {
     this->lhs->store();
+}
+
+
+CondItem::CondItem(Items& items, int opcode, Chain* truejumps, Chain* falsejumps)
+        : Item(items, bytecode::BYTEcode), opcode(opcode), trueJumps(truejumps), falseJumps(falsejumps) {
+}
+
+ItemPtr CondItem::load() {
+    return Item::load();
 }

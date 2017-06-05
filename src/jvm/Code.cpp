@@ -205,12 +205,36 @@ void Code::emitInvokespecial(int meth, TypePtr mtype) {
 }
 
 void Code::emitInvokevirtual(int meth, TypePtr mtype) {
+    int argsize = this->width(mtype->getParameterTypes());
+    this->emitop0(bytecode::invokevirtual);
 
+    if (!alive) return;
+
+    this->emit2(meth);
 }
 
 void Code::emitop1(int op, int od) {
     this->emitop(op);
     this->emit1(od);
+}
+
+int Code::width(TypeList types) {
+    int w = 0;
+    for (auto iter = types.begin(); iter != types.end(); iter++) {
+        w = w + width(iter->get());
+    }
+    return w;
+}
+
+void Code::emit2(int od) {
+    if (!alive) return;
+    if (this->cp + 2 > code.size()) {
+        this->emit1(od >> 8);
+        this->emit1(od);
+    } else {
+        code[cp++] = (char) (od >> 8);
+        code[cp++] = (char) od;
+    }
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)
@@ -222,4 +246,7 @@ LocalVar::LocalVar(VarSymbolPtr v)
 
 LocalVar* LocalVar::dup() {
     return new LocalVar(sym);
+}
+
+Chain::Chain(int pc, Chain* next) : pc(pc), next(next) {
 }

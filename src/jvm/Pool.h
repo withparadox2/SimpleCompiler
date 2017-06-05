@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include "../code/symbols.h"
+#include "../tree/tree.h"
 
 class Pool {
 private:
@@ -23,6 +24,8 @@ public:
     Pool();
     void reset();
     int put(SymbolPtr value);
+    int put(TypePtr value);
+    int put(IValueHolder::Ptr value);
 
 };
 

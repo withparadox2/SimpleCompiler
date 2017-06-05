@@ -118,11 +118,11 @@ void Symtab::setUpArrayType(ClassSymbolPtr sym) {
             std::dynamic_pointer_cast<ClassType>(sym->type);
     arrayClassType->supertype_field = objectType;
     sym->memberField = Scope::Ptr(new Scope(sym));
-    VarSymbolPtr lengthSym(
+    this->lengthVar = VarSymbolPtr(
             new VarSymbol(Flags::PUBLIC | Flags::FINAL,
                           names->fromString("length"),
                           intType,
                           sym));
-    sym->memberField->enter(lengthSym);
+    sym->memberField->enter(this->lengthVar);
 
 }

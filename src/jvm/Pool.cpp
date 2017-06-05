@@ -15,3 +15,11 @@ int Pool::put(SymbolPtr value) {
 void Pool::reset() {
 
 }
+
+int Pool::put(IValueHolder::Ptr value) {
+    return 0;
+}
+
+int Pool::put(TypePtr value) {
+    return 0;
+}

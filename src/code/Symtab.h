@@ -61,6 +61,8 @@ public:
     TypePtr stringType;
     TypePtr systemType;
     TypePtr printStreamType;
+
+    VarSymbolPtr lengthVar;
 };
 
 
