@@ -52,7 +52,7 @@ void ClassReader::complete(SymbolPtr symP) {
     sym->memberField = Scope::Ptr(new Scope(sym));
     if (sym->name == names.fromString("System")) {
         VarSymbolPtr outSym(
-                new VarSymbol(0,
+                new VarSymbol(Flags::STATIC | Flags::PUBLIC,
                               names.fromString("out"),
                               classes.at(&names.fromString("java.io.PrintStream"))->type,
                               sym));

@@ -87,7 +87,7 @@ void Code::setDefined(int adr) {
 }
 
 void Code::emitop0(int op) {
-
+    emitop(op);
 }
 
 void Code::emitop(int op) {
@@ -157,7 +157,9 @@ void Code::addLocalVar(VarSymbolPtr v) {
 }
 
 void Code::emitop2(int op, int od) {
-
+    emitop(op);
+    if (!alive) return;
+    emit2(od);
 }
 
 void Code::emitop1w(int op, int od1, int od2) {
@@ -165,17 +167,27 @@ void Code::emitop1w(int op, int od1, int od2) {
 }
 
 void Code::emitop1w(int op, int od) {
-
+    if (od > 0xFF) {
+        emitop(bytecode::wide);
+        emitop(op);
+        emit2(od);
+    } else {
+        emitop(op);
+        emit1(od);
+    }
 }
 
 void Code::emitInvokestatic(int meth, TypePtr mtype) {
-
+    int argsize = width(mtype->getParameterTypes());
+    emitop(bytecode::invokestatic);
+    if (!alive) return;
+    emit2(meth);
 }
 
 void Code::emit1(int od) {
     if (!alive) return;
     if (cp == code.size()) {
-        code.reserve(cp == 0 ? 64 : (v_size) cp * 2);
+        code.resize(cp == 0 ? 64 : (v_size) cp * 2);
     }
     code[cp++] = (char) od;
 }
@@ -201,7 +213,10 @@ void Code::emitNewarray(int elemCode, TypePtr arrType) {
 }
 
 void Code::emitInvokespecial(int meth, TypePtr mtype) {
-
+    int argsize = width(mtype->getParameterTypes());
+    emitop(bytecode::invokespecial);
+    if (!alive) return;
+    emit2(meth);
 }
 
 void Code::emitInvokevirtual(int meth, TypePtr mtype) {
@@ -252,7 +267,7 @@ Chain* Code::branch(int opcode) {
     if (opcode != bytecode::jsr) {
         result = new Chain(emitJump(opcode), result);
         if (opcode == bytecode::goto_) {
-            alive = false;
+//            alive = false;
         }
     }
     return result;
@@ -287,7 +302,7 @@ void Code::resolve(Chain* chain, int target) {
         cp = cp - 3;
         target = target - 3;
     }
-    put2(chain->pc, target);
+    put2(chain->pc + 1, target - chain->pc);
 }
 
 void Code::put2(int pc, int od) {
@@ -301,6 +316,14 @@ void Code::put1(int pc, int od) {
 
 int Code::get1(int pc) {
     return code[pc] & 0xff;
+}
+
+void Code::printCode() {
+    std::cout << "length = " << code.size() << std::endl;
+    for (auto i = code.begin(); i != code.end(); i++) {
+        std::cout << (int)(uint8_t)*i << " ";
+    }
+    std::cout << std::endl;
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)

@@ -109,6 +109,8 @@ public:
 
     int get1(int pc);
 
+    void printCode();
+
     static Chain* mergeChains(Chain* c1, Chain* c2);
 
     static int negate(int opcode);

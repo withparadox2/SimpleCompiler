@@ -45,7 +45,12 @@ void Enter::visitMethodDef(JCMethodDecl* tree) {
     MethodSymbolPtr m(new MethodSymbol(0, tree->name, nullptr, enclScope->owner.lock()));
     //TODO   m->flags
     tree->sym = m;
-    m->type = signature(tree->params, tree->resType, this->env);
+
+    JCMethodDecl::Ptr treePtr = std::dynamic_pointer_cast<JCMethodDecl>
+            (tree->shared_from_this());
+    Env<AttrContext>::Ptr localEnv(methodEnv(treePtr, env));
+
+    m->type = signature(tree->params, tree->resType, localEnv.get());
 
     //TODO check unique
     enclScope->enter(m);

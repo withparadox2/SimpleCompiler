@@ -95,6 +95,7 @@ void Attr::visitIdent(JCIdent* that) {
         sym = SymbolPtr(resolveIdent(env, that->name, pKind));
     }
     that->sym = sym;
+    that->type = sym->type;
 
     if (!sym) {
         error("Fail to find symbol " + that->name.desc);
@@ -282,7 +283,7 @@ void Attr::visitApply(JCMethodInvocation* that) {
             // such as super.methodName()
             SymbolPtr sym = resolveConstructor(localEnv.get(), site, argtypes);
 
-            treeinfo::setSymbol(that, sym);
+            treeinfo::setSymbol(that->meth.get(), sym);
 
             //Ignore checkId()
         }
@@ -361,8 +362,9 @@ void Attr::visitIndexed(JCArrayAccess* that) {
     if (atype->tag == TypeTags::ARRAY) {
         TypePtr owntype = dynamic_cast<ArrayType*>(atype.get())->elemtype;
         result = owntype;
+        that->type = result;
     } else {
-        error("need array type but foung " + atype->tag);
+        error("need array type but found " + atype->tag);
     }
 }
 

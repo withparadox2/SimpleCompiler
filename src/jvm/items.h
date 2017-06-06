@@ -38,7 +38,7 @@ public:
 
     virtual Ptr invoke();
 
-    void duplicate();
+    virtual void duplicate();
 
     virtual void drop();
 
@@ -63,6 +63,8 @@ public:
 class StackItem : public Item {
 public:
     StackItem(Items& items, int typecode);
+
+    void duplicate() override;
 
     Item::Ptr load() override;
 

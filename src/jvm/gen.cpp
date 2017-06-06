@@ -64,6 +64,14 @@ void Gen::genMethod(JCMethodDecl* tree, Env<GenContext>* env, bool fatcode) {
         //Ignore checking CodeSizeOverflow
         genStat(tree->body.get(), env);
     }
+
+    if (env->enclMethod == nullptr ||
+        env->enclMethod->sym->type->getReturnType()->tag == TypeTags::VOID) {
+        code->emitop0(bytecode::return_);
+    }
+
+    code->endScopes(0);
+    code->printCode();
 }
 
 //Assume fatcode = false
@@ -149,10 +157,18 @@ void Gen::visitIf(JCIf* that) {
     genStat(that->thenPart.get(), env);
     thenExit = code->branch(bytecode::goto_);
 
-    code->resolve(elseChain, code->cp);
+    int elseCp = code->cp;
 
-    genStat(that->elsePart.get(), env);
+    if (that->elsePart) {
+        genStat(that->elsePart.get(), env);
+    }
     code->resolve(thenExit, code->cp);
+
+    if (thenExit->pc == code->cp) {
+        code->resolve(elseChain, thenExit->pc);
+    } else {
+        code->resolve(elseChain, elseCp);
+    }
 
     code->endScopes(limit);
 }
@@ -250,7 +266,12 @@ void Gen::visitSelect(JCFieldAccess* that) {
 
     SymbolPtr ssym = treeinfo::symbol(that->selected.get());
 
-    Item::Ptr base = this->genExpr(that->selected.get(), that->selected->type);
+    bool selectSuper = ssym.get() != nullptr && (ssym->kind == Kind::TYP
+                                                 || ssym->name == *names._super);
+
+    Item::Ptr base = selectSuper
+                     ? items->superItem
+                     : this->genExpr(that->selected.get(), that->selected->type);
 
     //TODO binaryQualifier
     if ((sym->flags & Flags::STATIC) != 0) {
@@ -260,7 +281,7 @@ void Gen::visitSelect(JCFieldAccess* that) {
         base->load();
         if (sym == syms.lengthVar) {
             this->code->emitop0(bytecode::arraylength);
-            result = items->makeStaticItem(sym);
+            result = items->makeStackItem(syms.intType);
         } else {
             result = items->makeMemberItem(sym, (sym->flags & Flags::PRIVATE) != 0);
         }
@@ -340,8 +361,8 @@ void Gen::visitNewArray(JCNewArray* that) {
             this->loadIntConst(i);
             i++;
             // Load item's value
-            this->genExpr(iter->get(), elemType);
-            this->items->makeIndexedItem(elemType)->load();
+            this->genExpr(iter->get(), elemType)->load();
+            this->items->makeIndexedItem(elemType)->store();
         }
         this->result = arr;
     } else {
@@ -401,7 +422,13 @@ Item::Ptr Gen::completeBinop(Tree::Ptr lhs,
     TypePtr rtype = sym->type->getParameterTypes().at(0);
     genExpr(rhs.get(), rtype)->load();
 
-    return items->makeCondItem(opcode);
+    if (opcode >= bytecode::ifeq && opcode <= bytecode::if_acmpne ||
+        opcode == bytecode::if_acmp_null || opcode == bytecode::if_acmp_nonnull) {
+        return items->makeCondItem(opcode);
+    } else {
+        code->emitop0(opcode);
+        return items->makeStackItem(optype->restype);
+    }
 }
 
 //TODO this is too slow
@@ -484,7 +511,7 @@ void Gen::appendStrings(Tree* tree) {
 
     genExpr(tree, tree->type)->load();
     appendString(tree);
- }
+}
 
 void Gen::appendString(Tree* tree) {
     callMethod(syms.stringBuilderType, *names.append, ofList(tree->type), false);

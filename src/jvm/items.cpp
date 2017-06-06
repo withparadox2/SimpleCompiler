@@ -131,6 +131,10 @@ void StackItem::drop() {
                         : bytecode::pop);
 }
 
+void StackItem::duplicate() {
+    items.code->emitop0(width() == 2 ? bytecode::dup2 : bytecode::dup);
+}
+
 SelfItem::SelfItem(Items& items, bool isSuper)
         : Item(items, bytecode::OBJECTcode), isSuper(isSuper) {
 }
