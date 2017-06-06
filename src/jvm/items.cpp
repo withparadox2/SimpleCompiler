@@ -290,7 +290,8 @@ Item::Ptr CondItem::load() {
 }
 
 CondItem::Ptr CondItem::mkCond() {
-    return shared_from_this();
+    return std::dynamic_pointer_cast<CondItem>
+            (shared_from_this());
 }
 
 Chain* CondItem::jumpFalse() {

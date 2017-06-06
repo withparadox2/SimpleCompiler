@@ -35,6 +35,8 @@ Names::Names() {
     Array = &fromString("Array");
     METHOD = &fromString("METHOD");
     empty = &fromString("");
+    append = &fromString("append");
+    toString = &fromString("toString");
 }
 
 Name& Names::fromString(const string& str) {

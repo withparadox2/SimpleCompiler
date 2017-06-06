@@ -25,6 +25,8 @@ public:
     LocalVar* dup();
 };
 
+class Chain;
+
 class Code {
 private:
     bool alive;

@@ -13,8 +13,10 @@
 #include "items.h"
 #include "Pool.h"
 #include "../code/type.h"
+#include "../comp/attr.h"
 
 class Symtab;
+
 class Names;
 
 class GenContext {
@@ -26,6 +28,7 @@ public:
 class Gen : public EnableMapHelper, public Visitor {
 private:
     Gen();
+
     Env<GenContext>* env;
     /**Expected type.*/
     TypePtr pt;
@@ -33,6 +36,7 @@ private:
     Code::Ptr code;
     Items::Ptr items;
     Pool::Ptr pool;
+    Attr& attr;
 
     Symtab& syms;
     Names& names;
@@ -91,8 +95,16 @@ private:
 
     int makeRef(TypePtr type);
 
+    void callMethod(TypePtr site, Name& name, TypeList argtypes,
+                    bool isStatic);
+
+    void appendStrings(Tree* tree);
+
+    void appendString(Tree* tree);
+
 public:
     static Gen& instance();
+
     void genClass(Env<AttrContext>* env, JCClassDecl* cdef);
 
     void genDef(Tree* tree, Env<GenContext>* env);
@@ -108,7 +120,8 @@ public:
 
     void genArgs(JCExpression::List& trees, TypeList& pts);
 
-    void genLoop(JCStatement* loop, JCStatement* body, JCExpression* cond, JCExpressionStatement::List step, bool testFirst);
+    void
+    genLoop(JCStatement* loop, JCStatement* body, JCExpression* cond, JCExpressionStatement::List step, bool testFirst);
 
     CondItem::Ptr genCond(Tree* tree);
 

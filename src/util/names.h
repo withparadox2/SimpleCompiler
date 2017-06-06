@@ -48,6 +48,8 @@ public:
     Name* Array;
     Name* METHOD;
     Name* empty;
+    Name* append;
+    Name* toString;
 
     static Names& instance();
 

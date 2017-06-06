@@ -7,12 +7,17 @@
 #include "../jvm/ClassReader.h"
 #include "../util/log.h"
 
+SymbolList Scope::emptyList;
+
 void Scope::enter(SymbolPtr symbol) {
     log("enter symbol: " + symbol->name.desc);
     if (nameToSym->find(&symbol->name) == nameToSym->end()) {
-        nameToSym->insert(std::make_pair(&symbol->name, symbol));
-        elems.insert(&symbol->name);
+        nameToSym->insert(std::make_pair(&symbol->name, SymbolList()));
     }
+
+    SymbolList& list = nameToSym->at(&symbol->name);
+    list.push_back(symbol);
+    elems.insert(&symbol->name);
 }
 
 void Scope::remove(const Name& name) {
@@ -29,9 +34,19 @@ Scope::Scope(SymbolPtr owner) : owner(owner), nameToSym(new Map) {
 
 SymbolPtr& Scope::lookUp(const Name& name) {
     if (nameToSym->find(&name) != nameToSym->end()) {
-        return nameToSym->at(&name);
+        SymbolList& list = nameToSym->at(&name);
+        if (list.size() > 0) {
+            return list.at(0);
+        }
     }
     return Symtab::instance().noSymbol;
+}
+
+SymbolList& Scope::lookUpList(const Name& name) {
+    if (nameToSym->find(&name) != nameToSym->end()) {
+        return nameToSym->at(&name);
+    }
+    return emptyList;
 }
 
 Scope::Ptr Scope::dupUnshared() {

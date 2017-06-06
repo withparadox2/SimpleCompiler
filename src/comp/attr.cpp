@@ -496,7 +496,22 @@ SymbolPtr Attr::findMethod(Env<AttrContext>* env,
 
     //Simplified, without checking, chosing
     ClassSymbolPtr sym = dynamic_pointer_cast<ClassSymbol>(site->tsym.lock());
-    SymbolPtr result = sym->member()->lookUp(name);
+
+    SymbolPtr result;
+    if (isOperator) {
+        SymbolList& list = sym->member()->lookUpList(name);
+        for (auto iter = list.begin(); iter != list.end(); iter++) {
+            SymbolPtr temp = *iter;
+            TypeList srcTypeList = temp->type->getParameterTypes();
+            if (checkTypes(srcTypeList, argTypes)) {
+                result = temp;
+                break;
+            }
+        }
+        log("length = " + std::to_string(list.size()));
+    } else {
+        result = sym->member()->lookUp(name);
+    }
 
     if (result) {
         log("find method of " + name.desc + ":" + result->name.desc);
@@ -587,5 +602,21 @@ TypeList Attr::attribExprs(JCExpression::List trees,
         list.push_back(attribExpr(iter->get(), env, pt));
     }
     return list;
+}
+
+bool Attr::checkTypes(TypeList src, TypeList dest) {
+    if (src.size() != dest.size()) {
+        return false;
+    }
+    auto aIter = src.begin();
+    auto pIter = dest.begin();
+    while (aIter != src.end() && pIter != dest.end()) {
+        if (aIter->get() != pIter->get()) {
+            return false;
+        }
+        aIter++;
+        pIter++;
+    }
+    return true;
 }
 

@@ -8,12 +8,14 @@
 #include <map>
 #include <set>
 #include "symbols.h"
+#include "types.h"
 
 class Name;
 
 class Scope : public std::enable_shared_from_this<Scope> {
 private:
-    typedef std::map<const Name*, SymbolPtr> Map;
+    static SymbolList emptyList;
+    typedef std::map<const Name*, SymbolList> Map;
     typedef std::shared_ptr<Map> MapPtr;
     /**
      * May be shared with other scope, using elems to track
@@ -35,6 +37,8 @@ public:
     Scope(SymbolPtr owner);
 
     SymbolPtr& lookUp(const Name& name);
+
+    SymbolList& lookUpList(const Name& name);
 
     Scope(const Scope& s, const MapPtr& nameToSym);
 

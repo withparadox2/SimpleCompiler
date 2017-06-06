@@ -22,7 +22,7 @@ class CondItem;
 
 typedef std::shared_ptr<CondItem> CondItemPtr;
 
-class Item {
+class Item : public std::enable_shared_from_this<Item>{
 protected:
     Items& items;
 public:
@@ -148,7 +148,7 @@ public:
     void drop() override;
 };
 
-class CondItem : public Item, public std::enable_shared_from_this<CondItem> {
+class CondItem : public Item {
 public:
     typedef std::shared_ptr<CondItem> Ptr;
     Chain* trueJumps;

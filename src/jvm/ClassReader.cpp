@@ -71,5 +71,33 @@ void ClassReader::complete(SymbolPtr symP) {
         MethodSymbolPtr printSym(
                 new MethodSymbol(0, *names.init, type, sym));
         sym->memberField->enter(printSym);
+    } else if (sym->name == names.fromString("StringBuilder")) {
+        insertAppendMethod(sym, Symtab::instance().stringType);
+        insertAppendMethod(sym, Symtab::instance().intType);
+        insertDefaultInit(sym);
+
+        MethodTypePtr type(new MethodType(TypeList(), Symtab::instance().stringType, sym));
+        MethodSymbolPtr toStringSym(
+                new MethodSymbol(0, *sym->name.names.toString, type, sym));
+        sym->memberField->enter(toStringSym);
     }
+}
+
+void ClassReader::insertAppendMethod(ClassSymbolPtr sym, TypePtr type) {
+    Names& names = sym->name.names;
+
+    vector<TypePtr> args;
+    args.push_back(type);
+    MethodTypePtr appendType(new MethodType(args, Symtab::instance().stringBuilderType, sym));
+
+    MethodSymbolPtr appendSym(
+            new MethodSymbol(0, names.fromString("append"), appendType, sym));
+    sym->memberField->enter(appendSym);
+}
+
+void ClassReader::insertDefaultInit(ClassSymbolPtr sym) {
+    MethodTypePtr type(new MethodType(TypeList(), Symtab::instance().voidType, sym));
+    MethodSymbolPtr initSym(
+            new MethodSymbol(0, *sym->name.names.init, type, sym));
+    sym->memberField->enter(initSym);
 }

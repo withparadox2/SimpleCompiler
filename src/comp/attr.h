@@ -84,8 +84,6 @@ private:
 
     SymbolPtr resolveOperator(int optag, Env<AttrContext>* env, TypeList argtypes);
 
-    SymbolPtr findMethod(Env<AttrContext>* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
-
     TypePtr newMethTemplate(TypeList argtypes);
 
     SymbolPtr resolveConstructor(Env<AttrContext>* env, TypePtr site, TypeList argtypes);
@@ -93,6 +91,8 @@ private:
     SymbolPtr selectSym(JCFieldAccess* tree, SymbolPtr sitesym, TypePtr site, Env<AttrContext>* env, TypePtr pt, int pkind);
 
     TypePtr selectType(SymbolPtr sym);
+
+    bool checkTypes(TypeList src, TypeList dest);
 
 public:
     static Attr& instance();
@@ -125,6 +125,8 @@ public:
     SymbolPtr findVar(Env<AttrContext>* env, const Name& name);
 
     SymbolPtr findField(Env<AttrContext>* env, const Name& name, TypePtr site, SymbolPtr c);
+
+    SymbolPtr findMethod(Env<AttrContext>* env, TypePtr site, const Name& name, TypeList argTypes, bool isOperator);
 };
 
 template<typename T>

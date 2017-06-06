@@ -4,9 +4,9 @@
 
 #include <memory>
 #include "gen.h"
-#include "../code/Flags.h"
 #include "../code/Symtab.h"
 #include "../util/error.h"
+#include "../util/tools.h"
 
 #define KEY_GEN "gen"
 
@@ -20,7 +20,8 @@ Gen& Gen::instance() {
 
 Gen::Gen() : pool(new Pool),
              syms(Symtab::instance()),
-             names(Names::instance()) {
+             names(Names::instance()),
+             attr(Attr::instance()) {
     Context::instance().put(KEY_GEN, this);
     vector<TypePtr> args;
     methodType = MethodTypePtr(new MethodType(args, TypePtr(nullptr), syms.methodClass));
@@ -172,7 +173,7 @@ void Gen::visitReturn(JCReturn* that) {
         Item::Ptr r = genExpr(that->expr.get(), pt)->load();
         r->load();
         code->emitop0(bytecode::ireturn
-                      + Code::truncate(Code::typecode(pt.get())))
+                      + Code::truncate(Code::typecode(pt.get())));
     } else {
         code->emitop0(bytecode::ireturn);
     }
@@ -212,7 +213,16 @@ void Gen::visitBinary(JCBinary* that) {
     OperatorSymbolPtr sym =
             std::dynamic_pointer_cast<OperatorSymbol>(that->sym);
     if (sym->opcode == bytecode::string_add) {
-        //TODO finish
+        code->emitop2(bytecode::new_, makeRef(syms.stringBuilderType));
+        code->emitop0(bytecode::dup);
+
+        callMethod(syms.stringBuilderType, *names.init, TypeList(), false);
+
+        appendStrings(that);
+
+        callMethod(syms.stringBuilderType, *names.toString, TypeList(), false);
+
+        result = items->makeStackItem(syms.stringType);
     } else if (that->treeTag == Tree::AND) {
 
     } else if (that->treeTag == Tree::OR) {
@@ -243,7 +253,7 @@ void Gen::visitSelect(JCFieldAccess* that) {
     Item::Ptr base = this->genExpr(that->selected.get(), that->selected->type);
 
     //TODO binaryQualifier
-    if ((sym->flags && Flags::STATIC) != 0) {
+    if ((sym->flags & Flags::STATIC) != 0) {
         base->drop();
         result = items->makeStaticItem(sym);
     } else {
@@ -252,7 +262,7 @@ void Gen::visitSelect(JCFieldAccess* that) {
             this->code->emitop0(bytecode::arraylength);
             result = items->makeStaticItem(sym);
         } else {
-            result = items->makeMemberItem(sym, (sym->flags && Flags::PRIVATE) != 0);
+            result = items->makeMemberItem(sym, (sym->flags & Flags::PRIVATE) != 0);
         }
     }
 }
@@ -452,6 +462,32 @@ CondItem::Ptr Gen::genCond(Tree* tree) {
         CondItem::Ptr result = genExpr(tree, syms.booleanType)->mkCond();
         return result;
     }
+}
+
+void Gen::callMethod(TypePtr site, Name& name, TypeList argtypes, bool isStatic) {
+    SymbolPtr msym = attr.findMethod(nullptr, site, name, argtypes, true);
+    if (isStatic) items->makeStaticItem(msym)->invoke();
+    else items->makeMemberItem(msym, name == *names.init)->invoke();
+}
+
+void Gen::appendStrings(Tree* tree) {
+    tree = treeinfo::skipParens(tree);
+    if (tree->treeTag == Tree::PLUS) {
+        JCBinary* op = dynamic_cast<JCBinary*>(tree);
+        if (op->sym->kind == Kind::MTH
+            && dynamic_cast<OperatorSymbol*>(op->sym.get())->opcode == bytecode::string_add) {
+            appendStrings(op->lhs.get());
+            appendStrings(op->rhs.get());
+            return;
+        }
+    }
+
+    genExpr(tree, tree->type)->load();
+    appendString(tree);
+ }
+
+void Gen::appendString(Tree* tree) {
+    callMethod(syms.stringBuilderType, *names.append, ofList(tree->type), false);
 }
 
 

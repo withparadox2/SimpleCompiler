@@ -43,6 +43,7 @@ Symtab::Symtab() : typeOfTag{TypePtr()} {
 
     printStreamType = enterClass("java.io.PrintStream");
     systemType = enterClass("java.lang.System");
+    stringBuilderType = enterClass("java.lang.StringBuilder");
 
     arrayClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names->Array, nullptr));
     methodClass = ClassSymbolPtr(new ClassSymbol(Flags::PUBLIC, *names->METHOD, nullptr));
