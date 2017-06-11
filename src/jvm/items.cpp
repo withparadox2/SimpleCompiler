@@ -152,14 +152,12 @@ MemberItem::MemberItem(Items& items, SymbolPtr member, bool nonvirtual)
 }
 
 Item::Ptr MemberItem::load() {
-    //TODO finish pool
-    items.code->emitop2(bytecode::getfield, 0);
+    items.code->emitop2(bytecode::getfield, items.pool->put(member));
     return items.stackItem[typecode];
 }
 
 void MemberItem::store() {
-    //TODO finish pool
-    items.code->emitop2(bytecode::putfield, 0);
+    items.code->emitop2(bytecode::putfield, items.pool->put(member));
 }
 
 Item::Ptr MemberItem::invoke() {
@@ -185,21 +183,18 @@ StaticItem::StaticItem(Items& items, SymbolPtr member)
 }
 
 Item::Ptr StaticItem::load() {
-    //TODO finish pool
-    items.code->emitop2(bytecode::getstatic, 0);
+    items.code->emitop2(bytecode::getstatic, items.pool->put(member));
     return items.stackItem[typecode];
 }
 
 void StaticItem::store() {
-    //TODO finish pool
-    items.code->emitop2(bytecode::putstatic, 0);
+    items.code->emitop2(bytecode::putstatic, items.pool->put(member));
 }
 
 Item::Ptr StaticItem::invoke() {
     MethodTypePtr mtype = std::dynamic_pointer_cast<MethodType>(member->type);
     int rescode = Code::typecode(mtype->restype.get());
-    //TODO finish pool
-    items.code->emitInvokestatic(0, mtype);
+    items.code->emitInvokestatic(items.pool->put(member), mtype);
     return items.stackItem[rescode];
 }
 
@@ -255,7 +250,7 @@ void ImmediateItem::store() {
 }
 
 void ImmediateItem::ldc() {
-    int idx = this->items.pool->put(value);
+    int idx = this->items.pool->put(value, typecode);
     if (typecode == bytecode::FLOATcode || typecode == bytecode::DOUBLEcode) {
         this->items.code->emitop2(bytecode::ldc2w, idx);
     } else if (idx <= 255) {

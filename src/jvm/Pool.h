@@ -11,22 +11,64 @@
 #include "../code/symbols.h"
 #include "../tree/tree.h"
 
+class Wrapper {
+public:
+    typedef shared_ptr<Wrapper> Ptr;
+
+    template<typename R>
+    Wrapper(R value, int type);
+
+    template<typename R>
+    R getValue();
+
+    IValueHolder::Ptr value;
+    int type;// symbol or type or literal
+};
+
+template<typename R>
+Wrapper::Wrapper(R value, int type) : value(new ValueHolder<R>(value)), type(type) {
+
+}
+
+template<typename R>
+R Wrapper::getValue() {
+    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(value.get());
+    return p->value;
+}
+
 class Pool {
 private:
+
 public:
+    enum {
+        SYMBOL, TYPE, INT, STRING
+    };
     typedef std::shared_ptr<Pool> Ptr;
-    static const int MAX_ENTRIES = 0xFFFF;
-    static const int MAX_STRING_LENGTH = 0xFFFF;
+    std::vector<Wrapper::Ptr> pool;
 
-    /** Index of next constant to be entered.
-     */
-    int pp;
     Pool();
-    void reset();
-    int put(SymbolPtr value);
-    int put(TypePtr value);
-    int put(IValueHolder::Ptr value);
 
+    void reset();
+
+    int put(SymbolPtr value);
+
+    int put(TypePtr value);
+
+    int put(IValueHolder::Ptr value, int typeCode);
+
+    int testAndPut(Wrapper::Ptr value);
+
+    int find(Wrapper* value);
+
+    bool equals(SymbolPtr ptr1, SymbolPtr ptr2);
+
+    bool equals(MethodSymbolPtr ptr1, MethodSymbolPtr ptr2);
+
+    bool equals(TypePtr ptr1, TypePtr ptr2);
+
+    bool equals(MethodTypePtr ptr1, MethodTypePtr ptr2);
+
+    bool equals(ArrayTypePtr ptr1, ArrayTypePtr ptr2);
 };
 
 
