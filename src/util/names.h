@@ -40,6 +40,7 @@ private:
     Names();
 
 public:
+    Name* STUB_FOR_COMPILE;
     Name* init;
     Name* _this;
     Name* _class;
@@ -50,6 +51,7 @@ public:
     Name* empty;
     Name* append;
     Name* toString;
+    Name* Code;
 
     static Names& instance();
 

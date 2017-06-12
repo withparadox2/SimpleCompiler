@@ -27,6 +27,7 @@ bool Name::operator==(const Name& name) {
 
 Names::Names() {
     Context::instance().put(KEY_NAMES, this);
+    STUB_FOR_COMPILE = &fromString("STUB_FOR_COMPILE");
     init = &fromString("<init>");
     _this = &fromString("this");
     _class = &fromString("class");
@@ -37,6 +38,7 @@ Names::Names() {
     empty = &fromString("");
     append = &fromString("append");
     toString = &fromString("toString");
+    Code = &fromString("Code");
 }
 
 Name& Names::fromString(const string& str) {

@@ -11,6 +11,7 @@
 #include "types.h"
 #include "../util/names.h"
 #include "symbols.h"
+#include "../jvm/Pool.h"
 
 class Name;
 class Scope;
@@ -65,9 +66,11 @@ public:
 
     ScopePtr member();
 
-    Name* fullName;
+    const Name* flatName;
 
     SymbolPtr initOnShared();
+
+    Pool::Ptr pool;
 
     ClassSymbol(long flags, const Name& name, SymbolPtr owner);
 

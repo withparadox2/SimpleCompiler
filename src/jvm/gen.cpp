@@ -33,6 +33,8 @@ void Gen::genClass(Env<AttrContext>* env, JCClassDecl* cdef) {
                     cdef->shared_from_this(),
                     GenContext::Ptr(new GenContext)
             ));
+    cdef->sym->pool = pool;
+    pool->reset();
     for (auto iter = cdef->defs.begin();
          iter != cdef->defs.end(); iter++) {
         genDef(iter->get(), localEnv.get());

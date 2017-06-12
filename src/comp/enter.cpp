@@ -42,7 +42,7 @@ void Enter::visitClassDef(JCClassDecl* that) {
 
 void Enter::visitMethodDef(JCMethodDecl* tree) {
     Scope::Ptr& enclScope = enterScope(this->env);
-    MethodSymbolPtr m(new MethodSymbol(0, tree->name, nullptr, enclScope->owner.lock()));
+    MethodSymbolPtr m(new MethodSymbol(tree->mods->flags, tree->name, nullptr, enclScope->owner.lock()));
     //TODO   m->flags
     tree->sym = m;
 

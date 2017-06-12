@@ -10,6 +10,7 @@
 #include <map>
 #include "../code/symbols.h"
 #include "../tree/tree.h"
+#include "../code/NameAndType.h"
 
 class Wrapper {
 public:
@@ -41,7 +42,7 @@ private:
 
 public:
     enum {
-        SYMBOL, TYPE, INT, STRING
+        SYMBOL, TYPE, INT, STRING, NAME, NAME_AND_TYPE
     };
     typedef std::shared_ptr<Pool> Ptr;
     std::vector<Wrapper::Ptr> pool;
@@ -54,7 +55,11 @@ public:
 
     int put(TypePtr value);
 
+    int put(const Name* value);
+
     int put(IValueHolder::Ptr value, int typeCode);
+
+    int put(NameAndType::Ptr value);
 
     int testAndPut(Wrapper::Ptr value);
 

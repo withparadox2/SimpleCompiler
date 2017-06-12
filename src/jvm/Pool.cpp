@@ -18,17 +18,20 @@ int Pool::put(SymbolPtr value) {
 }
 
 void Pool::reset() {
+    pool.clear();
+    pool.push_back(Wrapper::Ptr(new Wrapper(Names::instance().STUB_FOR_COMPILE, NAME)));
 }
+
 
 int Pool::put(IValueHolder::Ptr value, int typeCode) {
     Wrapper* w;
     if (typeCode == bytecode::INTcode) {
-        w = new Wrapper(value->getValue<int>(), bytecode::INTcode);
+        w = new Wrapper(value->getValue<int>(), INT);
     } else {
-        w = new Wrapper(value->getValue<std::string>(), bytecode::OBJECTcode);
+        w = new Wrapper(value->getValue<std::string>(), STRING);
     }
     Wrapper::Ptr src(w);
-    return testAndPut(src);;
+    return testAndPut(src);
 }
 
 int Pool::put(TypePtr value) {
@@ -36,6 +39,17 @@ int Pool::put(TypePtr value) {
     return testAndPut(src);
 }
 
+int Pool::put(const Name* name) {
+    log("put to pool, name = " + name->desc);
+    Wrapper::Ptr src(new Wrapper(name, NAME));
+    return testAndPut(src);
+}
+
+
+int Pool::put(NameAndType::Ptr value) {
+    Wrapper::Ptr src(new Wrapper(value, NAME_AND_TYPE));
+    return testAndPut(src);
+}
 
 int Pool::testAndPut(Wrapper::Ptr src) {
     int index = find(src.get());
@@ -43,7 +57,7 @@ int Pool::testAndPut(Wrapper::Ptr src) {
         pool.push_back(src);
         index = (int) (pool.size() - 1);
     }
-    return index + 1;
+    return index;
 }
 
 
@@ -84,9 +98,23 @@ int Pool::find(Wrapper* value) {
                 }
                 break;
             }
+            case NAME: {
+                if (value->getValue<Name*>() == iter->get()->getValue<Name*>()) {
+                    return index;
+                }
+                break;
+            }
+            case NAME_AND_TYPE: {
+                NameAndType::Ptr p1 = value->getValue<NameAndType::Ptr>();
+                NameAndType::Ptr p2 = iter->get()->getValue<NameAndType::Ptr>();
+                if (equals(p1->type, p2->type) && *p1->name == *p2->name) {
+                    return index;
+                }
+                break;
+            }
         }
     }
-    return -2;
+    return -1;
 }
 
 bool Pool::equals(SymbolPtr ptr1, SymbolPtr ptr2) {

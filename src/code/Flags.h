@@ -36,6 +36,8 @@ public:
     static const long long GENERATEDCONSTR = 1LL << 36;
 
     static const int AccessFlags = PUBLIC | PROTECTED | PRIVATE;
+
+    static const int ACC_SUPER = 0x0020;
 };
 
 

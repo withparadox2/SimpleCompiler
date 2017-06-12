@@ -9,6 +9,7 @@
 #include "main.h"
 #include "comp/attr.h"
 #include "jvm/gen.h"
+#include "jvm/ClassWriter.h"
 
 using namespace std;
 
@@ -46,5 +47,8 @@ int main() {
     Env<AttrContext>* env = Enter::instance().typeEnvs.at(clazz->sym).get();
     Attr::instance().attrib(env);
     Gen::instance().genClass(env, clazz.get());
+
+    ClassWriter writer;
+    writer.writeClass(clazz.get(), FILE_PATH_ROOT "Computer.class");
     return 0;
 }

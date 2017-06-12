@@ -33,6 +33,7 @@ ClassSymbolPtr& ClassReader::enterClass(const Name& flatName) {
     bool isDefault = flatName.desc.find_last_of('.') != string::npos;
 
     ClassSymbolPtr symbol(defineClass(shortName(flatName)));
+    symbol->flatName = &flatName;
     symbol->initOnShared();
     if (isDefault) {
         symbol->completer = this;
