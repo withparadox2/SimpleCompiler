@@ -2,3 +2,4 @@
 bin/
 .class
 TestHelloWorld/*.txt
+TestHelloWorld/*.class
