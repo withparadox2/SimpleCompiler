@@ -215,8 +215,19 @@ void ClassWriter::writeCode(Code::Ptr code) {
     append2(databuf, code->max_locals);
     append4(databuf, code->cp);
     appendBytes(databuf, code->cp, code->code);
-    append2(databuf, 0);
-    append2(databuf, 0);
+    append2(databuf, 0);//cacheInfo length
+
+    int idx = beginAttrs();
+    int count = 0;
+
+    if (code->stackMapTableBuffer.size() > 0) {
+        int alenIdx = writeAttr(names->StackMapTable);
+        writeStackMap(code);
+        endAttr(alenIdx);
+        count++;
+    }
+
+    endAttrs(idx, count);
 }
 
 void ClassWriter::appendBytes(std::vector<char>& buf, int len, std::vector<char>& src) {
@@ -320,4 +331,12 @@ string ClassWriter::dotToSlash(const string& from) {
         }
     }
     return flat;
+}
+
+void ClassWriter::writeStackMap(Code::Ptr code) {
+    size_t size = code->stackMapTableBuffer.size();
+    append2(databuf, (int) size);
+    for (int i = 0; i < size; ++i) {
+        code->stackMapTableBuffer.at(i)->write(*this);
+    }
 }

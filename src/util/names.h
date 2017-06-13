@@ -52,6 +52,7 @@ public:
     Name* append;
     Name* toString;
     Name* Code;
+    Name* StackMapTable;
 
     static Names& instance();
 

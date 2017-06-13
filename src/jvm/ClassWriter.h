@@ -17,24 +17,8 @@
 class ClassWriter {
 private:
     Names* names;
-    std::vector<char> poolbuf;
-    std::vector<char> databuf;
     Pool::Ptr pool;
     ofstream ofs;
-
-    void append1(std::vector<char>& buf, int val);
-
-    void append2(std::vector<char>& buf, int val);
-
-    void append4(std::vector<char>& buf, int val);
-
-    void put4(std::vector<char>& buf, int start, int val);
-
-    void put2(std::vector<char>& buf, int start, int val);
-
-    void appendBytes(std::vector<char>& buf, int len, std::vector<char>& src);
-
-    void appendStr(std::vector<char>& buf, int len, const char* str);
 
     void writeMethod(MethodSymbolPtr sym);
 
@@ -54,6 +38,8 @@ private:
 
     void writeCode(Code::Ptr code);
 
+    void writeStackMap(Code::Ptr code);
+
     void endAttr(int idx);
 
     void endAttrs(int idx, int acount);
@@ -66,6 +52,23 @@ private:
 
 public:
     ClassWriter();
+
+    std::vector<char> poolbuf;
+    std::vector<char> databuf;
+
+    void append1(std::vector<char>& buf, int val);
+
+    void append2(std::vector<char>& buf, int val);
+
+    void append4(std::vector<char>& buf, int val);
+
+    void put4(std::vector<char>& buf, int start, int val);
+
+    void put2(std::vector<char>& buf, int start, int val);
+
+    void appendBytes(std::vector<char>& buf, int len, std::vector<char>& src);
+
+    void appendStr(std::vector<char>& buf, int len, const char* str);
 
     void writeClass(JCClassDecl* cTree, std::string path);
 };

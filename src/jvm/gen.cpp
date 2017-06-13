@@ -80,7 +80,7 @@ void Gen::genMethod(JCMethodDecl* tree, Env<GenContext>* env, bool fatcode) {
 void Gen::initCode(JCMethodDecl* tree, Env<GenContext>* env) {
     MethodSymbolPtr meth = tree->sym;
     //TODO construct code
-    meth->code = Code::Ptr(new Code);
+    meth->code = Code::Ptr(new Code(meth));
     this->code = meth->code;
 
     this->items = Items::Ptr(new Items(code, pool));
@@ -108,8 +108,9 @@ void Gen::initCode(JCMethodDecl* tree, Env<GenContext>* env) {
         this->code->setDefined(
                 this->code->newLocal(iter->get()->sym));
     }
-    //TODO entryPoint
 
+    this->code->entryPoint();
+    this->code->pendingStackMap = false;
 }
 
 void Gen::genStat(Tree* tree, Env<GenContext>* env) {
@@ -464,7 +465,7 @@ void Gen::genLoop(JCStatement* loop,
                   bool testFirst) {
     Env<GenContext>::Ptr localEnv(env->dup(loop, GenContext::Ptr(new GenContext)));
 
-    int startpc = code->cp;
+    int startpc = code->entryPoint();
 
     if (testFirst) {
         CondItem::Ptr c;

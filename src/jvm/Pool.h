@@ -65,15 +65,15 @@ public:
 
     int find(Wrapper* value);
 
-    bool equals(SymbolPtr ptr1, SymbolPtr ptr2);
+    static bool equals(SymbolPtr ptr1, SymbolPtr ptr2);
 
-    bool equals(MethodSymbolPtr ptr1, MethodSymbolPtr ptr2);
+    static bool equals(MethodSymbolPtr ptr1, MethodSymbolPtr ptr2);
 
-    bool equals(TypePtr ptr1, TypePtr ptr2);
+    static bool equals(TypePtr ptr1, TypePtr ptr2);
 
-    bool equals(MethodTypePtr ptr1, MethodTypePtr ptr2);
+    static bool equals(MethodTypePtr ptr1, MethodTypePtr ptr2);
 
-    bool equals(ArrayTypePtr ptr1, ArrayTypePtr ptr2);
+    static bool equals(ArrayTypePtr ptr1, ArrayTypePtr ptr2);
 };
 
 

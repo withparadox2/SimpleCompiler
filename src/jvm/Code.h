@@ -9,7 +9,10 @@
 #include <vector>
 #include "../code/symbols.h"
 #include "../code/types.h"
+#include "../jvm/Pool.h"
+#include "../code/stackframe.h"
 
+#define MAX_VALUE 0x7fffffff
 class LocalVar {
 public:
     typedef std::shared_ptr<LocalVar> Ptr;
@@ -25,12 +28,26 @@ public:
     LocalVar* dup();
 };
 
+class StackMapFrame {
+public:
+    typedef std::shared_ptr<StackMapFrame> Ptr;
+    int pc;
+    TypeList locals;
+    TypeList stack;
+};
+
 class Chain;
+class StackMapTableFrame;
+typedef std::shared_ptr<StackMapTableFrame> StackMapTableFramePtr;
+typedef std::vector<StackMapTableFramePtr> StackMapTableFrameList;
 
 class Code {
 private:
     bool alive;
 
+    StackMapFrame::Ptr lastFrame;
+
+    SymbolPtr meth;
 
     void emitop(int op);
 
@@ -48,9 +65,23 @@ private:
     std::vector<LocalVar::Ptr> lvar;
 
     void endScope(int adr);
+
+    void emitStackMapFrame(int pc, int localSize);
+
+    StackMapFrame::Ptr getInitialFrame();
+
+    StackMapTableFramePtr buildStackFrame(StackMapFrame::Ptr thisFrame,
+                                            int prevPc,
+                                            TypeList prevLocals);
+
+    int compare(TypeList& list1, TypeList& list2);
 public:
     /** the current code pointer.*/
     int cp;
+
+    bool pendingStackMap;
+
+    StackMapTableFrameList stackMapTableBuffer;
 
     typedef std::shared_ptr<Code> Ptr;
 
@@ -69,7 +100,7 @@ public:
 
     Chain* pendingJumps;
 
-    Code();
+    Code(SymbolPtr meth);
 
     void endScopes(int start);
 
@@ -93,7 +124,9 @@ public:
     int emitJump(int opcode);
 
     void emitInvokestatic(int meth, TypePtr mtype);
+
     void emitInvokespecial(int meth, TypePtr mtype);
+
     void emitInvokevirtual(int meth, TypePtr mtype);
 
     void emitNewarray(int elemCode, TypePtr arrType);
@@ -105,11 +138,14 @@ public:
     void resolve(Chain* chain, int target);
 
     void put2(int pc, int od);
+
     void put1(int pc, int od);
 
     int get1(int pc);
 
     void printCode();
+
+    int entryPoint();
 
     static Chain* mergeChains(Chain* c1, Chain* c2);
 

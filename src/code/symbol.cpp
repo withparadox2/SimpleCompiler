@@ -48,6 +48,14 @@ Symbol::~Symbol() {
 
 }
 
+bool Symbol::isConstructor() {
+    return name == *Names::instance().init;
+}
+
+bool Symbol::isStatic() {
+    return flags & Flags::STATIC != 0;
+}
+
 VarSymbol::VarSymbol(long flags, const Name& name, TypePtr type, SymbolPtr owner)
         : Symbol(Kind::VAR, flags, name, type, owner) {
 

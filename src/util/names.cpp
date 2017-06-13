@@ -39,6 +39,7 @@ Names::Names() {
     append = &fromString("append");
     toString = &fromString("toString");
     Code = &fromString("Code");
+    StackMapTable = &fromString("StackMapTable");
 }
 
 Name& Names::fromString(const string& str) {

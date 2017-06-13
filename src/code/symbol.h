@@ -49,6 +49,9 @@ public:
     Symbol(int kind, long flags, const Name& name, TypePtr type, SymbolPtr owner);
     virtual ScopePtr member();
     virtual ~Symbol();
+
+    bool isConstructor();
+    bool isStatic();
 };
 
 class TypeSymbol : public Symbol {

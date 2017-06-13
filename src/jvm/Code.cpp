@@ -4,9 +4,9 @@
 
 #include "Code.h"
 #include "../code/type.h"
-#include "../code/TypeTags.h"
 #include "bytecode.h"
 #include "../util/error.h"
+#include "../code/stackframe.h"
 
 int Code::typecode(const Type* type) {
     using namespace TypeTags;
@@ -91,7 +91,10 @@ void Code::emitop0(int op) {
 }
 
 void Code::emitop(int op) {
-    //TODO pending jump, alive check
+    if (pendingStackMap) {
+        pendingStackMap = false;
+
+    }
     this->emit1(op);
 }
 
@@ -121,7 +124,7 @@ int Code::newLocal(int typecode) {
     return reg;
 }
 
-Code::Code() : nextreg(0), alive(true), cp(0) {
+Code::Code(SymbolPtr meth) : nextreg(0), alive(true), cp(0), meth(meth) {
 }
 
 int Code::width(int typecode) {
@@ -297,8 +300,8 @@ Chain* Code::mergeChains(Chain* chain1, Chain* chain2) {
 void Code::resolve(Chain* chain, int target) {
     //Jump can be dropped
     if (get1(chain->pc) == bytecode::goto_
-            && chain->pc + 3 == target
-            && target == cp) {
+        && chain->pc + 3 == target
+        && target == cp) {
         cp = cp - 3;
         target = target - 3;
     }
@@ -321,9 +324,90 @@ int Code::get1(int pc) {
 void Code::printCode() {
     std::cout << "length = " << code.size() << std::endl;
     for (auto i = code.begin(); i != code.end(); i++) {
-        std::cout << (int)(uint8_t)*i << " ";
+        std::cout << (int) (uint8_t) *i << " ";
     }
     std::cout << std::endl;
+}
+
+int Code::entryPoint() {
+    pendingStackMap = true;
+    alive = true;
+    return this->cp;
+}
+
+void Code::emitStackMapFrame(int pc, int localSize) {
+    if (!lastFrame) {
+        lastFrame = getInitialFrame();
+    }
+
+    StackMapFrame::Ptr frame = std::make_shared<StackMapFrame>();
+    frame->pc = pc;
+
+    for (auto iter = lvar.begin(); iter != lvar.end(); iter++) {
+        frame->locals.push_back(iter->get()->sym->type);
+    }
+
+    stackMapTableBuffer.push_back(
+            buildStackFrame(frame,
+                            lastFrame->pc,
+                            lastFrame->locals));
+}
+
+StackMapFrame::Ptr Code::getInitialFrame() {
+    StackMapFrame* frame = new StackMapFrame;
+
+    //Non static method has `this` as its first parameter
+    if (!meth->isStatic()) {
+        TypePtr thisType = meth->owner->type;
+        if (meth->isConstructor()) {
+            //TODO wrap thisType into uninitializedThis
+            frame->locals.push_back(thisType);
+        } else {
+            frame->locals.push_back(thisType);
+        }
+    }
+
+    TypeList argTypes = dynamic_pointer_cast<MethodType>(meth->type)->argtypes;
+    for (auto iter = argTypes.begin(); iter != argTypes.end(); iter++) {
+        frame->locals.push_back(*iter);
+    }
+
+    frame->pc = -1;
+    return StackMapFrame::Ptr(frame);
+}
+
+StackMapTableFrame::Ptr
+Code::buildStackFrame(StackMapFrame::Ptr thisFrame, int prevPc, TypeList prevLocals) {
+    TypeList& locals = thisFrame->locals;
+    int offsetDelta = thisFrame->pc - prevPc - 1;
+    //TODO consider stack count
+    int diffLen = compare(prevLocals, locals);
+    if (diffLen == 0) {
+        return std::make_shared<SameFrame>(offsetDelta);
+    } else if (-4 < diffLen && diffLen < 0) {
+        TypeList newList;
+        for (std::size_t i = prevLocals.size(); i < locals.size(); ++i) {
+            newList.push_back(locals[i]);
+        }
+        return std::make_shared<AppendFrame>(SAME_FRAME_EXTENDED - diffLen, offsetDelta, newList);
+    } else if (0 < diffLen && diffLen < 4) {
+        return std::make_shared<ChopFrame>(SAME_FRAME_EXTENDED - diffLen, offsetDelta);
+    }
+    error("[buildStackFrame] not support any way.");
+}
+
+int Code::compare(TypeList& list1, TypeList& list2) {
+    int diffLen = (int) (list1.size() - list2.size());
+    if (diffLen > 4 || diffLen < -4) {
+        return MAX_VALUE;
+    }
+    int len = (int) (diffLen > 0 ? list2.size() : list1.size());
+    for (int i = 0; i < len; ++i) {
+        if (!Pool::equals(list1.at(i), list2.at(i))) {
+            return MAX_VALUE;
+        }
+    }
+    return diffLen;
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)
