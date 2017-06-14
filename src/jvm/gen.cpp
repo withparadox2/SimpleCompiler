@@ -160,18 +160,14 @@ void Gen::visitIf(JCIf* that) {
     genStat(that->thenPart.get(), env);
     thenExit = code->branch(bytecode::goto_);
 
-    int elseCp = code->cp;
-
-    if (that->elsePart) {
-        genStat(that->elsePart.get(), env);
+    if (elseChain != nullptr) {
+        code->resolve(elseChain);
+        if (that->elsePart) {
+            genStat(that->elsePart.get(), env);
+        }
     }
-    code->resolve(thenExit, code->cp);
 
-    if (thenExit->pc == code->cp) {
-        code->resolve(elseChain, thenExit->pc);
-    } else {
-        code->resolve(elseChain, elseCp);
-    }
+    code->resolve(thenExit);
 
     code->endScopes(limit);
 }
@@ -480,7 +476,7 @@ void Gen::genLoop(JCStatement* loop,
         genStats(step, localEnv.get());
 
         code->resolve(code->branch(bytecode::goto_), startpc);
-        code->resolve(loopDone, code->cp);
+        code->resolve(loopDone);
     }
 }
 

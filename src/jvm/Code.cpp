@@ -91,9 +91,12 @@ void Code::emitop0(int op) {
 }
 
 void Code::emitop(int op) {
+    if (pendingJumps != nullptr) {
+        resolvePending();
+    }
     if (pendingStackMap) {
         pendingStackMap = false;
-
+        emitStackMapFrame(cp, getLocalSize());
     }
     this->emit1(op);
 }
@@ -124,7 +127,7 @@ int Code::newLocal(int typecode) {
     return reg;
 }
 
-Code::Code(SymbolPtr meth) : nextreg(0), alive(true), cp(0), meth(meth) {
+Code::Code(SymbolPtr meth) : nextreg(0), alive(true), cp(0), meth(meth), pendingJumps(nullptr) {
 }
 
 int Code::width(int typecode) {
@@ -154,7 +157,9 @@ void Code::addLocalVar(VarSymbolPtr v) {
         //TODO check where does ele store, stack or heap?
         this->lvar.resize(newLen);
     }
-    //TODO if (pendingJumps != null) resolvePending();
+    if (pendingJumps != nullptr) {
+        resolvePending();
+    }
     this->lvar.at(adr) = LocalVar::Ptr(new LocalVar(v));
     //TODO state.defined.excl(adr);
 }
@@ -204,7 +209,7 @@ void Code::endScopes(int start) {
 }
 
 void Code::endScope(int adr) {
-    LocalVar::Ptr sptr = this->lvar.at(adr);
+    LocalVar::Ptr& sptr = this->lvar.at(adr);
     if (sptr) {
         sptr.reset();
     }
@@ -298,14 +303,21 @@ Chain* Code::mergeChains(Chain* chain1, Chain* chain2) {
 }
 
 void Code::resolve(Chain* chain, int target) {
-    //Jump can be dropped
-    if (get1(chain->pc) == bytecode::goto_
-        && chain->pc + 3 == target
-        && target == cp) {
-        cp = cp - 3;
-        target = target - 3;
+
+    for (; chain != nullptr; chain = chain->next) {
+        //Jump can be dropped
+        if (get1(chain->pc) == bytecode::goto_
+            && chain->pc + 3 == target
+            && target == cp) {
+            cp = cp - 3;
+            target = target - 3;
+        }
+        put2(chain->pc + 1, target - chain->pc);
+        if (cp == target) {
+           pendingStackMap = true;
+        }
     }
-    put2(chain->pc + 1, target - chain->pc);
+
 }
 
 void Code::put2(int pc, int od) {
@@ -340,10 +352,15 @@ void Code::emitStackMapFrame(int pc, int localSize) {
         lastFrame = getInitialFrame();
     }
 
+    std::vector<LocalVar::Ptr> localList;
+    for (int i = 0; i < localSize; ++i) {
+        localList.push_back(lvar.at(i));
+    }
+
     StackMapFrame::Ptr frame = std::make_shared<StackMapFrame>();
     frame->pc = pc;
 
-    for (auto iter = lvar.begin(); iter != lvar.end(); iter++) {
+    for (auto iter = localList.begin(); iter != localList.end(); iter++) {
         frame->locals.push_back(iter->get()->sym->type);
     }
 
@@ -351,6 +368,7 @@ void Code::emitStackMapFrame(int pc, int localSize) {
             buildStackFrame(frame,
                             lastFrame->pc,
                             lastFrame->locals));
+    lastFrame = frame;
 }
 
 StackMapFrame::Ptr Code::getInitialFrame() {
@@ -408,6 +426,22 @@ int Code::compare(TypeList& list1, TypeList& list2) {
         }
     }
     return diffLen;
+}
+
+int Code::getLocalSize() {
+    int size = 0;
+    for (auto iter = lvar.begin(); iter != lvar.end(); iter++) {
+        if (*iter) {
+            size++;
+        }
+    }
+    return size;
+}
+
+void Code::resolvePending() {
+    Chain* c = pendingJumps;
+    pendingJumps = nullptr;
+    resolve(c, cp);
 }
 
 LocalVar::LocalVar(VarSymbolPtr v)

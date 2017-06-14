@@ -75,6 +75,8 @@ private:
                                             TypeList prevLocals);
 
     int compare(TypeList& list1, TypeList& list2);
+
+    int getLocalSize();
 public:
     /** the current code pointer.*/
     int cp;
@@ -136,6 +138,8 @@ public:
     void resolve(Chain* chain);
 
     void resolve(Chain* chain, int target);
+
+    void resolvePending();
 
     void put2(int pc, int od);
 
