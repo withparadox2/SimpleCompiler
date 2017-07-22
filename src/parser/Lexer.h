@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 #include "Token.h"
-#include "../util/names.h"
+#include "util/names.h"
 
 class Lexer {
 private:

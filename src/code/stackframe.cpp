@@ -4,8 +4,8 @@
 
 #include "stackframe.h"
 #include "type.h"
-#include "../util/error.h"
-#include "../jvm/ClassWriter.h"
+#include "util/error.h"
+#include "jvm/ClassWriter.h"
 
 void StackMapTableFrame::write(ClassWriter& writer) {
     int frameType = getFrameType();

@@ -3,9 +3,9 @@
 //
 
 #include "Pool.h"
-#include "../code/symbol.h"
-#include "../code/type.h"
-#include "../jvm/bytecode.h"
+#include "code/symbol.h"
+#include "code/type.h"
+#include "jvm/bytecode.h"
 
 Pool::Pool() {
 

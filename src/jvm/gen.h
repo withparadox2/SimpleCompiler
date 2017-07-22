@@ -6,14 +6,14 @@
 #define SIMPLECOMPILER_GEN_H
 
 #include <memory>
-#include "../tree/alltree.h"
-#include "../comp/env.h"
-#include "../tree/visitor.h"
+#include "tree/alltree.h"
+#include "comp/env.h"
+#include "tree/visitor.h"
 #include "Code.h"
 #include "items.h"
 #include "Pool.h"
-#include "../code/type.h"
-#include "../comp/attr.h"
+#include "code/type.h"
+#include "comp/attr.h"
 
 class Symtab;
 

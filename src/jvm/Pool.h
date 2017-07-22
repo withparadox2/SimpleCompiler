@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include "../code/symbols.h"
-#include "../tree/tree.h"
-#include "../code/NameAndType.h"
+#include "code/symbols.h"
+#include "tree/tree.h"
+#include "code/NameAndType.h"
 
 class Wrapper {
 public:

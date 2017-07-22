@@ -4,11 +4,11 @@
 
 #include "ClassReader.h"
 #include <cstddef>
-#include "../util/error.h"
-#include "../code/scope.h"
-#include "../code/type.h"
-#include "../code/Symtab.h"
-#include "../util/tools.h"
+#include "util/error.h"
+#include "code/scope.h"
+#include "code/type.h"
+#include "code/Symtab.h"
+#include "util/tools.h"
 
 using std::vector;
 

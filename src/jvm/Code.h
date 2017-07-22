@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <vector>
-#include "../code/symbols.h"
-#include "../code/types.h"
-#include "../jvm/Pool.h"
-#include "../code/stackframe.h"
+#include "code/symbols.h"
+#include "code/types.h"
+#include "jvm/Pool.h"
+#include "code/stackframe.h"
 
 #define MAX_VALUE 0x7fffffff
 class LocalVar {

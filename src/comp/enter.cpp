@@ -3,10 +3,10 @@
 //
 
 #include "enter.h"
-#include "../util/error.h"
+#include "util/error.h"
 #include "attr.h"
-#include "../jvm/ClassReader.h"
-#include "../code/Symtab.h"
+#include "jvm/ClassReader.h"
+#include "code/Symtab.h"
 
 #define KEY_ENTER "enter"
 

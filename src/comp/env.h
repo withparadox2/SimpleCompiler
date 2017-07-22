@@ -6,9 +6,9 @@
 #define SIMPLECOMPILER_ENV_H
 
 #include <memory>
-#include "../code/scope.h"
-#include "../code/symbol.h"
-#include "../tree/tree.h"
+#include "code/scope.h"
+#include "code/symbol.h"
+#include "tree/tree.h"
 
 template <typename T>
 class Env {

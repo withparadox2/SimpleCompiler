@@ -3,8 +3,8 @@
 //
 
 #include "pretty.h"
-#include "../code/Flags.h"
-#include "../util/names.h"
+#include "code/Flags.h"
+#include "util/names.h"
 
 
 void Pretty::visitClassDef(JCClassDecl* that) {

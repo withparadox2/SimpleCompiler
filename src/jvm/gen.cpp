@@ -4,9 +4,9 @@
 
 #include <memory>
 #include "gen.h"
-#include "../code/Symtab.h"
-#include "../util/error.h"
-#include "../util/tools.h"
+#include "code/Symtab.h"
+#include "util/error.h"
+#include "util/tools.h"
 
 #define KEY_GEN "gen"
 

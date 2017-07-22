@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <vector>
-#include "../comp/completer.h"
+#include "comp/completer.h"
 #include "types.h"
-#include "../util/names.h"
+#include "util/names.h"
 #include "symbols.h"
-#include "../jvm/Pool.h"
+#include "jvm/Pool.h"
 
 class Name;
 class Scope;

@@ -6,10 +6,10 @@
 #define SIMPLECOMPILER_CLASSWRITER_H
 
 #include <fstream>
-#include "../code/symbol.h"
-#include "../jvm/Pool.h"
+#include "code/symbol.h"
+#include "jvm/Pool.h"
 #include "Code.h"
-#include "../code/NameAndType.h"
+#include "code/NameAndType.h"
 
 #define DEBUG true
 

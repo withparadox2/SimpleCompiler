@@ -5,13 +5,13 @@
 #ifndef SIMPLECOMPILER_ATTR_H
 #define SIMPLECOMPILER_ATTR_H
 
-#include "../code/types.h"
-#include "../tree/tree.h"
+#include "code/types.h"
+#include "tree/tree.h"
 #include "env.h"
-#include "../code/Flags.h"
-#include "../tree/visitor.h"
-#include "../code/type.h"
-#include "../util/context.h"
+#include "code/Flags.h"
+#include "tree/visitor.h"
+#include "code/type.h"
+#include "util/context.h"
 
 class Symtab;
 

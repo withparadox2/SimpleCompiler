@@ -3,11 +3,11 @@
 //
 
 #include "ClassWriter.h"
-#include "../code/Flags.h"
-#include "../code/type.h"
-#include "../code/scope.h"
-#include "../util/error.h"
-#include "../jvm/ClassFile.h"
+#include "code/Flags.h"
+#include "code/type.h"
+#include "code/scope.h"
+#include "util/error.h"
+#include "jvm/ClassFile.h"
 
 
 void ClassWriter::writeClass(JCClassDecl* cTree, std::string path) {

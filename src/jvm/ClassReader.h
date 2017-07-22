@@ -6,10 +6,10 @@
 #define SIMPLECOMPILER_CLASSREADER_H
 
 #include <map>
-#include "../code/symbols.h"
-#include "../comp/completer.h"
-#include "../util/context.h"
-#include "../code/types.h"
+#include "code/symbols.h"
+#include "comp/completer.h"
+#include "util/context.h"
+#include "code/types.h"
 
 class Name;
 

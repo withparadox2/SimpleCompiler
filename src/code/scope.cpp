@@ -4,8 +4,8 @@
 
 #include "scope.h"
 #include "Symtab.h"
-#include "../jvm/ClassReader.h"
-#include "../util/log.h"
+#include "jvm/ClassReader.h"
+#include "util/log.h"
 
 SymbolList Scope::emptyList;
 

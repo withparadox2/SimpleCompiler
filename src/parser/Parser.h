@@ -10,7 +10,7 @@
 #include <string>
 #include "Lexer.h"
 #include "Token.h"
-#include "../tree/tree.h"
+#include "tree/tree.h"
 
 
 using std::vector;

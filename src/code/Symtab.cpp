@@ -4,10 +4,10 @@
 
 #include "Symtab.h"
 #include "type.h"
-#include "../jvm/ClassReader.h"
-#include "../comp/env.h"
-#include "../util/tools.h"
-#include "../jvm/bytecode.h"
+#include "jvm/ClassReader.h"
+#include "comp/env.h"
+#include "util/tools.h"
+#include "jvm/bytecode.h"
 
 #define KEY_SYMTAB "symtab"
 

@@ -9,12 +9,12 @@
 #include <memory>
 #include <string>
 #include "treevisitor.h"
-#include "../parser/Token.h"
+#include "parser/Token.h"
 #include "alltree.h"
-#include "../code/TypeTags.h"
-#include "../code/symbols.h"
-#include "../code/types.h"
-#include "../util/log.h"
+#include "code/TypeTags.h"
+#include "code/symbols.h"
+#include "code/types.h"
+#include "util/log.h"
 
 using std::vector;
 using std::shared_ptr;

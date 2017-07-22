@@ -4,11 +4,11 @@
 
 #include <iostream>
 #include "attr.h"
-#include "../util/log.h"
-#include "../code/Symtab.h"
+#include "util/log.h"
+#include "code/Symtab.h"
 #include "enter.h"
-#include "../util/tools.h"
-#include "../util/error.h"
+#include "util/tools.h"
+#include "util/error.h"
 
 #define KEY_ATTR "attr"
 

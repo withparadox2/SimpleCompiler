@@ -3,8 +3,8 @@
 //
 
 #include "Lexer.h"
-#include "../util/error.h"
-#include "../util/layoutchars.h"
+#include "util/error.h"
+#include "util/layoutchars.h"
 
 using namespace std;
 

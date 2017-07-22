@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <vector>
-#include "../code/types.h"
+#include "code/types.h"
 #define SAME_FRAME_SIZE 64
 #define SAME_LOCALS_1_STACK_ITEM_EXTENDED 247
 #define SAME_FRAME_EXTENDED 251

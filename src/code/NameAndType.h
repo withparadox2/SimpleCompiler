@@ -6,7 +6,7 @@
 #define SIMPLECOMPILER_NAMEANDTYPE_H
 
 #include <memory>
-#include "../util/names.h"
+#include "util/names.h"
 #include "types.h"
 
 class NameAndType {

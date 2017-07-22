@@ -11,7 +11,7 @@
 #include "Flags.h"
 #include "TypeTags.h"
 #include "symbol.h"
-#include "../util/context.h"
+#include "util/context.h"
 
 using std::string;
 

@@ -3,10 +3,10 @@
 //
 
 #include "Code.h"
-#include "../code/type.h"
+#include "code/type.h"
 #include "bytecode.h"
-#include "../util/error.h"
-#include "../code/stackframe.h"
+#include "util/error.h"
+#include "code/stackframe.h"
 
 int Code::typecode(const Type* type) {
     using namespace TypeTags;

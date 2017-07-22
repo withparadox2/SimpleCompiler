@@ -8,9 +8,9 @@
 #include <memory>
 #include "Code.h"
 #include "Pool.h"
-#include "../code/types.h"
+#include "code/types.h"
 #include "bytecode.h"
-#include "../tree/tree.h"
+#include "tree/tree.h"
 
 class Symtab;
 

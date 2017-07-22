@@ -2,7 +2,7 @@
 // Created by withparadox2 on 2017/1/17.
 //
 #include "visitor.h"
-#include "../code/Symtab.h"
+#include "code/Symtab.h"
 
 void TreeScanner::initTypeIfNeeded(Tree* that) {
     if (!that->type) {

@@ -3,9 +3,9 @@
 //
 
 #include "items.h"
-#include "../code/Symtab.h"
-#include "../code/type.h"
-#include "../util/error.h"
+#include "code/Symtab.h"
+#include "code/type.h"
+#include "util/error.h"
 
 Items::Items(Code::Ptr code, Pool::Ptr pool)
         : syms(Symtab::instance()), pool(pool), code(code) {
