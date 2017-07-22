@@ -21,3 +21,12 @@
 
 ## stageX
 胡作非为。
+
+
+## run
+- install mingw and add /bin to system env
+- `mkdir build`
+- `cd build` and then `cmake .. -G "MinGW Makefiles"`
+- `make` or `mingw32-make`
+- `cd ../bin` and then `SimpleCompiler.exe`
+- `cd ../TestHelloWorld` and then `java Computer` 
