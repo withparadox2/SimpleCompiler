@@ -3,3 +3,5 @@ bin/
 .class
 TestHelloWorld/*.txt
 TestHelloWorld/*.class
+CMakeCache.txt
+CMakeFiles/*
