@@ -1,5 +1,4 @@
 照抄javac 1.7，剔除难点繁点。
-目的：熟悉java，学习C++，学习javac。
 
 ## stage1
 通过各种方式打印出`hello world!`
