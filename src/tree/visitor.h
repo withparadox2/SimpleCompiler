@@ -5,6 +5,7 @@
 #ifndef SIMPLECOMPILER_VISITOR_H
 #define SIMPLECOMPILER_VISITOR_H
 
+#include <cassert>
 #include "tree.h"
 
 class Visitor {
@@ -60,7 +61,7 @@ public:
     virtual void visitNewArray(JCNewArray* that) { visitTree(that); }
 
     virtual void visitTree(Tree* that) {
-        //TODO error
+        assert(false && "Please override specific visit-method.");
     }
 };
 

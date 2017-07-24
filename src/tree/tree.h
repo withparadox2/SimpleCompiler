@@ -52,7 +52,6 @@ public:
      * virtual.
      *
      */
-    //TODO why hide?
     virtual ~Tree();
 
     static const int CLASSDEF = 1;
