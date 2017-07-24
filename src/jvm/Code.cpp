@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <memory>
+#include <cassert>
 #include "Code.h"
 #include "code/type.h"
 #include "bytecode.h"
@@ -322,6 +323,7 @@ void Code::resolve(Chain* chain, int target) {
         }
     }
 
+    assert(pendingJumps == nullptr && "Consider another way to clean chain.");
     Chain::clearChain(ch);
 }
 
