@@ -90,7 +90,7 @@ void Lexer::nextToken() {
                     cToken = &Token::STRINGLITERAL;
                     nextChar();
                 } else {
-                    //TODO handle error
+                    error("\" is being expected to form a full string.");
                 }
                 return;
 

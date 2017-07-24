@@ -10,8 +10,10 @@
 
 using namespace std;
 
-//TODO We need a robust, flexible, amazing logger, not a toy :-)
 void log(string tag, string info);
+
 void log(string info);
+
+void log(const char *format, ...);
 
 #endif //SIMPLECOMPILER_LOG_H
