@@ -77,6 +77,7 @@ private:
     int compare(TypeList& list1, TypeList& list2);
 
     int getLocalSize();
+
 public:
     /** the current code pointer.*/
     int cp;
@@ -103,6 +104,8 @@ public:
     Chain* pendingJumps;
 
     Code(SymbolPtr meth);
+
+    ~Code();
 
     void endScopes(int start);
 
@@ -174,6 +177,7 @@ public:
     const int pc;
     Chain* next;//TODO use sharedptr
     Chain(int pc, Chain* next);
+    static void clearChain(Chain* ch);
 };
 
 

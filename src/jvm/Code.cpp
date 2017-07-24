@@ -306,6 +306,8 @@ Chain* Code::mergeChains(Chain* chain1, Chain* chain2) {
 
 void Code::resolve(Chain* chain, int target) {
 
+    Chain* ch = chain;
+
     for (; chain != nullptr; chain = chain->next) {
         //Jump can be dropped
         if (get1(chain->pc) == bytecode::goto_
@@ -320,6 +322,7 @@ void Code::resolve(Chain* chain, int target) {
         }
     }
 
+    Chain::clearChain(ch);
 }
 
 void Code::put2(int pc, int od) {
@@ -446,6 +449,10 @@ void Code::resolvePending() {
     resolve(c, cp);
 }
 
+Code::~Code() {
+    Chain::clearChain(pendingJumps);
+}
+
 LocalVar::LocalVar(VarSymbolPtr v)
         : sym(v),
           reg(static_cast<char16_t>(v->adr)),
@@ -458,4 +465,12 @@ LocalVar* LocalVar::dup() {
 }
 
 Chain::Chain(int pc, Chain* next) : pc(pc), next(next) {
+}
+
+void Chain::clearChain(Chain* ch) {
+    while (ch != nullptr) {
+        Chain* c = ch->next;
+        delete ch;
+        ch = c;
+    }
 }
