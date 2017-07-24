@@ -15,6 +15,7 @@
 #include "code/symbols.h"
 #include "code/types.h"
 #include "util/log.h"
+#include "util/valueholder.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -422,28 +423,6 @@ public:
     void accept(Visitor* visitor) override;
 };
 
-class IValueHolder {
-public:
-    typedef shared_ptr<IValueHolder> Ptr;
-
-    template<typename R>
-    R getValue();
-};
-
-template<typename T>
-class ValueHolder : public IValueHolder {
-public://let outer class read value
-    T value;
-
-    ValueHolder(T value);
-};
-
-template<typename R>
-R IValueHolder::getValue() {
-    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(this);
-    return p->value;
-}
-
 class JCLiteral : public JCExpression {
 
 public:
@@ -464,9 +443,6 @@ public:
 
     IValueHolder::Ptr value;
 };
-
-template<typename T>
-ValueHolder<T>::ValueHolder(T value) : value(value) {}
 
 template<typename R>
 JCLiteral::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(typetag), value(new ValueHolder<R>(value)) {

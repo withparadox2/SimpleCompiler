@@ -6,6 +6,8 @@
 #include "code/symbol.h"
 #include "code/type.h"
 #include "jvm/bytecode.h"
+#include "util/log.h"
+#include "code/TypeTags.h"
 
 Pool::Pool() {
 

@@ -9,12 +9,12 @@
 #include <vector>
 #include <map>
 #include "code/symbols.h"
-#include "tree/tree.h"
 #include "code/NameAndType.h"
+#include "util/valueholder.h"
 
 class Wrapper {
 public:
-    typedef shared_ptr<Wrapper> Ptr;
+    typedef std::shared_ptr<Wrapper> Ptr;
 
     template<typename R>
     Wrapper(R value, int type);
@@ -33,8 +33,7 @@ Wrapper::Wrapper(R value, int type) : value(new ValueHolder<R>(value)), type(typ
 
 template<typename R>
 R Wrapper::getValue() {
-    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(value.get());
-    return p->value;
+    return value->getValue<R>();
 }
 
 class Pool {

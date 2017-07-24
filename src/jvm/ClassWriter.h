@@ -10,6 +10,7 @@
 #include "jvm/Pool.h"
 #include "Code.h"
 #include "code/NameAndType.h"
+#include "tree/tree.h"
 
 #define DEBUG true
 
