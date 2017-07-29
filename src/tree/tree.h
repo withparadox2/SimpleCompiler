@@ -450,8 +450,7 @@ JCLiteral::JCLiteral(int typetag, R value) : JCExpression(LITERAL), typetag(type
 
 template<typename R>
 R JCLiteral::getValue() {
-    ValueHolder<R>* p = static_cast<ValueHolder<R>*>(value.get());
-    return p->value;
+    return value->getValue<R>();
 }
 
 class JCPrimitiveTypeTree : public JCExpression {

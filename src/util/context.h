@@ -31,8 +31,8 @@ T* Context::get(const std::string key) {
     if (keyToObj.find(key) == keyToObj.end()) {
         return nullptr;
     }
-    EnableMapHelper* base = keyToObj.at(key).get();
-    return static_cast<T*>(base);
+    EnableMapHelper* obj = keyToObj.at(key).get();
+    return static_cast<T*>(obj);
 }
 
 #endif //SIMPLECOMPILER_CONTEXT_H

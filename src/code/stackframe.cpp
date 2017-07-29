@@ -41,7 +41,6 @@ void StackMapTableFrame::writeStackMapType(ClassWriter& writer, TypePtr& t) {
                 typeByte = 5;
                 break;
             default:
-                //TODO
                 error("can not handle type:" + std::to_string(t->tag) + " in writeStackMapType");
                 break;
         }
