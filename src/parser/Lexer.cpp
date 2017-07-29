@@ -38,6 +38,7 @@ void Lexer::nextToken() {
                     cToken = &Token::SLASH;
                 }
                 return;
+            case lc::LF:
             case lc::CR:
                 nextChar();
                 if (ch == lc::LF) {

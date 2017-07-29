@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <iterator>
 #include "parser/Lexer.h"
 #include "parser/Parser.h"
 #include "util/layoutchars.h"
@@ -13,22 +14,14 @@
 
 using namespace std;
 
-//Break line at the end of each line.
-void readFileContent(ifstream& is, string& result) {
-    if (is.is_open()) {
-        string line;
-        while (getline(is, line)) {
-            result += line;
-            result += lc::CR;
-        }
+string* readByPath(const string& filePath) {
+    ifstream is(filePath.c_str());
+    string* source = nullptr;
+    if(is.is_open()) {
+        source = new string(istreambuf_iterator<char>(is),
+                            istreambuf_iterator<char>());
         is.close();
     }
-}
-
-string* readByPath(const string& filePath) {
-    string* source = new string;
-    ifstream is(filePath.c_str());
-    readFileContent(is, *source);
     return source;
 }
 
