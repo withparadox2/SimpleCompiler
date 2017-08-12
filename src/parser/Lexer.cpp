@@ -41,9 +41,6 @@ void Lexer::nextToken() {
             case lc::LF:
             case lc::CR:
                 nextChar();
-                if (ch == lc::LF) {
-                    nextChar();
-                }
                 break;
             case ',':
                 nextChar();
